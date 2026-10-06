@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import iconoMarcador from 'leaflet/dist/images/marker-icon.png'
+import iconoMarcadorRetina from 'leaflet/dist/images/marker-icon-2x.png'
+import sombraMarcador from 'leaflet/dist/images/marker-shadow.png'
 import { formatearTsm } from '../domain/nivelRiesgo'
 
 const UMBRAL_VERDE = 24
@@ -66,9 +69,9 @@ const Map = ({ latitude, longitude, zoom = 13, zonas = [] }) => {
       }).addTo(mapRef.current)
 
       const markerIcon = new L.Icon({
-        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2px.png',
-        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        iconUrl: iconoMarcador,
+        iconRetinaUrl: iconoMarcadorRetina,
+        shadowUrl: sombraMarcador,
         iconSize: [25, 41],
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
