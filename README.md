@@ -36,6 +36,8 @@ clima-spring/                        Backend Spring Boot + Maven
 `ubicacion_usuario`, `historial_notificacion` y `medida_preventiva`.
 
 El diagrama completo está en [`docs/HU-1-modelo-datos.md`](docs/HU-1-modelo-datos.md).
+La investigación de fuentes oficiales y la especificación campo por campo de las
+15 tablas están en [`docs/FUENTES-OFICIALES-Y-MODELO-DATOS.md`](docs/FUENTES-OFICIALES-Y-MODELO-DATOS.md).
 
 ## Requisitos
 
