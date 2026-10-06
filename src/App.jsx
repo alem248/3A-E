@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import Map from './components/Map'
 import WeatherInfo from './components/WeatherInfo'
 import LeyendaRiesgo from './components/LeyendaRiesgo'
+import { useAutoRefresh } from './hooks/useAutoRefresh'
 import { consultarTsmPorZonas } from './domain/zonasTermicas'
 import './App.css'
 
@@ -15,7 +16,7 @@ const App = () => {
     temperature: null
   })
   const [zonas, setZonas] = useState([])
-  const timerRef = useRef(null)
+  const [lastUpdated, setLastUpdated] = useState(null)
   const zonasTimerRef = useRef(null)
 
   const fetchWeather = async () => {
@@ -28,21 +29,16 @@ const App = () => {
         longitude: data.longitude,
         temperature: data.current?.temperature_2m ?? null
       }))
+      setLastUpdated(new Date().toLocaleTimeString())
     } catch (error) {
       console.error('Error al obtener datos:', error)
     }
   }
 
+  useAutoRefresh(fetchWeather, INTERVALO_REFRESCO_MS)
+
   useEffect(() => {
     fetchWeather()
-    timerRef.current = setInterval(fetchWeather, 15 * 60 * 1000)
-
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current)
-        timerRef.current = null
-      }
-    }
   }, [])
 
   useEffect(() => {
@@ -72,7 +68,7 @@ const App = () => {
   return (
     <div className="app">
       <h1>Clima Zona Costera</h1>
-      <WeatherInfo latitude={weather.latitude} longitude={weather.longitude} temperature={weather.temperature} />
+      <WeatherInfo latitude={weather.latitude} longitude={weather.longitude} temperature={weather.temperature} lastUpdated={lastUpdated} />
       <div className="mapa-contenedor">
         <Map latitude={weather.latitude} longitude={weather.longitude} zoom={7} zonas={zonas} />
         <LeyendaRiesgo zonas={zonas} />
