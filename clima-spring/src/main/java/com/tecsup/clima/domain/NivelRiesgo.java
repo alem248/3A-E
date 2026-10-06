@@ -1,5 +1,8 @@
 package com.tecsup.clima.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum NivelRiesgo {
     VERDE("VERDE", "Verde", "#22C55E", "Condiciones normales", null, 24.0),
     AMARILLO("AMARILLO", "Amarillo", "#EAB308", "Vigilancia / Moderado", 24.0, 26.0),

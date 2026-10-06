@@ -132,6 +132,10 @@ const mapa = (() => {
             }).addTo(mapaLeaflet);
 
             marcador = L.marker([-4.35, -81.35], { icon: icono }).addTo(mapaLeaflet);
+
+            mapaLeaflet.on('click', (evento) => {
+                consultarZonaEnPunto(evento.latlng.lat, evento.latlng.lng);
+            });
         }
     }
 
@@ -157,10 +161,40 @@ const mapa = (() => {
         }
     }
 
+    // Filtro por zona geográfica: al hacer clic en el mapa se consultan solo las
+    // zonas cuyo polígono contiene el punto seleccionado.
+    async function consultarZonaEnPunto(latitud, longitud) {
+        try {
+            const respuesta = await fetch(
+                `/api/zonas?lat=${latitud}&lon=${longitud}`
+            );
+            if (!respuesta.ok) {
+                return;
+            }
+            const zonas = await respuesta.json();
+
+            if (zonas.length === 0) {
+                L.popup()
+                    .setLatLng([latitud, longitud])
+                    .setContent('Sin zona térmica registrada en este punto.')
+                    .openOn(mapaLeaflet);
+                return;
+            }
+
+            L.popup()
+                .setLatLng([latitud, longitud])
+                .setContent(construirPopup(zonas[0]))
+                .openOn(mapaLeaflet);
+        } catch (error) {
+            console.error('Error al filtrar por zona geográfica:', error);
+        }
+    }
+
     return {
         inicializar,
         centrarEnLatLng,
-        cargarZonas
+        cargarZonas,
+        consultarZonaEnPunto
     };
 })();
 

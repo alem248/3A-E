@@ -30,7 +30,10 @@ public class WeatherService {
 
         double latitude = root.path("latitude").asDouble(properties.getLatitude());
         double longitude = root.path("longitude").asDouble(properties.getLongitude());
-        double temperature = root.path("current").path("temperature_2m").asDouble(Double.NaN);
+        double temperatura = root.path("current").path("temperature_2m").asDouble(Double.NaN);
+
+        // Evita serializar NaN (JSON invalido) cuando la fuente no devuelve el dato.
+        Double temperature = Double.isNaN(temperatura) ? null : temperatura;
 
         return new WeatherData(latitude, longitude, temperature);
     }
