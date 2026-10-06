@@ -13,9 +13,9 @@ Java Spring Boot** que sirve la API REST y el mapa Leaflet.
 clima-spring/                        Backend Spring Boot + Maven
 ├── src/main/java/com/tecsup/clima/
 │   ├── ClimaCosteroApplication.java
-│   ├── config/         WeatherProperties, ZonasSeedLoader
-│   ├── domain/         NivelRiesgo, ZonaTermica, WeatherData, WeatherSnapshot
-│   ├── persistence/    Entidades JPA y repositorios (modelo de datos)
+│   ├── config/         WeatherProperties, DatosInicialesLoader, PostgisGeometriaRefrescador
+│   ├── domain/         NivelRiesgo, ZonaTermica, PoligonoUtils, ZonasTermicas, WeatherData
+│   ├── persistence/    15 entidades JPA + repositorios del DER
 │   ├── scheduler/      AutoRefreshScheduler (refresco cada 15 min)
 │   ├── service/        WeatherService, WeatherCacheService, ZonasTermicasService
 │   └── web/            WeatherController, ZonasController (REST)
@@ -25,8 +25,17 @@ clima-spring/                        Backend Spring Boot + Maven
 │   ├── db/postgres/schema.sql            extensión PostGIS + columna geom + índices
 │   └── static/                           frontend Leaflet (HTML/CSS/JS)
 ├── db/docker-compose.yml                 PostgreSQL 16 + PostGIS
-└── docs/HU-1-modelo-datos.md             diagrama entidad-relación
+└── docs/HU-1-modelo-datos.md             diagrama entidad-relación del DER
 ```
+
+## Modelo de datos (DER)
+
+15 tablas: `fuente_oficial`, `nivel_riesgo`, `rol`, `evento_climatico`,
+`estacion_monitoreo`, `zona_vulnerable`, `usuario`, `proyeccion_trayectoria`,
+`registro_tsm`, `registro_precipitacion`, `centro_ayuda`, `alerta_preventiva`,
+`ubicacion_usuario`, `historial_notificacion` y `medida_preventiva`.
+
+El diagrama completo está en [`docs/HU-1-modelo-datos.md`](docs/HU-1-modelo-datos.md).
 
 ## Requisitos
 
@@ -71,9 +80,9 @@ mvn spring-boot:run -Dspring-boot.run.profiles=postgres
 | Tarea | Estado | Dónde |
 |---|---|---|
 | Investigar fuentes oficiales (temperatura/trayectoria) | ✅ | Open-Meteo `forecast` + `marine-api` |
-| Diagrama entidad-relación y tablas necesarias | ✅ | `docs/HU-1-modelo-datos.md` |
+| Diagrama entidad-relación y tablas necesarias | ✅ | `docs/HU-1-modelo-datos.md` (15 tablas del DER) |
 | Endpoints REST en tiempo real + filtro por zona geográfica | ✅ | `WeatherController`, `ZonasController` (`?lat&lon`) |
-| Base de datos (PostgreSQL + PostGIS) | ✅ | `persistence/`, `application-postgres.properties`, `schema.sql`, `docker-compose.yml` |
+| Base de datos (PostgreSQL + PostGIS) | ✅ | 15 entidades JPA en `persistence/`, perfil `postgres`, `schema.sql`, `docker-compose.yml` |
 | Librería de mapas (Leaflet) | ✅ | `static/index.html`, `static/js/mapa.js` |
 | Lógica de colores por temperatura | ✅ | `NivelRiesgo` |
 | Conectar el mapa con la API | ✅ | `static/js/mapa.js`, `App.jsx` |

@@ -72,70 +72,17 @@ public class ZonaTermica {
 
     /**
      * Indica si un punto (latitud, longitud) cae dentro del poligono de la zona.
-     * Implementa el algoritmo "ray casting" (par/impar), suficiente para los
-     * poligonos rectangulares y convexos usados por la costa peruana.
+     * Delega en {@link PoligonoUtils#contiene} (ray casting).
      */
     public boolean contiene(Double puntoLatitud, Double puntoLongitud) {
-        if (puntoLatitud == null || puntoLongitud == null) {
-            return false;
-        }
-
-        if (poligono == null || poligono.size() < 3) {
-            return false;
-        }
-
-        boolean dentro = false;
-        int total = poligono.size();
-
-        for (int i = 0, j = total - 1; i < total; j = i++) {
-            // Vértices: obtener(0) = latitud (y), obtener(1) = longitud (x).
-            double lati = poligono.get(i).get(0);
-            double loni = poligono.get(i).get(1);
-            double latj = poligono.get(j).get(0);
-            double lonj = poligono.get(j).get(1);
-
-            boolean cruza = ((lati > puntoLatitud) != (latj > puntoLatitud))
-                && (puntoLongitud < (lonj - loni) * (puntoLatitud - lati) / (latj - lati) + loni);
-
-            if (cruza) {
-                dentro = !dentro;
-            }
-        }
-
-        return dentro;
+        return PoligonoUtils.contiene(poligono, puntoLatitud, puntoLongitud);
     }
 
     /**
-     * Devuelve el poligono en formato WKT (SRID 4326) para insertarlo en la
-     * columna espacial PostGIS, por ejemplo: POLYGON((lon lat, ...)).
+     * Devuelve el poligono en formato WKT (SRID 4326) para almacenarlo en
+     * {@code zona_vulnerable.poligono} y poblar la columna PostGIS {@code geom}.
      */
     public String poligonoWkt() {
-        if (poligono == null || poligono.isEmpty()) {
-            return null;
-        }
-
-        StringBuilder wkt = new StringBuilder("POLYGON((");
-        List<List<Double>> anillo = new java.util.ArrayList<>(poligono);
-
-        // PostGIS exige que el anillo este cerrado (primer punto = ultimo).
-        if (anillo.size() > 0) {
-            List<Double> primero = anillo.get(0);
-            List<Double> ultimo = anillo.get(anillo.size() - 1);
-
-            if (!primero.get(0).equals(ultimo.get(0)) || !primero.get(1).equals(ultimo.get(1))) {
-                anillo.add(primero);
-            }
-        }
-
-        for (int i = 0; i < anillo.size(); i++) {
-            if (i > 0) {
-                wkt.append(", ");
-            }
-
-            // WKT usa el orden X=longitud, Y=latitud.
-            wkt.append(anillo.get(i).get(1)).append(" ").append(anillo.get(i).get(0));
-        }
-
-        return wkt.append("))").toString();
+        return PoligonoUtils.aWkt(poligono);
     }
 }
