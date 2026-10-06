@@ -28,7 +28,7 @@ public enum NivelRiesgo {
     }
 
     public static NivelRiesgo clasificarTemperatura(Double tsmCelsius) {
-        if (tsmCelsius == null || !tsmCelsius.isFinite()) {
+        if (tsmCelsius == null || !Double.isFinite(tsmCelsius)) {
             return SIN_DATOS;
         }
 
