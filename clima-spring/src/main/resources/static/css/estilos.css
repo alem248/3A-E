@@ -1,0 +1,103 @@
+:root {
+    --borde: #d0d7de;
+    --texto: #1f2328;
+    --fondo: #f6f8fa;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    color: var(--texto);
+    background: var(--fondo);
+}
+
+.app {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.app h1 {
+    margin: 0;
+    text-align: center;
+}
+
+.tarjeta-clima {
+    padding: 1rem;
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+}
+
+.tarjeta-clima h2 {
+    margin: 0 0 0.5rem;
+}
+
+.tarjeta-clima p {
+    margin: 0.25rem 0;
+}
+
+.mapa-contenedor {
+    display: flex;
+    gap: 1rem;
+    align-items: stretch;
+}
+
+#mapa {
+    height: 420px;
+    width: 100%;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    z-index: 1;
+}
+
+.leyenda {
+    width: 260px;
+    padding: 1rem;
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+}
+
+.leyenda h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+}
+
+.leyenda ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.leyenda li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.muestra-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    flex: 0 0 auto;
+}
+
+@media (max-width: 720px) {
+    .mapa-contenedor {
+        flex-direction: column;
+    }
+
+    .leyenda {
+        width: 100%;
+    }
+}

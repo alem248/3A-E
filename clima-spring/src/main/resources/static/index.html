@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clima Zona Costera</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="/css/estilos.css">
+</head>
+<body>
+    <div class="app">
+        <h1>Clima Zona Costera</h1>
+
+        <section class="tarjeta-clima">
+            <h2>Datos del clima</h2>
+            <p>Latitud: <strong id="latitud">—</strong></p>
+            <p>Longitud: <strong id="longitud">—</strong></p>
+            <p>Temperatura: <strong id="temperatura">Cargando...</strong></p>
+            <p>Última actualización: <strong id="ultima-actualizacion">—</strong></p>
+        </section>
+
+        <div class="mapa-contenedor">
+            <div id="mapa"></div>
+            <aside id="leyenda" class="leyenda" hidden></aside>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/js/clima.js"></script>
+    <script src="/js/mapa.js"></script>
+</body>
+</html>
