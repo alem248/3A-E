@@ -5,6 +5,7 @@ import iconoMarcador from 'leaflet/dist/images/marker-icon.png'
 import iconoMarcadorRetina from 'leaflet/dist/images/marker-icon-2x.png'
 import sombraMarcador from 'leaflet/dist/images/marker-shadow.png'
 import { formatearTsm } from '../domain/nivelRiesgo'
+import { TESELAS_BASE } from '../map/teselas'
 
 const UMBRAL_VERDE = 24
 
@@ -64,9 +65,15 @@ const Map = ({ latitude, longitude, zoom = 13, zonas = [] }) => {
     if (mapRef.current === null) {
       mapRef.current = L.map('map').setView([latitude, longitude], zoom)
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(mapRef.current)
+      const capasBase = {}
+
+      TESELAS_BASE.forEach((proveedor) => {
+        capasBase[proveedor.nombre] = L.tileLayer(proveedor.url, proveedor.opciones)
+      })
+
+      capasBase[TESELAS_BASE[0].nombre].addTo(mapRef.current)
+      L.control.layers(capasBase, null, { position: 'topright' }).addTo(mapRef.current)
+      L.control.scale({ metric: true, imperial: false, position: 'bottomright' }).addTo(mapRef.current)
 
       const markerIcon = new L.Icon({
         iconUrl: iconoMarcador,
