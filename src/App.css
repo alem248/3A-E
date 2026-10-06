@@ -6,3 +6,108 @@
 h1 {
   margin-bottom: 1rem;
 }
+
+.mapa-contenedor {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.leyenda-riesgo {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 1000;
+  min-width: 232px;
+  padding: 0.7rem 0.85rem;
+  text-align: left;
+  font-size: 13px;
+  line-height: 145%;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.leyenda-riesgo__titulo {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.leyenda-riesgo__resumen {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.leyenda-riesgo__lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.leyenda-riesgo__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+.leyenda-riesgo__color {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid rgba(128, 128, 128, 0.35);
+}
+
+.leyenda-riesgo__nombre {
+  min-width: 62px;
+}
+
+.leyenda-riesgo__rango {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text);
+}
+
+.leyenda-riesgo__conteo {
+  min-width: 18px;
+  margin-left: auto;
+  padding: 0 5px;
+  font-size: 11px;
+  text-align: center;
+  color: var(--text-h);
+  background: rgba(128, 128, 128, 0.16);
+  border-radius: 999px;
+}
+
+.leyenda-riesgo__pie {
+  margin-top: 7px;
+  padding-top: 6px;
+  font-size: 11px;
+  color: var(--text);
+  border-top: 1px solid var(--border);
+}
+
+@media (prefers-color-scheme: dark) {
+  .leyenda-riesgo {
+    background: rgba(22, 23, 29, 0.92);
+  }
+}
+
+@media (max-width: 640px) {
+  .leyenda-riesgo {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    min-width: 0;
+  }
+}
