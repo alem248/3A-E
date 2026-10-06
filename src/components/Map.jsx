@@ -6,8 +6,20 @@ import iconoMarcadorRetina from 'leaflet/dist/images/marker-icon-2x.png'
 import sombraMarcador from 'leaflet/dist/images/marker-shadow.png'
 import { formatearTsm } from '../domain/nivelRiesgo'
 import { TESELAS_BASE } from '../map/teselas'
+import { LIMITE_COSTA_PERU, OPCIONES_MAPA } from '../map/configuracion'
 
 const UMBRAL_VERDE = 24
+
+let avisoTeselasPendiente = false
+
+const avisarErrorTesela = (evento) => {
+  if (avisoTeselasPendiente) {
+    return
+  }
+
+  avisoTeselasPendiente = true
+  console.warn('No se pudieron cargar algunas teselas del mapa.', evento)
+}
 
 const escapar = (texto) =>
   String(texto).replace(
@@ -63,12 +75,19 @@ const Map = ({ latitude, longitude, zoom = 13, zonas = [] }) => {
 
   useEffect(() => {
     if (mapRef.current === null) {
-      mapRef.current = L.map('map').setView([latitude, longitude], zoom)
+      mapRef.current = L.map('map', {
+        ...OPCIONES_MAPA,
+        maxBounds: L.latLngBounds(LIMITE_COSTA_PERU)
+      })
+      mapRef.current.invalidateSize()
+      mapRef.current.setView([latitude, longitude], zoom)
 
       const capasBase = {}
 
       TESELAS_BASE.forEach((proveedor) => {
-        capasBase[proveedor.nombre] = L.tileLayer(proveedor.url, proveedor.opciones)
+        const capaBase = L.tileLayer(proveedor.url, proveedor.opciones)
+        capaBase.on('tileerror', avisarErrorTesela)
+        capasBase[proveedor.nombre] = capaBase
       })
 
       capasBase[TESELAS_BASE[0].nombre].addTo(mapRef.current)
