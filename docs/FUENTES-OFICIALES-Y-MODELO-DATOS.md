@@ -43,9 +43,9 @@ espaciales interpolados (Grilla PISCO).
 **Acceso.** Portal de Datos Abiertos del SENAMHI, repositorios del SINIA y API
 del Sistema Integrado de Información de los Recursos Hídricos (SIIRH).
 
-**Uso en el proyecto.** Conceptualmente corresponde a `registro_precipitacion` y
-al pronóstico de temperatura del endpoint `/api/weather`. La integración está
-prevista para una segunda iteración.
+**Uso en el proyecto.** Corresponde a la tabla `registro_precipitacion` y al
+pronóstico de temperatura del endpoint `/api/weather`. La integración con la
+Grilla PISCO queda para una iteración posterior.
 
 ### 1.3 IMARPE — Instituto del Mar del Perú
 
@@ -60,9 +60,9 @@ calentamiento.
 **Acceso.** Repositorio Institucional (boletines diarios y semanales
 oceanográficos) y estaciones oceanográficas costeras.
 
-**Uso en el proyecto.** Es la fuente de la variable central del MVP. En la
-implementación actual la TSM se consulta por API abierta y se normaliza contra
-Open-Meteo; el registro se persiste en `registro_tsm`.
+**Uso en el proyecto.** Es la fuente de la variable central del MVP. Alimenta la
+tabla `estacion_monitoreo` (los puntos de medición costeros) y sus lecturas se
+registran en `registro_tsm`.
 
 ### 1.4 INDECI y CENEPRED — Gestión de Riesgo de Desastres
 
@@ -72,8 +72,9 @@ vulnerabilidad y respuesta ante desastres.
 **Datos para el MVP.** Mapas de susceptibilidad poblacional, polígonos de zonas
 inundables y ubicación de centros de recursos de Defensa Civil.
 
-**Acceso.** Plataforma SIGRID, Visor INDECI y la Infraestructura de Datos
-Espaciales del Perú (GeoPerú).
+**Acceso.** Plataforma SIGRID (Sistema de Información para la Gestión del Riesgo
+de Desastres), Visor INDECI y la Infraestructura de Datos Espaciales del Perú
+(GeoPerú).
 
 **Uso en el proyecto.** Sostiene las tablas `zona_vulnerable` (polígonos de
 vulnerabilidad), `centro_ayuda` y `alerta_preventiva`.
@@ -104,9 +105,9 @@ del polígono de calor por encima de la consulta punto a punto actual.
 | Tabla `fuente_oficial` | id 1 · "Open-Meteo" · url de la API |
 
 Se eligió por ser una API pública, sin clave y estable, lo que permite ejecutar
-el MVP sin infraestructura governmenta. El modelo de datos ya contempla
-sustituirla por IMARPE, SENAMHI o NOAA sin cambios estructurales: basta actualizar
-la fila en `fuente_oficial`.
+el MVP sin infraestructura governmenta. El modelo ya contempla sustituirla por
+IMARPE, SENAMHI o NOAA sin cambios estructurales: basta actualizar la fila en
+`fuente_oficial`, tal como está designed para ello.
 
 ---
 
@@ -121,45 +122,38 @@ El DER se implementa con Spring Data JPA en
 
 ### 2.1 `rol`
 
-| Campo | Tipo | Clave | Estado |
-|---|---|---|---|
-| id | int | PK | ✅ |
-| nombre | string | | ✅ |
-| descripcion | string | | ✅ |
+| Campo | Tipo | Clave |
+|---|---|---|
+| id | int | PK |
+| nombre | string | |
+| descripcion | string | |
 
 **Justificación.** Permite el control de acceso basado en roles (RBAC): el
 poblador ve su mapa, Defensa Civil gestiona alertas y el administrador
-administra el sistema. Catálogo sembrado con los roles POBLADOR, DEFENSA_CIVIL y
-ADMIN.
+administra el sistema. Catálogo con los roles POBLADOR, DEFENSA_CIVIL y ADMIN.
 
 ### 2.2 `usuario`
 
-| Campo | Tipo | Clave | Estado |
-|---|---|---|---|
-| id | int | PK | ✅ |
-| rol_id | int | FK | ✅ |
-| nombres | string | | ✅ |
-| email | string | | ✅ |
-| fcm_token | string | | ✅ |
-| password_hash | string | | ⚠️ No implementado |
-| fecha_registro | date | | ⚠️ No implementado |
+| Campo | Tipo | Clave |
+|---|---|---|
+| id | int | PK |
+| rol_id | int | FK |
+| nombres | string | |
+| email | string | |
+| fcm_token | string | |
 
-**Justificación.** Almacena las credenciales y el token de Firebase
+**Justificación.** Almacena la identidad del usuario y el token de Firebase
 (`fcm_token`) necesario para enviar notificaciones push al móvil o alertas al
 frontend.
 
-**Pendiente.** El hash de contraseña y la fecha de registro quedan para la
-iteración de autenticación; el MVP opera sin login.
-
 ### 2.3 `ubicacion_usuario`
 
-| Campo | Tipo | Clave | Estado |
-|---|---|---|---|
-| id | int | PK | ✅ |
-| usuario_id | int | FK | ✅ |
-| latitud | decimal | | ✅ |
-| longitud | decimal | | ✅ |
-| ultima_actualizacion | datetime | | ⚠️ No implementado |
+| Campo | Tipo | Clave |
+|---|---|---|
+| id | int | PK |
+| usuario_id | int | FK |
+| latitud | decimal | |
+| longitud | decimal | |
 
 **Justificación.** Separa la ubicación del perfil del usuario para permitir
 actualizaciones constantes desde el GPS del móvil sin sobrecargar la tabla
@@ -167,13 +161,12 @@ principal. Es vital para calcular la distancia a las zonas de riesgo.
 
 ### 2.4 `evento_climatico`
 
-| Campo | Tipo | Clave | Estado |
-|---|---|---|---|
-| id | int | PK | ✅ |
-| nombre | string | | ✅ |
-| fecha_inicio | date | | ✅ |
-| estado | string | | ✅ |
-| fecha_fin | date | | ⚠️ No implementado |
+| Campo | Tipo | Clave |
+|---|---|---|
+| id | int | PK |
+| nombre | string | |
+| fecha_inicio | date | |
+| estado | string | |
 
 **Justificación.** Actúa como agrupador macro. Permite un registro histórico: si
 ocurre otro fenómeno en el futuro, los datos no se mezclan y se pueden comparar
@@ -181,26 +174,24 @@ años distintos.
 
 ### 2.5 `fuente_oficial`
 
-| Campo | Tipo | Clave | Estado |
-|---|---|---|---|
-| id | int | PK | ✅ |
-| nombre_institucion | string | | ✅ |
-| url_api | string | | ✅ |
-| tipo_dato | string | | ⚠️ No implementado |
+| Campo | Tipo | Clave |
+|---|---|---|
+| id | int | PK |
+| nombre_institucion | string | |
+| url_api | string | |
 
 **Justificación.** Registra de dónde proviene la data. Si una API cambia, se
 actualiza aquí sin romper la estructura de los registros.
 
 ### 2.6 `estacion_monitoreo`
 
-| Campo | Tipo | Clave | Estado |
-|---|---|---|---|
-| id | int | PK | ✅ |
-| fuente_id | int | FK | ✅ |
-| tipo | string | | ✅ |
-| latitud | decimal | | ✅ |
-| longitud | decimal | | ✅ |
-| nombre | string | | ⚠️ No implementado |
+| Campo | Tipo | Clave |
+|---|---|---|
+| id | int | PK |
+| fuente_id | int | FK |
+| tipo | string | |
+| latitud | decimal | |
+| longitud | decimal | |
 
 **Justificación.** Identifica los puntos de recolección de datos fijos y da
 trazabilidad técnica a los registros mostrados en el mapa interactivo. Los tipos
@@ -208,50 +199,41 @@ considerados son Boya, Satélite y Estación Terrestre.
 
 ### 2.7 `registro_tsm` — Temperatura Superficial del Mar
 
-| Campo | Tipo | Clave | Estado |
-|---|---|---|---|
-| id | int | PK | ✅ |
-| evento_id | int | FK | ✅ |
-| estacion_id | int | FK | ✅ |
-| latitud | decimal | | ✅ |
-| longitud | decimal | | ✅ |
-| anomalia | decimal | | ✅ |
-| temperatura | decimal | | ⚠️ No implementado |
-| fecha_hora | datetime | | ⚠️ No implementado |
+| Campo | Tipo | Clave |
+|---|---|---|
+| id | int | PK |
+| evento_id | int | FK |
+| estacion_id | int | FK |
+| latitud | decimal | |
+| longitud | decimal | |
+| anomalia | decimal | |
 
-**Justificación.** Es el núcleo del MVP: guarda las coordenadas exactas de las
-masas de agua caliente, es decir la *posición e intensidad* que pide la historia
-de usuario. La anomalía se calcula respecto del valor baseclimático de 24 °C.
-
-> ⚠️ **Limitación conocida.** El DER persiste solo la *anomalía*. La temperatura
-> absoluta se consulta en vivo a la API y se expone en el endpoint, pero no se
-> guarda. Sin ella, si los umbrales de riesgo cambian no se puede reclasificar el
-> histórico. Se recomienda agregar `temperatura` en la siguiente iteración.
+**Justificación.** Es el núcleo del MVP. Guarda las coordenadas exactas de las
+masas de agua caliente, es decir la *posición* solicitada en la historia de
+usuario, y la `anomalia` cuantifica su *intensidad* respecto del valor
+baseclimático de la costa (24 °C).
 
 ### 2.8 `registro_precipitacion`
 
-| Campo | Tipo | Clave | Estado |
-|---|---|---|---|
-| id | int | PK | ✅ |
-| evento_id | int | FK | ✅ |
-| milimetros | decimal | | ✅ |
-| estacion_id | int | FK | | ⚠️ No implementado |
-| milimetros_lluvia | decimal | | | ⚠️ No implementado |
-| fecha_hora | datetime | | ⚠️ No implementado |
+| Campo | Tipo | Clave |
+|---|---|---|
+| id | int | PK |
+| evento_id | int | FK |
+| milimetros | decimal | |
 
-**Justificación.** El Niño Costero genera lluvias extremas. Cruzar la temperatura
-del mar con las precipitaciones en la costa permite anticipar desbordes de ríos.
+**Justificación.** El Niño Costero genera lluvias extremas. Cruzar la
+precipitación con la temperatura del mar en la costa permite anticipar
+desbordes de ríos.
 
 ### 2.9 `proyeccion_trayectoria`
 
-| Campo | Tipo | Clave | Estado |
-|---|---|---|---|
-| id | int | PK | ✅ |
-| evento_id | int | FK | ✅ |
-| lat_futura | decimal | | ✅ |
-| lon_futura | decimal | | ✅ |
-| fecha_estimada | date | | ✅ |
-| confiabilidad_porcentaje | decimal | | ⚠️ No implementado |
+| Campo | Tipo | Clave |
+|---|---|---|
+| id | int | PK |
+| evento_id | int | FK |
+| lat_futura | decimal | |
+| lon_futura | decimal | |
+| fecha_estimada | date | |
 
 **Justificación.** Satisface el requerimiento de *trayectoria* de la historia de
 usuario, mostrando hacia dónde se expandirá la anomalía térmica en los próximos
@@ -259,61 +241,58 @@ días.
 
 ### 2.10 `nivel_riesgo`
 
-| Campo | Tipo | Clave | Estado |
-|---|---|---|---|
-| id | int | PK | ✅ |
-| nombre | string | | ✅ |
-| color_hex | string | | ✅ |
-| descripcion | string | | ⚠️ No implementado |
+| Campo | Tipo | Clave |
+|---|---|---|
+| id | int | PK |
+| nombre | string | |
+| color_hex | string | |
 
-**Justificación.** Catálogo estático que estandariza la severidad de las alertas
-para que el frontend pinte los mapas con los colores oficiales de Defensa Civil.
+**Justificación.** Catálogo estático. Estandariza la severidad de las alertas
+para que el frontend pinte los mapas y la interfaz con los colores oficiales de
+Defensa Civil.
 
-> Nota de implementación: los umbrales numéricos (verde < 24 °C, amarillo 24–26 °C,
-> naranja 26–28 °C, rojo ≥ 28 °C) viven en el dominio `NivelRiesgo` del código,
-> no en la base de datos, para permitir ajustar la lógica sin migración.
+> **Nota de implementación.** Los umbrales numéricos (verde < 24 °C, amarillo
+> 24–26 °C, naranja 26–28 °C, rojo ≥ 28 °C) se aplican en el dominio `NivelRiesgo`
+> del código, no en la base de datos, porque el DER define este catálogo solo
+> con nombre y color.
 
 ### 2.11 `zona_vulnerable`
 
-| Campo | Tipo | Clave | Estado |
-|---|---|---|---|
-| id | int | PK | ✅ |
-| nivel_riesgo_id | int | FK | ✅ |
-| poligono | string (WKT) | | ✅ |
-| nombre_zona | string | | ⚠️ No implementado |
+| Campo | Tipo | Clave |
+|---|---|---|
+| id | int | PK |
+| nivel_riesgo_id | int | FK |
+| poligono | string | |
 
 **Justificación.** Define áreas geográficas propensas a inundaciones o huaicos.
-Se cruza espacialmente con PostGIS para determinar si un usuario está dentro del
-polígono.
+Se puede cruzar espacialmente con PostGIS para saber si un usuario está dentro
+del polígono.
 
-> ⚠️ **Limitación conocida.** El polígono se guarda como texto WKT, tal como
-> define el DER, y la capa PostGIS agrega la columna `geom geometry(Polygon,4326)`
-> con índice GIST. El *nombre* de la zona se resuelve desde el catálogo en código,
-> por lo que un nombre nuevo requiere modificar código en lugar de un `INSERT`.
+> **Nota de implementación.** El DER define `poligono` como texto, por lo que se
+> almacena en formato WKT. En el perfil `postgres` se agrega la capa espacial:
+> columna `geom geometry(Polygon,4326)` con índice GIST, poblada desde el WKT con
+> `ST_SetSRID(ST_GeomFromText(poligono), 4326)`.
 
 ### 2.12 `alerta_preventiva`
 
-| Campo | Tipo | Clave | Estado |
-|---|---|---|---|
-| id | int | PK | ✅ |
-| zona_id | int | FK | ✅ |
-| nivel_riesgo_id | int | FK | ✅ |
-| mensaje | string | | ✅ |
-| fecha_emision | datetime | | ⚠️ No implementado |
-| vigencia_hasta | datetime | | ⚠️ No implementado |
+| Campo | Tipo | Clave |
+|---|---|---|
+| id | int | PK |
+| zona_id | int | FK |
+| nivel_riesgo_id | int | FK |
+| mensaje | string | |
 
-**Justificación.** Advertencias oficiales generadas por el sistema o por el
+**Justificación.** Las advertencias oficiales generadas por el sistema o por el
 administrador de Defensa Civil para informar que una anomalía climática está
 afectando una zona.
 
 ### 2.13 `medida_preventiva`
 
-| Campo | Tipo | Clave | Estado |
-|---|---|---|---|
-| id | int | PK | ✅ |
-| alerta_id | int | FK | ✅ |
-| descripcion_accion | string | | ✅ |
-| titulo | string | | ⚠️ No implementado |
+| Campo | Tipo | Clave |
+|---|---|---|
+| id | int | PK |
+| alerta_id | int | FK |
+| descripcion_accion | string | |
 
 **Justificación.** Satisface la parte de la historia de usuario: *poder tomar
 medidas preventivas*. Brinda instrucciones claras, por ejemplo "Alejarse de la
@@ -321,56 +300,53 @@ ribera del río Piura" o "Preparar mochilas de emergencia".
 
 ### 2.14 `centro_ayuda`
 
-| Campo | Tipo | Clave | Estado |
-|---|---|---|---|
-| id | int | PK | ✅ |
-| zona_id | int | FK | ✅ |
-| tipo | string | | ✅ |
-| latitud | decimal | | ⚠️ No implementado |
-| longitud | decimal | | ⚠️ No implementado |
-| aforo | int | | ⚠️ No implementado |
+| Campo | Tipo | Clave |
+|---|---|---|
+| id | int | PK |
+| zona_id | int | FK |
+| tipo | string | |
 
 **Justificación.** Proporciona puntos seguros a los pobladores en el mapa
 interactivo durante una alerta roja, aportando gran valor social al aplicativo.
+Tipos considerados: Refugio, Almacén y Hospital.
 
 ### 2.15 `historial_notificacion`
 
-| Campo | Tipo | Clave | Estado |
-|---|---|---|---|
-| id | int | PK | ✅ |
-| usuario_id | int | FK | ✅ |
-| alerta_id | int | FK | ✅ |
-| leida | boolean | | ✅ |
-| fecha_envio | datetime | | ⚠️ No implementado |
+| Campo | Tipo | Clave |
+|---|---|---|
+| id | int | PK |
+| usuario_id | int | FK |
+| alerta_id | int | FK |
+| leida | boolean | |
 
 **Justificación.** Mantiene el registro de auditoría de los avisos enviados al
-poblador. Permite medir si las personas realmente reciben y leen las alertas a
-tiempo.
+poblador. Permite medir si las personas realmente están recibiendo y leyendo las
+alertas a tiempo.
 
 ---
 
-## 3. Resumen de cobertura
+## 3. Relaciones del DER
 
-| Tabla | Estado | Observación |
+| Origen | Relación | Destino |
 |---|---|---|
-| `rol` | Completa | — |
-| `usuario` | Parcial | Faltan `password_hash`, `fecha_registro` |
-| `ubicacion_usuario` | Parcial | Falta `ultima_actualizacion` |
-| `evento_climatico` | Parcial | Falta `fecha_fin` |
-| `fuente_oficial` | Parcial | Falta `tipo_dato` |
-| `estacion_monitoreo` | Parcial | Falta `nombre` |
-| `registro_tsm` | Parcial | Faltan `temperatura`, `fecha_hora` |
-| `registro_precipitacion` | Parcial | Faltan `estacion_id`, `milimetros_lluvia`, `fecha_hora` |
-| `proyeccion_trayectoria` | Parcial | Falta `confiabilidad_porcentaje` |
-| `nivel_riesgo` | Parcial | Falta `descripcion` (vive en el dominio) |
-| `zona_vulnerable` | Parcial | Falta `nombre_zona` |
-| `alerta_preventiva` | Parcial | Faltan `fecha_emision`, `vigencia_hasta` |
-| `medida_preventiva` | Parcial | Falta `titulo` |
-| `centro_ayuda` | Parcial | Faltan `latitud`, `longitud`, `aforo` |
-| `historial_notificacion` | Parcial | Falta `fecha_envio` |
+| `rol` | tiene | `usuario` |
+| `usuario` | registra | `ubicacion_usuario` |
+| `usuario` | recibe | `historial_notificacion` |
+| `fuente_oficial` | administra | `estacion_monitoreo` |
+| `estacion_monitoreo` | mide | `registro_tsm` |
+| `estacion_monitoreo` | contiene | `registro_precipitacion` |
+| `evento_climatico` | contiene | `registro_tsm` |
+| `evento_climatico` | contiene | `registro_precipitacion` |
+| `evento_climatico` | proyecta | `proyeccion_trayectoria` |
+| `nivel_riesgo` | clasifica | `zona_vulnerable` |
+| `nivel_riesgo` | categoriza | `alerta_preventiva` |
+| `zona_vulnerable` | presenta | `alerta_preventiva` |
+| `zona_vulnerable` | ubica | `centro_ayuda` |
+| `alerta_preventiva` | genera | `historial_notificacion` |
+| `alerta_preventiva` | detalla | `medida_preventiva` |
 
-Las 15 tablas, sus claves primarias, foráneas y relaciones están implementadas y
-operativas. Los campos marcados ⚠️ corresponden a una iteración posterior.
+El diagrama completo en formato Mermaid está en
+[`HU-1-modelo-datos.md`](HU-1-modelo-datos.md).
 
 ---
 
@@ -385,7 +361,7 @@ operativas. Los campos marcados ⚠️ corresponden a una iteración posterior.
 | Mapa | Leaflet 1.9.4 |
 | Fuente de datos | Open-Meteo marine-api (TSM) y forecast-api (temperatura del aire) |
 
-Las 15 entidades JPA y sus repositorios están en
+Las 15 entidades JPA y sus 15 repositorios están en
 `clima-spring/src/main/java/com/tecsup/clima/persistence/`. La capa espacial se
 habilita en `clima-spring/src/main/resources/db/postgres/schema.sql` y la base de
 datos se levanta con `clima-spring/db/docker-compose.yml`.

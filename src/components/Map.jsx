@@ -1,9 +1,25 @@
 import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import iconoMarcador from 'leaflet/dist/images/marker-icon.png'
+import iconoMarcadorRetina from 'leaflet/dist/images/marker-icon-2x.png'
+import sombraMarcador from 'leaflet/dist/images/marker-shadow.png'
 import { formatearTsm } from '../domain/nivelRiesgo'
+import { TESELAS_BASE } from '../map/teselas'
+import { LIMITE_COSTA_PERU, OPCIONES_MAPA } from '../map/configuracion'
 
 const UMBRAL_VERDE = 24
+
+let avisoTeselasPendiente = false
+
+const avisarErrorTesela = (evento) => {
+  if (avisoTeselasPendiente) {
+    return
+  }
+
+  avisoTeselasPendiente = true
+  console.warn('No se pudieron cargar algunas teselas del mapa.', evento)
+}
 
 const escapar = (texto) =>
   String(texto).replace(
@@ -59,16 +75,29 @@ const Map = ({ latitude, longitude, zoom = 13, zonas = [] }) => {
 
   useEffect(() => {
     if (mapRef.current === null) {
-      mapRef.current = L.map('map').setView([latitude, longitude], zoom)
+      mapRef.current = L.map('map', {
+        ...OPCIONES_MAPA,
+        maxBounds: L.latLngBounds(LIMITE_COSTA_PERU)
+      })
+      mapRef.current.invalidateSize()
+      mapRef.current.setView([latitude, longitude], zoom)
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(mapRef.current)
+      const capasBase = {}
+
+      TESELAS_BASE.forEach((proveedor) => {
+        const capaBase = L.tileLayer(proveedor.url, proveedor.opciones)
+        capaBase.on('tileerror', avisarErrorTesela)
+        capasBase[proveedor.nombre] = capaBase
+      })
+
+      capasBase[TESELAS_BASE[0].nombre].addTo(mapRef.current)
+      L.control.layers(capasBase, null, { position: 'topright' }).addTo(mapRef.current)
+      L.control.scale({ metric: true, imperial: false, position: 'bottomright' }).addTo(mapRef.current)
 
       const markerIcon = new L.Icon({
-        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2px.png',
-        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        iconUrl: iconoMarcador,
+        iconRetinaUrl: iconoMarcadorRetina,
+        shadowUrl: sombraMarcador,
         iconSize: [25, 41],
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
