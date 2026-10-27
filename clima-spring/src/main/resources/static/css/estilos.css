@@ -101,3 +101,18 @@ body {
         width: 100%;
     }
 }
+
+.tarjeta-ubicacion button {
+    padding: 0.5rem 1rem;
+    font: inherit;
+    color: #fff;
+    background: #0969da;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.tarjeta-ubicacion button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
