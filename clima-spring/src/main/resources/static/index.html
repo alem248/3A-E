@@ -19,6 +19,12 @@
             <p>Última actualización: <strong id="ultima-actualizacion">—</strong></p>
         </section>
 
+        <section class="tarjeta-clima tarjeta-ubicacion">
+            <h2>Mi ubicación</h2>
+            <button type="button" id="boton-ubicacion">Usar mi ubicación (GPS)</button>
+            <p id="estado-ubicacion" role="status"></p>
+        </section>
+
         <div class="mapa-contenedor">
             <div id="mapa"></div>
             <aside id="leyenda" class="leyenda" hidden></aside>
@@ -28,5 +34,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="/js/clima.js"></script>
     <script src="/js/mapa.js"></script>
+    <script src="/js/ubicacion.js"></script>
 </body>
 </html>

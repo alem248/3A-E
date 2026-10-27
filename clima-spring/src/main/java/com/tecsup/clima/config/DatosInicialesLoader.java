@@ -24,6 +24,8 @@ import com.tecsup.clima.persistence.NivelRiesgoEntity;
 import com.tecsup.clima.persistence.NivelRiesgoRepository;
 import com.tecsup.clima.persistence.RolEntity;
 import com.tecsup.clima.persistence.RolRepository;
+import com.tecsup.clima.persistence.UsuarioEntity;
+import com.tecsup.clima.persistence.UsuarioRepository;
 import com.tecsup.clima.persistence.ZonaVulnerableEntity;
 import com.tecsup.clima.persistence.ZonaVulnerableRepository;
 
@@ -32,7 +34,8 @@ import com.tecsup.clima.persistence.ZonaVulnerableRepository;
  * Es idempotente: solo inserta los registros que aun no existen.
  *
  * <p>Sembrado: rol, nivel_riesgo, fuente_oficial, evento_climatico,
- * estacion_monitoreo y zona_vulnerable (costa norte).</p>
+ * estacion_monitoreo, zona_vulnerable (costa norte) y un usuario demo para
+ * registrar ubicaciones GPS.</p>
  */
 @Component
 @Order(1)
@@ -46,19 +49,22 @@ public class DatosInicialesLoader implements CommandLineRunner {
     private final EventoClimaticoRepository eventoRepository;
     private final EstacionMonitoreoRepository estacionRepository;
     private final ZonaVulnerableRepository zonaRepository;
+    private final UsuarioRepository usuarioRepository;
 
     public DatosInicialesLoader(RolRepository rolRepository,
                                 NivelRiesgoRepository nivelRiesgoRepository,
                                 FuenteOficialRepository fuenteRepository,
                                 EventoClimaticoRepository eventoRepository,
                                 EstacionMonitoreoRepository estacionRepository,
-                                ZonaVulnerableRepository zonaRepository) {
+                                ZonaVulnerableRepository zonaRepository,
+                                UsuarioRepository usuarioRepository) {
         this.rolRepository = rolRepository;
         this.nivelRiesgoRepository = nivelRiesgoRepository;
         this.fuenteRepository = fuenteRepository;
         this.eventoRepository = eventoRepository;
         this.estacionRepository = estacionRepository;
         this.zonaRepository = zonaRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
@@ -69,9 +75,24 @@ public class DatosInicialesLoader implements CommandLineRunner {
         FuenteOficialEntity fuente = sembrarFuenteOficial();
         sembrarEventoClimatico();
         sembrarZonasYEstaciones(fuente);
+        sembrarUsuarioDemo();
 
         log.info("Datos iniciales del DER verificados. zonas={} estaciones={} niveles={}",
             zonaRepository.count(), estacionRepository.count(), nivelRiesgoRepository.count());
+    }
+
+    /** Usuario 1 (POBLADOR): el frontend lo usa para registrar la ubicacion GPS. */
+    private void sembrarUsuarioDemo() {
+        if (usuarioRepository.existsById(1)) {
+            return;
+        }
+
+        UsuarioEntity usuario = new UsuarioEntity();
+        usuario.setId(1);
+        usuario.setRol(rolRepository.findById(1).orElseThrow());
+        usuario.setNombres("Usuario Demo");
+        usuario.setEmail("demo@clima.local");
+        usuarioRepository.save(usuario);
     }
 
     private void sembrarRoles() {
