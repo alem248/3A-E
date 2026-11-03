@@ -4,6 +4,17 @@ const mapa = (() => {
     let capaRiesgo = null;
     let vistaAjustada = false;
 
+    // Caja geográfica de Perú (extremos nacionales, con margen visual).
+    const limitesPeru = L.latLngBounds([-18.45, -81.45], [-0.02, -68.55]);
+    const opcionesTiles = { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' };
+    const capasBase = {
+        'Normal (calles)': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', opcionesTiles),
+        'Satelital': L.tileLayer(
+            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            { maxZoom: 19, attribution: 'Tiles &copy; Esri' }
+        )
+    };
+
     const icono = L.icon({
         iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
         iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -125,11 +136,13 @@ const mapa = (() => {
     function inicializar() {
         const contenedor = document.getElementById('mapa');
         if (mapaLeaflet === null && contenedor) {
-            mapaLeaflet = L.map('mapa').setView([-4.35, -81.35], 7);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(mapaLeaflet);
+            mapaLeaflet = L.map('mapa', {
+                maxBounds: limitesPeru,
+                maxBoundsViscosity: 1.0,
+                minZoom: 5
+            }).fitBounds(limitesPeru);
+            capasBase['Normal (calles)'].addTo(mapaLeaflet);
+            L.control.layers(capasBase, null, { position: 'topright' }).addTo(mapaLeaflet);
 
             marcador = L.marker([-4.35, -81.35], { icon: icono }).addTo(mapaLeaflet);
 
