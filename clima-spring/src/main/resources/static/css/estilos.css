@@ -1,7 +1,19 @@
 :root {
+    color-scheme: light;
     --borde: #d0d7de;
     --texto: #1f2328;
     --fondo: #f6f8fa;
+    --superficie: #fff;
+    --acento: #0969da;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --borde: #3d4652;
+    --texto: #e6edf3;
+    --fondo: #111820;
+    --superficie: #1b2530;
+    --acento: #398bfa;
 }
 
 * {
@@ -29,9 +41,29 @@ body {
     text-align: center;
 }
 
+.encabezado-app {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-height: 44px;
+}
+
+.boton-tema {
+    position: absolute;
+    right: 0;
+    padding: 0.5rem 0.75rem;
+    font: inherit;
+    color: var(--texto);
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
 .tarjeta-clima {
     padding: 1rem;
-    background: #fff;
+    background: var(--superficie);
     border: 1px solid var(--borde);
     border-radius: 8px;
 }
@@ -61,7 +93,7 @@ body {
 .leyenda {
     width: 260px;
     padding: 1rem;
-    background: #fff;
+    background: var(--superficie);
     border: 1px solid var(--borde);
     border-radius: 8px;
 }
@@ -106,10 +138,34 @@ body {
     padding: 0.5rem 1rem;
     font: inherit;
     color: #fff;
-    background: #0969da;
+    background: var(--acento);
     border: none;
     border-radius: 6px;
     cursor: pointer;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+    color: var(--texto);
+    background: var(--superficie);
+}
+
+.leaflet-control-layers,
+.leaflet-bar a {
+    color: var(--texto);
+    background: var(--superficie);
+    border-color: var(--borde);
+}
+
+@media (max-width: 560px) {
+    .encabezado-app {
+        justify-content: flex-start;
+        padding-right: 9rem;
+    }
+
+    .app {
+        padding: 1rem;
+    }
 }
 
 .tarjeta-ubicacion button:disabled {
