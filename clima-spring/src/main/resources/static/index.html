@@ -9,7 +9,12 @@
 </head>
 <body>
     <div class="app">
-        <h1>Clima Zona Costera</h1>
+        <header class="encabezado-app">
+            <h1>Clima Zona Costera</h1>
+            <button type="button" id="boton-tema" class="boton-tema" aria-pressed="false">
+                <span aria-hidden="true">☾</span> Modo oscuro
+            </button>
+        </header>
 
         <section class="tarjeta-clima">
             <h2>Datos del clima</h2>
@@ -35,5 +40,6 @@
     <script src="/js/clima.js"></script>
     <script src="/js/mapa.js"></script>
     <script src="/js/ubicacion.js"></script>
+    <script src="/js/tema.js"></script>
 </body>
 </html>
