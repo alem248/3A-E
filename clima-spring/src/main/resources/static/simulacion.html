@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de escenarios de alerta</title>
+    <link rel="stylesheet" href="/css/estilos.css">
+    <style>
+        .simulador label { display: block; margin-bottom: 0.5rem; }
+        .simulador select, .simulador input { padding: 0.35rem; font: inherit; }
+        .simulador table { width: 100%; border-collapse: collapse; margin-top: 0.75rem; }
+        .simulador th, .simulador td { padding: 0.4rem; border-bottom: 1px solid var(--borde); text-align: left; }
+        .simulador th { background: #eef2f6; }
+        .simulador .alerta { background: #fde8e8; }
+        .simulador .ok { background: #e8f7ee; }
+        .simulador .acciones { margin-top: 0.75rem; }
+        .simulador button { padding: 0.5rem 1rem; font: inherit; color: #fff; background: #0969da; border: none; border-radius: 6px; cursor: pointer; }
+        .simulador button:disabled { opacity: 0.6; cursor: wait; }
+        .simulador .lecturas { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+        .simulador .lectura { font-size: 0.9rem; }
+        .simulador .nota { color: #57606a; }
+    </style>
+</head>
+<body>
+    <div class="app simulador">
+        <h1>Simulador de escenarios de alerta</h1>
+        <p class="nota">
+            Simula un fenómeno natural con lecturas hipotéticas de TSM y comprueba que la alerta
+            solo se dispare en las ubicaciones que caen dentro de una zona crítica afectada.
+        </p>
+
+        <section class="tarjeta-clima">
+            <h2>1. Escenario</h2>
+            <label>
+                Fenómeno natural:
+                <select id="escenario"></select>
+            </label>
+            <div id="lecturas" class="lecturas"></div>
+        </section>
+
+        <section class="tarjeta-clima">
+            <h2>2. Ubicaciones a verificar</h2>
+            <table>
+                <thead>
+                    <tr><th>Etiqueta</th><th>Latitud</th><th>Longitud</th></tr>
+                </thead>
+                <tbody id="ubicaciones"></tbody>
+            </table>
+            <div class="acciones">
+                <button type="button" id="simular">Simular escenario</button>
+            </div>
+            <p id="estado" role="status"></p>
+        </section>
+
+        <section class="tarjeta-clima" id="resultado" hidden>
+            <h2>3. Resultado</h2>
+            <p id="resumen"></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ubicación</th><th>Zona</th><th>Nivel de zona</th>
+                        <th>Zona crítica</th><th>Alerta</th><th>Nivel de alerta</th><th>Mensaje</th>
+                    </tr>
+                </thead>
+                <tbody id="filas-resultado"></tbody>
+            </table>
+            <h3>Alertas generadas por el escenario</h3>
+            <ul id="alertas-escenario"></ul>
+        </section>
+
+        <p><a href="/">Volver al mapa</a></p>
+    </div>
+    <script src="/js/simulacion.js"></script>
+</body>
+</html>
