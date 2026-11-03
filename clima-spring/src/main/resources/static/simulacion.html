@@ -4,72 +4,170 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulador de escenarios de alerta</title>
-    <link rel="stylesheet" href="/css/estilos.css">
-    <style>
-        .simulador label { display: block; margin-bottom: 0.5rem; }
-        .simulador select, .simulador input { padding: 0.35rem; font: inherit; }
-        .simulador table { width: 100%; border-collapse: collapse; margin-top: 0.75rem; }
-        .simulador th, .simulador td { padding: 0.4rem; border-bottom: 1px solid var(--borde); text-align: left; }
-        .simulador th { background: #eef2f6; }
-        .simulador .alerta { background: #fde8e8; }
-        .simulador .ok { background: #e8f7ee; }
-        .simulador .acciones { margin-top: 0.75rem; }
-        .simulador button { padding: 0.5rem 1rem; font: inherit; color: #fff; background: #0969da; border: none; border-radius: 6px; cursor: pointer; }
-        .simulador button:disabled { opacity: 0.6; cursor: wait; }
-        .simulador .lecturas { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-        .simulador .lectura { font-size: 0.9rem; }
-        .simulador .nota { color: #57606a; }
-    </style>
+    <link rel="stylesheet" href="/css/simulacion.css">
 </head>
-<body>
-    <div class="app simulador">
-        <h1>Simulador de escenarios de alerta</h1>
-        <p class="nota">
-            Simula un fenómeno natural con lecturas hipotéticas de TSM y comprueba que la alerta
-            solo se dispare en las ubicaciones que caen dentro de una zona crítica afectada.
-        </p>
+<body class="sim-body">
+    <div class="sim-shell">
+        <header class="sim-topbar">
+            <a class="sim-brand" href="/">
+                <span class="sim-logo" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"></path>
+                        <circle cx="12" cy="10" r="2.6"></circle>
+                    </svg>
+                </span>
+                <span>
+                    <strong>Alerta Costera</strong>
+                    <small>Simulador HU-2</small>
+                </span>
+            </a>
 
-        <section class="tarjeta-clima">
-            <h2>1. Escenario</h2>
-            <label>
-                Fenómeno natural:
-                <select id="escenario"></select>
-            </label>
-            <div id="lecturas" class="lecturas"></div>
-        </section>
+            <nav class="sim-nav" aria-label="Navegación principal">
+                <a href="/">Mapa</a>
+                <a href="/simulacion.html" class="is-active" aria-current="page">Simulador</a>
+                <span class="sim-live"><span class="dot" aria-hidden="true"></span>Motor activo</span>
+            </nav>
+        </header>
 
-        <section class="tarjeta-clima">
-            <h2>2. Ubicaciones a verificar</h2>
-            <table>
-                <thead>
-                    <tr><th>Etiqueta</th><th>Latitud</th><th>Longitud</th></tr>
-                </thead>
-                <tbody id="ubicaciones"></tbody>
-            </table>
-            <div class="acciones">
-                <button type="button" id="simular">Simular escenario</button>
+        <section class="sim-hero">
+            <div class="sim-hero-copy">
+                <span class="sim-eyebrow">Escenarios de fenómenos naturales</span>
+                <h1>Verifica que la alerta llegue solo a las zonas críticas</h1>
+                <p>
+                    Ejecuta un escenario con lecturas hipotéticas de TSM sobre las zonas vulnerables
+                    reales del proyecto y comprueba, ubicación por ubicación, si la alerta se dispara.
+                </p>
+                <div class="sim-hero-meta">
+                    <span>Reglas aplicadas<b id="meta-reglas">—</b></span>
+                    <span>Zonas monitoreadas<b id="meta-zonas">—</b></span>
+                    <span>Ubicaciones<b id="meta-ubicaciones">—</b></span>
+                </div>
             </div>
-            <p id="estado" role="status"></p>
+
+            <div class="sim-hero-visual" aria-hidden="true">
+                <div class="sim-radar">
+                    <span class="sim-radar-pin">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"></path>
+                            <circle cx="12" cy="10" r="2.4"></circle>
+                        </svg>
+                    </span>
+                </div>
+            </div>
         </section>
 
-        <section class="tarjeta-clima" id="resultado" hidden>
-            <h2>3. Resultado</h2>
-            <p id="resumen"></p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Ubicación</th><th>Zona</th><th>Nivel de zona</th>
-                        <th>Zona crítica</th><th>Alerta</th><th>Nivel de alerta</th><th>Mensaje</th>
-                    </tr>
-                </thead>
-                <tbody id="filas-resultado"></tbody>
-            </table>
-            <h3>Alertas generadas por el escenario</h3>
-            <ul id="alertas-escenario"></ul>
+        <div class="sim-layout">
+            <section class="sim-card">
+                <div class="sim-card-head">
+                    <span class="sim-step">01</span>
+                    <div>
+                        <h2>Escenario simulado</h2>
+                        <p>Elige el fenómeno y revisa las lecturas que se aplicarán.</p>
+                    </div>
+                </div>
+
+                <div class="sim-field">
+                    <label for="escenario">Fenómeno natural</label>
+                    <select id="escenario" class="sim-select"></select>
+                </div>
+
+                <div class="sim-field">
+                    <label>Lecturas de TSM por zona</label>
+                    <div id="lecturas" class="sim-readings"></div>
+                </div>
+
+                <p class="sim-readings-note" id="nota-escenario"></p>
+            </section>
+
+            <section class="sim-card">
+                <div class="sim-card-head">
+                    <span class="sim-step">02</span>
+                    <div>
+                        <h2>Ubicaciones a verificar</h2>
+                        <p>Ajusta las coordenadas o usa los puntos precargados.</p>
+                    </div>
+                </div>
+
+                <div id="ubicaciones" class="sim-locations"></div>
+
+                <button type="button" id="simular" class="sim-btn">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M5 3v4"></path>
+                        <path d="M19 17v4"></path>
+                        <path d="M3 5h4"></path>
+                        <path d="M17 19h4"></path>
+                        <path d="M12 4c-.9 4.6-2.4 6.1-7 7 4.6.9 6.1 2.4 7 7 .9-4.6 2.4-6.1 7-7-4.6-.9-6.1-2.4-7-7Z"></path>
+                    </svg>
+                    Ejecutar simulación
+                </button>
+                <p id="estado" class="sim-status" role="status">Listo para simular.</p>
+            </section>
+        </div>
+
+        <section class="sim-results" id="resultado" hidden>
+            <div class="sim-results-head">
+                <div>
+                    <span class="sim-eyebrow">03 · Resultado</span>
+                    <h2 id="titulo-resultado">Resultado de la simulación</h2>
+                </div>
+                <span class="sim-chip" id="chip-veredicto">—</span>
+            </div>
+
+            <div class="sim-kpis">
+                <div class="sim-kpi">
+                    <span>Alertas del escenario</span>
+                    <strong id="kpi-alertas">0</strong>
+                    <small>Zonas críticas afectadas</small>
+                </div>
+                <div class="sim-kpi">
+                    <span>Ubicaciones</span>
+                    <strong id="kpi-ubicaciones">0</strong>
+                    <small>Puntos verificados</small>
+                </div>
+                <div class="sim-kpi">
+                    <span>Con alerta</span>
+                    <strong id="kpi-con-alerta">0</strong>
+                    <small>Dentro de zona crítica</small>
+                </div>
+                <div class="sim-kpi">
+                    <span>Sin alerta</span>
+                    <strong id="kpi-sin-alerta">0</strong>
+                    <small>Fuera o zona no afectada</small>
+                </div>
+            </div>
+
+            <div class="sim-table-wrap">
+                <table class="sim-table">
+                    <thead>
+                        <tr>
+                            <th>Ubicación</th>
+                            <th>Zona</th>
+                            <th>Nivel de zona</th>
+                            <th>Zona crítica</th>
+                            <th>Alerta</th>
+                            <th>Nivel de alerta</th>
+                            <th>Mensaje</th>
+                        </tr>
+                    </thead>
+                    <tbody id="filas-resultado"></tbody>
+                </table>
+            </div>
+
+            <div class="sim-alert-list">
+                <h3>Alertas generadas por el escenario</h3>
+                <ul id="alertas-escenario"></ul>
+            </div>
         </section>
 
-        <p><a href="/">Volver al mapa</a></p>
+        <footer class="sim-footer">
+            <span>Simulación de solo lectura: no registra alertas ni modifica zonas.</span>
+            <a href="/">Volver al mapa</a>
+        </footer>
     </div>
+
     <script src="/js/simulacion.js"></script>
 </body>
 </html>
