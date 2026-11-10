@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { formatearTsm } from '../domain/nivelRiesgo'
 import { contarAlertasPorNivel, obtenerAlertasActivas } from '../domain/alertasTermicas'
 
@@ -16,7 +17,11 @@ const formatearHora = (iso) => {
 }
 
 const AlertasTemperatura = ({ zonas = [] }) => {
+  const [nivelSeleccionado, setNivelSeleccionado] = useState('TODAS')
   const alertas = obtenerAlertasActivas(zonas)
+  const alertasVisibles = nivelSeleccionado === 'TODAS'
+    ? alertas
+    : alertas.filter((alerta) => alerta.nivel.id === nivelSeleccionado)
   const conteos = contarAlertasPorNivel(alertas)
   const sinDatos = zonas.filter((zona) => !zona.disponible)
 
@@ -34,6 +39,18 @@ const AlertasTemperatura = ({ zonas = [] }) => {
           {alertas.length} {alertas.length === 1 ? 'alerta' : 'alertas'}
         </span>
       </div>
+
+      {alertas.length > 0 && (
+        <label className="alertas__filtro">
+          Filtrar por nivel
+          <select value={nivelSeleccionado} onChange={(event) => setNivelSeleccionado(event.target.value)}>
+            <option value="TODAS">Todos los niveles</option>
+            {[...conteos].map(([id]) => (
+              <option key={id} value={id}>{alertas.find((alerta) => alerta.nivel.id === id).nivel.nombre}</option>
+            ))}
+          </select>
+        </label>
+      )}
 
       {alertas.length > 0 && (
         <ul className="alertas__resumen" aria-label="Cantidad de alertas por nivel">
@@ -59,7 +76,7 @@ const AlertasTemperatura = ({ zonas = [] }) => {
         </div>
       ) : (
         <ul className="alertas__lista">
-          {alertas.map((zona) => (
+          {alertasVisibles.map((zona) => (
             <li className="alerta" key={zona.id} style={{ '--alerta-color': zona.nivel.color }}>
               <span className="alerta__indicador" aria-hidden="true" />
               <div className="alerta__zona">
@@ -80,6 +97,10 @@ const AlertasTemperatura = ({ zonas = [] }) => {
             </li>
           ))}
         </ul>
+      )}
+
+      {alertas.length > 0 && alertasVisibles.length === 0 && (
+        <p className="alertas__sin-coincidencias" role="status">No hay alertas para el nivel seleccionado.</p>
       )}
 
       {sinDatos.length > 0 && (
