@@ -1,7 +1,19 @@
 :root {
+    color-scheme: light;
     --borde: #d0d7de;
     --texto: #1f2328;
     --fondo: #f6f8fa;
+    --superficie: #fff;
+    --acento: #0969da;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --borde: #3d4652;
+    --texto: #e6edf3;
+    --fondo: #111820;
+    --superficie: #1b2530;
+    --acento: #398bfa;
 }
 
 * {
@@ -29,9 +41,66 @@ body {
     text-align: center;
 }
 
+.encabezado-app {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-height: 44px;
+}
+
+.boton-tema {
+    position: absolute;
+    right: 0;
+    padding: 0.5rem 0.75rem;
+    font: inherit;
+    color: var(--texto);
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.menu-principal {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+
+.menu-principal form {
+    margin: 0;
+}
+
+.boton-historicos {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.55rem 1rem;
+    color: #fff;
+    background: var(--acento);
+    border: 1px solid var(--acento);
+    border-radius: 8px;
+    font: inherit;
+    font-weight: 650;
+    cursor: pointer;
+    transition: filter 150ms ease, transform 150ms ease;
+}
+
+.boton-historicos:hover {
+    filter: brightness(1.12);
+    transform: translateY(-1px);
+}
+
+.boton-historicos:focus-visible {
+    outline: 2px solid var(--texto);
+    outline-offset: 3px;
+}
+
 .tarjeta-clima {
     padding: 1rem;
-    background: #fff;
+    background: var(--superficie);
     border: 1px solid var(--borde);
     border-radius: 8px;
 }
@@ -61,7 +130,7 @@ body {
 .leyenda {
     width: 260px;
     padding: 1rem;
-    background: #fff;
+    background: var(--superficie);
     border: 1px solid var(--borde);
     border-radius: 8px;
 }
@@ -100,4 +169,291 @@ body {
     .leyenda {
         width: 100%;
     }
+}
+
+.tarjeta-ubicacion button {
+    padding: 0.5rem 1rem;
+    font: inherit;
+    color: #fff;
+    background: var(--acento);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+    color: var(--texto);
+    background: var(--superficie);
+}
+
+.leaflet-control-layers,
+.leaflet-bar a {
+    color: var(--texto);
+    background: var(--superficie);
+    border-color: var(--borde);
+}
+
+@media (max-width: 560px) {
+    .encabezado-app {
+        justify-content: flex-start;
+        padding-right: 9rem;
+    }
+
+    .app {
+        padding: 1rem;
+    }
+}
+
+.tarjeta-ubicacion button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+
+/* Histórico de temporadas */
+.formulario-historico {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.formulario-historico label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+}
+
+.formulario-historico input[type="date"] {
+    padding: 6px 8px;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    background: var(--superficie);
+    color: var(--texto);
+}
+
+.meses {
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 0;
+}
+
+.meses-opciones {
+    display: grid;
+    grid-template-columns: repeat(6, auto);
+    gap: 6px 12px;
+}
+
+.meses-opciones label {
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+}
+
+.formulario-historico button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background: var(--acento);
+    color: #fff;
+    cursor: pointer;
+}
+
+.formulario-historico button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.historico-resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.historico-resumen > div {
+    background: var(--fondo);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.historico-resumen span {
+    display: block;
+    font-size: 12px;
+    opacity: 0.75;
+}
+
+.historico-resumen strong {
+    font-size: 18px;
+}
+
+.historico-resumen[hidden],
+.historico-calendario[hidden],
+.historico-grafico[hidden] {
+    display: none;
+}
+
+
+/* Calendario mensual del histórico */
+.historico-calendario {
+    margin-top: 16px;
+}
+
+.calendario-leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px;
+    font-size: 14px;
+}
+
+.calendario-leyenda li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.calendario-muestra {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+}
+
+.calendario-mes {
+    margin-bottom: 20px;
+}
+
+.calendario-mes h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+}
+
+.calendario-grilla {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(40px, 1fr));
+    gap: 4px;
+}
+
+.calendario-cabecera {
+    font-size: 12px;
+    text-align: center;
+    opacity: 0.75;
+}
+
+.dia {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 13px;
+    border: 1px solid var(--borde);
+    color: var(--texto);
+    background: var(--superficie);
+}
+
+.dia-vacio {
+    border: none;
+    background: transparent;
+}
+
+.dia-sin-datos,
+.calendario-muestra.dia-sin-datos {
+    background: var(--superficie);
+}
+
+.dia-fresco,
+.calendario-muestra.dia-fresco {
+    background: #9ecbff;
+    color: #0b1d33;
+}
+
+.dia-templado,
+.calendario-muestra.dia-templado {
+    background: #7fd6a1;
+    color: #0b2415;
+}
+
+.dia-calido,
+.calendario-muestra.dia-calido {
+    background: #ffd166;
+    color: #2b1d00;
+}
+
+.dia-muy-calido,
+.calendario-muestra.dia-muy-calido {
+    background: #ef6f4a;
+    color: #2b0d05;
+}
+
+
+/* Gráfico comparativo del histórico */
+.historico-grafico {
+    margin-top: 16px;
+}
+
+.grafico-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.grafico-rejilla {
+    stroke: var(--borde);
+    stroke-width: 1;
+}
+
+.grafico-eje {
+    fill: var(--texto);
+    font-size: 11px;
+    opacity: 0.8;
+}
+
+.grafico-linea {
+    stroke-width: 2.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.grafico-linea-max {
+    stroke: #ef6f4a;
+}
+
+.grafico-linea-min {
+    stroke: #398bfa;
+}
+
+.grafico-barra {
+    fill: #398bfa;
+    opacity: 0.7;
+}
+
+/* Estado de la consulta del histórico */
+.estado-error {
+    color: #cf222e;
+}
+
+[data-theme="dark"] .estado-error {
+    color: #ff7b72;
+}
+
+/* Estado de la consulta del histórico */
+.estado-error {
+    color: #cf222e;
+}
+
+[data-theme="dark"] .estado-error {
+    color: #ff7b72;
+}
+/* Limita el ancho de la cuadrícula del calendario para celdas más compactas */
+.calendario-grilla {
+    max-width: 560px;
 }

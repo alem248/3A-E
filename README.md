@@ -99,3 +99,11 @@ directamente:
 npm install
 npm run dev
 ```
+
+### Mapa y apariencia (Spring Boot)
+
+La página servida por Spring Boot restringe la navegación del mapa al bounding box
+de Perú y permite alternar entre calles de OpenStreetMap e imágenes satelitales
+de Esri. El botón de tema alterna entre modo claro y oscuro y conserva la
+preferencia en el navegador. Estas mejoras visuales no modifican la lógica de
+negocio del backend.

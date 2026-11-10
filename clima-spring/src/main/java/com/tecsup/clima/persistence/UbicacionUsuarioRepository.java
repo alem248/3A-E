@@ -1,6 +1,7 @@
 package com.tecsup.clima.persistence;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -8,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UbicacionUsuarioRepository extends JpaRepository<UbicacionUsuarioEntity, Integer> {
 
     List<UbicacionUsuarioEntity> findByUsuarioOrderByIdDesc(UsuarioEntity usuario);
+
+    Optional<UbicacionUsuarioEntity> findFirstByUsuarioOrderByFechaRegistroDescIdDesc(UsuarioEntity usuario);
 }
