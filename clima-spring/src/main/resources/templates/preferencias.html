@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alertas por nivel de riesgo | Niño Costero</title>
+    <style>
+        :root {
+            --fondo: #07111f;
+            --panel: rgba(15, 30, 48, 0.92);
+            --panel-borde: rgba(148, 197, 255, 0.18);
+            --texto: #eaf3ff;
+            --texto-suave: #9fb3c8;
+            --acento: #38bdf8;
+            --ok: #22c55e;
+            --error: #ef4444;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 32px 16px 48px;
+            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+            color: var(--texto);
+            background:
+                radial-gradient(circle at 15% 0%, rgba(56, 189, 248, 0.18), transparent 38%),
+                radial-gradient(circle at 90% 20%, rgba(249, 115, 22, 0.12), transparent 34%),
+                var(--fondo);
+        }
+
+        .contenedor { width: min(760px, 100%); margin: 0 auto; }
+
+        .hero { margin-bottom: 24px; }
+
+        .eyebrow {
+            margin: 0 0 8px;
+            color: var(--acento);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        h1 { margin: 0 0 10px; font-size: clamp(28px, 6vw, 40px); line-height: 1.1; }
+
+        .subtitulo { margin: 0; max-width: 620px; color: var(--texto-suave); line-height: 1.6; }
+
+        .usuario-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 18px;
+            padding: 8px 14px 8px 8px;
+            border: 1px solid var(--panel-borde);
+            border-radius: 999px;
+            background: rgba(15, 30, 48, 0.7);
+            font-size: 14px;
+        }
+
+        .usuario-avatar {
+            display: grid;
+            place-items: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            font-weight: 800;
+        }
+
+        .panel {
+            padding: 22px;
+            border: 1px solid var(--panel-borde);
+            border-radius: 20px;
+            background: var(--panel);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+            backdrop-filter: blur(12px);
+        }
+
+        .panel-cabecera {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .panel-cabecera h2 { margin: 0; font-size: 18px; }
+
+        .badge {
+            padding: 5px 10px;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 999px;
+            color: #7dd3fc;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .niveles { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+
+        .nivel-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            border: 1px solid rgba(148, 197, 255, 0.12);
+            border-left: 4px solid var(--nivel-color);
+            border-radius: 14px;
+            background: rgba(7, 17, 31, 0.55);
+            transition: transform 0.18s ease, border-color 0.18s ease;
+        }
+
+        .nivel-card:hover { transform: translateY(-1px); border-color: rgba(148, 197, 255, 0.3); }
+
+        .nivel-dot {
+            flex: 0 0 auto;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--nivel-color);
+            box-shadow: 0 0 16px var(--nivel-color);
+        }
+
+        .nivel-info { min-width: 0; flex: 1; }
+
+        .nivel-info h3 { margin: 0 0 4px; font-size: 16px; text-transform: capitalize; }
+
+        .nivel-info p { margin: 0; color: var(--texto-suave); font-size: 13px; line-height: 1.45; }
+
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; flex: 0 0 auto; }
+
+        .switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+
+        .slider {
+            position: absolute;
+            inset: 0;
+            border-radius: 999px;
+            background: #334155;
+            transition: background 0.2s ease;
+            pointer-events: none;
+        }
+
+        .slider::before {
+            content: "";
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #f8fafc;
+            transition: transform 0.2s ease;
+        }
+
+        .switch input:checked + .slider { background: var(--ok); }
+        .switch input:checked + .slider::before { transform: translateX(22px); }
+        .switch input:focus-visible + .slider { outline: 2px solid var(--acento); outline-offset: 3px; }
+        .switch input:disabled + .slider { opacity: 0.6; }
+
+        .estado { min-height: 22px; margin-top: 16px; font-size: 13px; font-weight: 600; }
+        .estado.ok { color: #86efac; }
+        .estado.error { color: #fca5a5; }
+
+        .alerta-error {
+            padding: 14px 16px;
+            border: 1px solid rgba(239, 68, 68, 0.45);
+            border-radius: 14px;
+            background: rgba(127, 29, 29, 0.35);
+            color: #fecaca;
+            font-size: 14px;
+        }
+
+        .nota {
+            margin: 20px 2px 0;
+            color: #7f93a8;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .nota code { color: #bae6fd; }
+
+        @media (max-width: 520px) {
+            body { padding-top: 20px; }
+            .panel { padding: 16px; }
+            .nivel-card { padding: 13px; gap: 10px; }
+            .nivel-info p { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+<div class="contenedor">
+    <header class="hero">
+        <p class="eyebrow">Niño Costero · HU-2</p>
+        <h1>Alertas por nivel de riesgo</h1>
+        <p class="subtitle">
+            Elige qué niveles de alerta quieres recibir en tu dispositivo. Los cambios se guardan
+            de inmediato y se aplican al envío de notificaciones por Firebase FCM.
+        </p>
+
+        <div class="usuario-chip" th:if="${usuario != null}">
+            <span class="usuario-avatar"
+                  th:text="${usuario.nombres != null ? #strings.substring(usuario.nombres, 0, 1) : 'U'}">U</span>
+            <span th:text="${usuario.nombres}">Usuario</span>
+        </div>
+    </header>
+
+    <div class="alerta-error" th:if="${error != null}" th:text="${error}">
+        No se pudo cargar el usuario.
+    </div>
+
+    <main class="panel" th:if="${!#lists.isEmpty(preferencias)}">
+        <div class="panel-cabecera">
+            <h2>Niveles de alerta</h2>
+            <span class="badge">Firebase FCM</span>
+        </div>
+
+        <ul class="niveles">
+            <li class="nivel-card"
+                th:each="pref : ${preferencias}"
+                th:style="|--nivel-color: ${pref.colorHex}|">
+                <span class="nivel-dot" aria-hidden="true"></span>
+
+                <div class="nivel-info">
+                    <h3 th:text="${pref.nombre}">Verde</h3>
+                    <p th:text="${pref.descripcion}">Condiciones normales</p>
+                </div>
+
+                <label class="switch" th:attr="aria-label=${'Alertas ' + pref.nombre}">
+                    <input type="checkbox"
+                           th:checked="${pref.activa}"
+                           th:value="${pref.nivelRiesgoId}"
+                           onchange="guardarPreferencia(this)">
+                    <span class="slider"></span>
+                </label>
+            </li>
+        </ul>
+
+        <div id="estado" class="estado" role="status" aria-live="polite"></div>
+    </main>
+
+    <p class="nota">
+        Modo simulado: si no existe <code>firebase-service-account.json</code>, el envío se muestra
+        en la consola y la transacción queda registrada en <code>historial_notificacion</code>.
+    </p>
+</div>
+
+<script th:inline="javascript">
+    const usuarioId = /*[[${usuarioId}]]*/ 1;
+    const estado = document.getElementById('estado');
+    let temporizador;
+
+    function mostrarEstado(texto, tipo) {
+        estado.textContent = texto;
+        estado.className = 'estado ' + tipo;
+        clearTimeout(temporizador);
+        temporizador = setTimeout(() => {
+            estado.textContent = '';
+            estado.className = 'estado';
+        }, 3500);
+    }
+
+    async function guardarPreferencia(checkbox) {
+        const nivelId = checkbox.value;
+        const activa = checkbox.checked;
+        checkbox.disabled = true;
+
+        try {
+            const respuesta = await fetch(`/api/preferencias/${usuarioId}/${nivelId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ activa })
+            });
+            const datos = await respuesta.json().catch(() => ({}));
+
+            if (!respuesta.ok) {
+                throw new Error(datos.error || 'No se pudo guardar la preferencia.');
+            }
+
+            mostrarEstado(
+                `Alertas ${datos.nombre} ${datos.activa ? 'activadas' : 'desactivadas'}.`,
+                'ok'
+            );
+        } catch (error) {
+            checkbox.checked = !activa;
+            mostrarEstado(error.message, 'error');
+        } finally {
+            checkbox.disabled = false;
+        }
+    }
+</script>
+</body>
+</html>

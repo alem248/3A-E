@@ -8,6 +8,7 @@ import { consultarTsmPorZonas } from './domain/zonasTermicas'
 import './App.css'
 
 const API_URL = 'https://api.open-meteo.com/v1/forecast'
+const PREFERENCIAS_URL = import.meta.env.VITE_PREFERENCIAS_URL || 'http://localhost:8081/preferencias?usuarioId=1'
 const INTERVALO_REFRESCO_MS = 15 * 60 * 1000
 
 const App = () => {
@@ -75,6 +76,11 @@ const App = () => {
       </nav>
       <WeatherInfo latitude={weather.latitude} longitude={weather.longitude} temperature={weather.temperature} lastUpdated={lastUpdated} />
       <AlertasTemperatura zonas={zonas} />
+      <nav className="preferencias-nav" aria-label="Preferencias de alertas">
+        <a className="preferencias-nav__button" href={PREFERENCIAS_URL}>
+          Preferencias de alertas
+        </a>
+      </nav>
       <div className="mapa-contenedor">
         <Map latitude={weather.latitude} longitude={weather.longitude} zoom={7} zonas={zonas} />
         <LeyendaRiesgo zonas={zonas} />
