@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Consulta y compara tendencias históricas de clima costero.">
+    <title>Históricos y tendencias · Niño Costero</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root { color-scheme: dark; --fondo:#07111f; --panel:#101e30; --borde:#24364d; --texto:#e7f0fa; --suave:#9fb1c6; --azul:#38bdf8; }
+        * { box-sizing:border-box; }
+        body { margin:0; min-height:100vh; background:radial-gradient(ellipse at top,#12304c,var(--fondo) 52%); color:var(--texto); font:15px/1.5 system-ui,sans-serif; }
+        main { width:min(1120px,calc(100% - 32px)); margin:36px auto 64px; }
+        .encabezado { margin-bottom:24px; }
+        .eyebrow { color:var(--azul); font-size:12px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+        h1 { margin:4px 0 8px; font-size:clamp(28px,5vw,42px); line-height:1.1; }
+        .encabezado p:last-child { margin:0; color:var(--suave); }
+        .panel { border:1px solid var(--borde); border-radius:18px; background:rgba(16,30,48,.92); box-shadow:0 20px 60px #0003; }
+        .filtros { display:flex; flex-wrap:wrap; align-items:end; gap:14px; padding:18px; margin-bottom:18px; }
+        label { display:grid; gap:6px; color:var(--suave); font-size:13px; font-weight:650; }
+        input { min-height:42px; padding:8px 10px; border:1px solid #38516b; border-radius:9px; background:#091625; color:var(--texto); font:inherit; }
+        input:focus-visible,button:focus-visible { outline:2px solid var(--azul); outline-offset:2px; }
+        button { min-height:42px; padding:9px 18px; border:0; border-radius:9px; background:#0284c7; color:white; font:inherit; font-weight:750; cursor:pointer; }
+        button:disabled { opacity:.6; cursor:wait; }
+        #estado { min-height:24px; margin:0 2px 14px; color:var(--suave); }
+        #estado.error { color:#fca5a5; } #estado.ok { color:#86efac; }
+        .resumen { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-bottom:18px; }
+        .indicador { padding:16px 18px; }
+        .indicador span { display:block; color:var(--suave); font-size:13px; }
+        .indicador strong { display:block; margin-top:5px; font-size:24px; }
+        .graficos { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+        .grafico { min-width:0; padding:18px; }
+        .grafico h2 { margin:0 0 4px; font-size:17px; }
+        .grafico p { margin:0 0 14px; color:var(--suave); font-size:13px; }
+        .canvas-wrap { position:relative; height:310px; }
+        .nota { margin:16px 2px 0; color:#8094aa; font-size:12px; }
+        @media(max-width:740px) { .graficos{grid-template-columns:1fr;} .resumen{grid-template-columns:1fr;} main{margin-top:24px;} }
+    </style>
+</head>
+<body>
+<main>
+    <header class="encabezado">
+        <p class="eyebrow">Niño Costero · Datos históricos</p>
+        <h1>Calendario y tendencias</h1>
+        <p>Elige un rango de fechas para consultar temperatura y precipitación diaria.</p>
+    </header>
+
+    <form id="filtros" class="panel filtros">
+        <label>Desde <input id="desde" name="desde" type="date" required th:value="${fechaDesde}"></label>
+        <label>Hasta <input id="hasta" name="hasta" type="date" required th:value="${fechaHasta}"></label>
+        <button id="consultar" type="submit">Consultar rango</button>
+    </form>
+
+    <p id="estado" role="status" aria-live="polite">Selecciona las fechas y consulta el historial.</p>
+
+    <section class="resumen" aria-label="Resumen de los registros cargados">
+        <article class="panel indicador"><span>Días cargados</span><strong id="dias">—</strong></article>
+        <article class="panel indicador"><span>Temperatura media del periodo</span><strong id="media">—</strong></article>
+        <article class="panel indicador"><span>Precipitación acumulada</span><strong id="lluvia">—</strong></article>
+    </section>
+
+    <section class="graficos" aria-label="Gráficos de tendencias históricas">
+        <article class="panel grafico">
+            <h2>Temperatura diaria</h2>
+            <p>Media, máximas y mínimas del aire en °C.</p>
+            <div class="canvas-wrap"><canvas id="temperatura" role="img" aria-label="Gráfico de temperatura por fecha"></canvas></div>
+        </article>
+        <article class="panel grafico">
+            <h2>Precipitación diaria</h2>
+            <p>Precipitación acumulada por día en milímetros.</p>
+            <div class="canvas-wrap"><canvas id="precipitacion" role="img" aria-label="Gráfico de precipitación por fecha"></canvas></div>
+        </article>
+    </section>
+    <p class="nota">Fuente: Open-Meteo Historical Weather API. Los registros ausentes se muestran como espacios en el gráfico.</p>
+</main>
+
+<script>
+(() => {
+    const form = document.getElementById('filtros');
+    const desde = document.getElementById('desde');
+    const hasta = document.getElementById('hasta');
+    const boton = document.getElementById('consultar');
+    const estado = document.getElementById('estado');
+    let temperaturaChart;
+    let lluviaChart;
+
+    const numero = (valor, unidad) => valor == null || !Number.isFinite(Number(valor))
+        ? '—' : `${Number(valor).toLocaleString('es-PE', { maximumFractionDigits: 1 })} ${unidad}`;
+    const fechaLocal = valor => new Date(`${valor}T12:00:00`).toLocaleDateString('es-PE', { day:'2-digit', month:'short' });
+
+    function mensaje(texto, tipo = '') {
+        estado.textContent = texto;
+        estado.className = tipo;
+    }
+
+    function limpiarGraficos() {
+        temperaturaChart?.destroy();
+        lluviaChart?.destroy();
+        temperaturaChart = undefined;
+        lluviaChart = undefined;
+        document.getElementById('dias').textContent = '0';
+        document.getElementById('media').textContent = '—';
+        document.getElementById('lluvia').textContent = '—';
+    }
+
+    function dibujar(registros) {
+        if (typeof Chart === 'undefined') throw new Error('No cargó Chart.js. Revisa la conexión a internet y vuelve a intentar.');
+        const etiquetas = registros.map(r => fechaLocal(r.fecha));
+        const configComun = { responsive:true, maintainAspectRatio:false, interaction:{ mode:'index', intersect:false }, plugins:{ legend:{ labels:{ color:'#d4e2f0' } } } };
+
+        temperaturaChart?.destroy();
+        temperaturaChart = new Chart(document.getElementById('temperatura'), {
+            type:'line',
+            data:{ labels:etiquetas, datasets:[
+                { label:'Media °C', data:registros.map(r => r.temperaturaMediaC), borderColor:'#38bdf8', backgroundColor:'#38bdf822', spanGaps:false, tension:.25 },
+                { label:'Máxima °C', data:registros.map(r => r.temperaturaMaxC), borderColor:'#fb923c', spanGaps:false, tension:.25 },
+                { label:'Mínima °C', data:registros.map(r => r.temperaturaMinC), borderColor:'#a78bfa', spanGaps:false, tension:.25 }
+            ]}, options:{ ...configComun, scales:{ x:{ ticks:{ color:'#9fb1c6', maxTicksLimit:10 }, grid:{ color:'#ffffff0d' } }, y:{ title:{ display:true, text:'°C', color:'#9fb1c6' }, ticks:{ color:'#9fb1c6' }, grid:{ color:'#ffffff12' } } } }
+        });
+
+        lluviaChart?.destroy();
+        lluviaChart = new Chart(document.getElementById('precipitacion'), {
+            type:'bar', data:{ labels:etiquetas, datasets:[{ label:'Precipitación mm', data:registros.map(r => r.precipitacionMm), backgroundColor:'#2dd4bfaa', borderRadius:4 }] },
+            options:{ ...configComun, scales:{ x:{ ticks:{ color:'#9fb1c6', maxTicksLimit:10 }, grid:{ display:false } }, y:{ beginAtZero:true, title:{ display:true, text:'mm', color:'#9fb1c6' }, ticks:{ color:'#9fb1c6' }, grid:{ color:'#ffffff12' } } } }
+        });
+    }
+
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+        if (!desde.value || !hasta.value || desde.value > hasta.value) {
+            limpiarGraficos();
+            mensaje('Selecciona un rango de fechas válido.', 'error');
+            return;
+        }
+        boton.disabled = true;
+        mensaje('Cargando datos históricos…');
+        try {
+            const query = new URLSearchParams({ desde:desde.value, hasta:hasta.value });
+            const response = await fetch(`/api/historicos/serie?${query}`);
+            const body = await response.json();
+            if (!response.ok) throw new Error(body.mensaje || 'No se pudo consultar el rango.');
+            const registros = Array.isArray(body.registros) ? body.registros : [];
+            limpiarGraficos();
+            if (!body.disponible || registros.length === 0) {
+                mensaje(body.mensaje || 'No hay registros históricos para estas fechas.');
+                return;
+            }
+            dibujar(registros);
+            document.getElementById('dias').textContent = String(registros.length);
+            const medias = registros.map(r => r.temperaturaMediaC).filter(v => Number.isFinite(Number(v)));
+            const lluvias = registros.map(r => r.precipitacionMm).filter(v => Number.isFinite(Number(v)));
+            const media = medias.length ? medias.reduce((a,b) => a + Number(b), 0) / medias.length : null;
+            const lluvia = lluvias.length ? lluvias.reduce((a,b) => a + Number(b), 0) : null;
+            document.getElementById('media').textContent = numero(media, '°C');
+            document.getElementById('lluvia').textContent = numero(lluvia, 'mm');
+            mensaje(body.mensaje || `Se cargaron ${registros.length} días.`, 'ok');
+        } catch (error) {
+            limpiarGraficos();
+            mensaje(error.message || 'Ocurrió un error al cargar los datos.', 'error');
+        } finally {
+            boton.disabled = false;
+        }
+    });
+
+    form.requestSubmit();
+})();
+</script>
+</body>
+</html>
