@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class HistoricoClimaServiceTest {
+class SerieHistoricaServiceTest {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -31,7 +31,7 @@ class HistoricoClimaServiceTest {
             """);
         RestTemplate restTemplate = new StubRestTemplate(respuesta);
 
-        SerieHistoricaResponse resultado = new HistoricoClimaService(properties, restTemplate)
+        SerieHistoricaResponse resultado = new SerieHistoricaService(properties, restTemplate)
             .consultarSerie(LocalDate.parse("2026-10-01"), LocalDate.parse("2026-10-02"), null, null);
 
         assertTrue(resultado.disponible());
@@ -44,7 +44,7 @@ class HistoricoClimaServiceTest {
     void conservaRespuestaVaciaSinFallar() throws Exception {
         RestTemplate restTemplate = new StubRestTemplate(mapper.readTree("{\"daily\":{\"time\":[]}}"));
 
-        SerieHistoricaResponse resultado = new HistoricoClimaService(properties(), restTemplate)
+        SerieHistoricaResponse resultado = new SerieHistoricaService(properties(), restTemplate)
             .consultarSerie(LocalDate.parse("2026-10-01"), LocalDate.parse("2026-10-02"), null, null);
 
         assertFalse(resultado.disponible());
@@ -54,7 +54,7 @@ class HistoricoClimaServiceTest {
 
     @Test
     void rechazaRangoInvertido() {
-        HistoricoClimaService servicio = new HistoricoClimaService(properties(), new StubRestTemplate(null));
+        SerieHistoricaService servicio = new SerieHistoricaService(properties(), new StubRestTemplate(null));
         assertThrows(IllegalArgumentException.class, () -> servicio.consultarSerie(
             LocalDate.parse("2026-10-03"), LocalDate.parse("2026-10-02"), null, null));
     }

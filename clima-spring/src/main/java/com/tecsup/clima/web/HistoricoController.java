@@ -13,17 +13,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tecsup.clima.domain.historico.SerieHistoricaResponse;
 import com.tecsup.clima.domain.historico.ComparacionHistoricaResponse;
 import com.tecsup.clima.service.ComparacionHistoricaService;
-import com.tecsup.clima.service.HistoricoClimaService;
+import com.tecsup.clima.service.SerieHistoricaService;
 
 /** API de series climáticas diarias históricas. */
 @RestController
 @RequestMapping("/api/historicos")
 public class HistoricoController {
 
-    private final HistoricoClimaService historicoService;
+    private final SerieHistoricaService historicoService;
     private final ComparacionHistoricaService comparacionService;
 
-    public HistoricoController(HistoricoClimaService historicoService,
+    public HistoricoController(SerieHistoricaService historicoService,
                                ComparacionHistoricaService comparacionService) {
         this.historicoService = historicoService;
         this.comparacionService = comparacionService;

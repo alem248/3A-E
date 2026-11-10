@@ -13,10 +13,10 @@ import com.tecsup.clima.domain.historico.RegistroHistoricoDto;
 @Service
 public class ComparacionHistoricaService {
 
-    private final HistoricoClimaService historicoService;
+    private final SerieHistoricaService historicoService;
     private final WeatherProperties properties;
 
-    public ComparacionHistoricaService(HistoricoClimaService historicoService, WeatherProperties properties) {
+    public ComparacionHistoricaService(SerieHistoricaService historicoService, WeatherProperties properties) {
         this.historicoService = historicoService;
         this.properties = properties;
     }

@@ -20,7 +20,7 @@ class ComparacionHistoricaServiceTest {
     void calculaDesviacionPorcentualConSigno() {
         WeatherProperties properties = properties();
         LocalDate fecha = LocalDate.now().minusDays(10);
-        HistoricoClimaService historico = new StubHistoricoService(properties,
+        SerieHistoricaService historico = new StubHistoricoService(properties,
             Optional.of(20.0), Optional.of(new RegistroHistoricoDto(fecha, 25.0, 29.0, 20.0, 0.0)));
 
         var resultado = new ComparacionHistoricaService(historico, properties).comparar(fecha, null, null);
@@ -33,7 +33,7 @@ class ComparacionHistoricaServiceTest {
     @Test
     void informaDatosInsuficientesSinExcepcion() {
         WeatherProperties properties = properties();
-        HistoricoClimaService historico = new StubHistoricoService(properties, Optional.empty(), Optional.empty());
+        SerieHistoricaService historico = new StubHistoricoService(properties, Optional.empty(), Optional.empty());
         LocalDate fecha = LocalDate.now().minusDays(10);
 
         var resultado = new ComparacionHistoricaService(historico, properties).comparar(fecha, null, null);
@@ -47,7 +47,7 @@ class ComparacionHistoricaServiceTest {
     void noCalculaPorcentajeConMediaHistoricaCero() {
         WeatherProperties properties = properties();
         LocalDate fecha = LocalDate.now().minusDays(10);
-        HistoricoClimaService historico = new StubHistoricoService(properties, Optional.of(2.0),
+        SerieHistoricaService historico = new StubHistoricoService(properties, Optional.of(2.0),
             Optional.of(new RegistroHistoricoDto(fecha, 0.0, 1.0, -1.0, 4.0)));
 
         var resultado = new ComparacionHistoricaService(historico, properties).comparar(fecha, null, null);
@@ -63,7 +63,7 @@ class ComparacionHistoricaServiceTest {
         return properties;
     }
 
-    private static class StubHistoricoService extends HistoricoClimaService {
+    private static class StubHistoricoService extends SerieHistoricaService {
         private final Optional<Double> actual;
         private final Optional<RegistroHistoricoDto> registro;
 

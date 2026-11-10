@@ -20,7 +20,7 @@ import com.tecsup.clima.domain.historico.SerieHistoricaResponse;
 
 /** Consulta series diarias históricas y el promedio diario estimado actual. */
 @Service
-public class HistoricoClimaService {
+public class SerieHistoricaService {
 
     private static final int MAX_DIAS = 366;
     private static final String VARIABLES_DIARIAS =
@@ -30,11 +30,11 @@ public class HistoricoClimaService {
     private final RestTemplate restTemplate;
 
     @Autowired
-    public HistoricoClimaService(WeatherProperties properties) {
+    public SerieHistoricaService(WeatherProperties properties) {
         this(properties, new RestTemplate());
     }
 
-    public HistoricoClimaService(WeatherProperties properties, RestTemplate restTemplate) {
+    public SerieHistoricaService(WeatherProperties properties, RestTemplate restTemplate) {
         this.properties = properties;
         this.restTemplate = restTemplate;
     }
