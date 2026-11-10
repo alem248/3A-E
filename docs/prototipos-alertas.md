@@ -4,6 +4,8 @@ La interfaz toma la temperatura superficial del mar (TSM) por zona y aplica los 
 
 ## Baja fidelidad: estructura
 
+Prototipo navegable: [wireframe de alertas](prototipos/baja.html). Separa zona, temperatura, nivel y hora con cajas y bordes; el detalle desplegable enumera los estados de carga, normalidad y falta de lectura.
+
 ```text
 +------------------------------------------------------------+
 | ALERTAS TÉRMICAS                              [N alertas]  |
@@ -19,6 +21,8 @@ La interfaz toma la temperatura superficial del mar (TSM) por zona y aplica los 
 Prioriza jerarquía, lectura rápida y contenido mínimo. En móvil, cada fila se reorganiza en una tarjeta.
 
 ## Alta fidelidad: interfaz implementada
+
+Maqueta visual independiente: [prototipo de alta fidelidad](prototipos/alta.html). La pantalla principal implementada mantiene el mismo orden visual, con datos en vivo y ajustes para móvil.
 
 La sección **Alertas térmicas** en la pantalla principal aplica la estructura con tarjetas, color asociado al nivel, temperatura destacada, nombre y departamento, descripción del riesgo y hora de lectura. Incluye estados sin alertas, carga inicial y zonas sin lectura; el color se acompaña siempre de texto para que el nivel no dependa solo de la percepción del color. La sección es adaptable a móvil y anuncia actualizaciones a tecnologías de asistencia.
 
