@@ -1,4 +1,5 @@
 import { formatearTsm } from '../domain/nivelRiesgo'
+import { obtenerAlertasActivas } from '../domain/alertasTermicas'
 
 const formatearHora = (iso) => {
   if (!iso) return 'Hora no disponible'
@@ -15,7 +16,7 @@ const formatearHora = (iso) => {
 }
 
 const AlertasTemperatura = ({ zonas = [] }) => {
-  const alertas = zonas.filter((zona) => zona.disponible && zona.nivel.id !== 'VERDE')
+  const alertas = obtenerAlertasActivas(zonas)
   const sinDatos = zonas.filter((zona) => !zona.disponible)
 
   return (
