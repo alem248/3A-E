@@ -13,8 +13,11 @@ public class HistoricosViewController {
     @GetMapping("/historicos")
     public String historicos(Model model) {
         LocalDate hoy = LocalDate.now();
-        model.addAttribute("fechaHasta", hoy);
-        model.addAttribute("fechaDesde", hoy.minusDays(29));
+        LocalDate ultimoHistorico = hoy.minusDays(7);
+        model.addAttribute("fechaMaxima", hoy);
+        model.addAttribute("fechaHasta", ultimoHistorico);
+        model.addAttribute("fechaDesde", ultimoHistorico.minusDays(29));
+        model.addAttribute("fechaComparar", ultimoHistorico);
         return "historicos";
     }
 }

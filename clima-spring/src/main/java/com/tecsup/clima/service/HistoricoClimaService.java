@@ -1,12 +1,14 @@
 package com.tecsup.clima.service;
 
 import java.time.LocalDate;
+import java.time.DateTimeException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -27,6 +29,7 @@ public class HistoricoClimaService {
     private final WeatherProperties properties;
     private final RestTemplate restTemplate;
 
+    @Autowired
     public HistoricoClimaService(WeatherProperties properties) {
         this(properties, new RestTemplate());
     }
@@ -51,7 +54,7 @@ public class HistoricoClimaService {
                 : "Se cargaron " + registros.size() + " días.";
             return new SerieHistoricaResponse(desde, hasta, lat, lon, registros,
                 !registros.isEmpty(), mensaje);
-        } catch (RestClientException | IllegalStateException error) {
+        } catch (RestClientException | IllegalStateException | DateTimeException error) {
             return new SerieHistoricaResponse(desde, hasta, lat, lon, List.of(), false,
                 "No se pudieron cargar los datos históricos. Intenta nuevamente más tarde.");
         }

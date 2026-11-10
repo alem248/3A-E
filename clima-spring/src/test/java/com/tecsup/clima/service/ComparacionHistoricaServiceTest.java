@@ -13,19 +13,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class ComparacionHistoricaServiceTest {
 
     @Test
     void calculaDesviacionPorcentualConSigno() {
-        HistoricoClimaService historico = mock(HistoricoClimaService.class);
         WeatherProperties properties = properties();
         LocalDate fecha = LocalDate.now().minusDays(10);
-        when(historico.consultarMediaActual(-4.35, -81.35)).thenReturn(Optional.of(20.0));
-        when(historico.consultarDia(fecha, -4.35, -81.35)).thenReturn(Optional.of(
-            new RegistroHistoricoDto(fecha, 25.0, 29.0, 20.0, 0.0)));
+        HistoricoClimaService historico = new StubHistoricoService(properties,
+            Optional.of(20.0), Optional.of(new RegistroHistoricoDto(fecha, 25.0, 29.0, 20.0, 0.0)));
 
         var resultado = new ComparacionHistoricaService(historico, properties).comparar(fecha, null, null);
 
@@ -36,11 +32,11 @@ class ComparacionHistoricaServiceTest {
 
     @Test
     void informaDatosInsuficientesSinExcepcion() {
-        HistoricoClimaService historico = mock(HistoricoClimaService.class);
-        when(historico.consultarMediaActual(-4.35, -81.35)).thenReturn(Optional.empty());
+        WeatherProperties properties = properties();
+        HistoricoClimaService historico = new StubHistoricoService(properties, Optional.empty(), Optional.empty());
         LocalDate fecha = LocalDate.now().minusDays(10);
 
-        var resultado = new ComparacionHistoricaService(historico, properties()).comparar(fecha, null, null);
+        var resultado = new ComparacionHistoricaService(historico, properties).comparar(fecha, null, null);
 
         assertFalse(resultado.disponible());
         assertNull(resultado.desviacionPorcentual());
@@ -49,13 +45,12 @@ class ComparacionHistoricaServiceTest {
 
     @Test
     void noCalculaPorcentajeConMediaHistoricaCero() {
-        HistoricoClimaService historico = mock(HistoricoClimaService.class);
+        WeatherProperties properties = properties();
         LocalDate fecha = LocalDate.now().minusDays(10);
-        when(historico.consultarMediaActual(-4.35, -81.35)).thenReturn(Optional.of(2.0));
-        when(historico.consultarDia(fecha, -4.35, -81.35)).thenReturn(Optional.of(
-            new RegistroHistoricoDto(fecha, 0.0, 1.0, -1.0, 4.0)));
+        HistoricoClimaService historico = new StubHistoricoService(properties, Optional.of(2.0),
+            Optional.of(new RegistroHistoricoDto(fecha, 0.0, 1.0, -1.0, 4.0)));
 
-        var resultado = new ComparacionHistoricaService(historico, properties()).comparar(fecha, null, null);
+        var resultado = new ComparacionHistoricaService(historico, properties).comparar(fecha, null, null);
 
         assertTrue(resultado.disponible());
         assertNull(resultado.desviacionPorcentual());
@@ -66,5 +61,27 @@ class ComparacionHistoricaServiceTest {
         ReflectionTestUtils.setField(properties, "latitude", -4.35);
         ReflectionTestUtils.setField(properties, "longitude", -81.35);
         return properties;
+    }
+
+    private static class StubHistoricoService extends HistoricoClimaService {
+        private final Optional<Double> actual;
+        private final Optional<RegistroHistoricoDto> registro;
+
+        StubHistoricoService(WeatherProperties properties, Optional<Double> actual,
+                             Optional<RegistroHistoricoDto> registro) {
+            super(properties, new org.springframework.web.client.RestTemplate());
+            this.actual = actual;
+            this.registro = registro;
+        }
+
+        @Override
+        public Optional<Double> consultarMediaActual(double latitud, double longitud) {
+            return actual;
+        }
+
+        @Override
+        public Optional<RegistroHistoricoDto> consultarDia(LocalDate fecha, double latitud, double longitud) {
+            return registro;
+        }
     }
 }

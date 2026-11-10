@@ -46,8 +46,8 @@
     </header>
 
     <form id="filtros" class="panel filtros">
-        <label>Desde <input id="desde" name="desde" type="date" required th:value="${fechaDesde}"></label>
-        <label>Hasta <input id="hasta" name="hasta" type="date" required th:value="${fechaHasta}"></label>
+        <label>Desde <input id="desde" name="desde" type="date" required th:value="${fechaDesde}" th:attr="max=${fechaMaxima}"></label>
+        <label>Hasta <input id="hasta" name="hasta" type="date" required th:value="${fechaHasta}" th:attr="max=${fechaMaxima}"></label>
         <button id="consultar" type="submit">Consultar rango</button>
     </form>
 
@@ -57,6 +57,21 @@
         <article class="panel indicador"><span>Días cargados</span><strong id="dias">—</strong></article>
         <article class="panel indicador"><span>Temperatura media del periodo</span><strong id="media">—</strong></article>
         <article class="panel indicador"><span>Precipitación acumulada</span><strong id="lluvia">—</strong></article>
+    </section>
+
+    <section class="panel filtros" aria-labelledby="titulo-comparacion">
+        <div>
+            <h2 id="titulo-comparacion" style="margin:0 0 4px;font-size:18px">Comparar con la situación actual</h2>
+            <p style="margin:0;color:var(--suave);font-size:13px">Compara la media diaria estimada de hoy con un registro histórico.</p>
+        </div>
+        <label>Fecha histórica <input id="fechaComparar" type="date" required th:value="${fechaComparar}" th:attr="max=${fechaMaxima}"></label>
+        <button id="comparar" type="button">Comparar</button>
+        <p id="estadoComparacion" role="status" aria-live="polite" style="flex-basis:100%;margin:0;color:var(--suave)">Selecciona una fecha histórica para comparar.</p>
+        <div class="resumen" style="flex-basis:100%;margin:0">
+            <article class="panel indicador"><span>Media actual estimada</span><strong id="temperaturaActual">—</strong></article>
+            <article class="panel indicador"><span>Media histórica</span><strong id="temperaturaHistorica">—</strong></article>
+            <article class="panel indicador"><span>Desviación porcentual</span><strong id="desviacion">—</strong></article>
+        </div>
     </section>
 
     <section class="graficos" aria-label="Gráficos de tendencias históricas">
@@ -71,7 +86,7 @@
             <div class="canvas-wrap"><canvas id="precipitacion" role="img" aria-label="Gráfico de precipitación por fecha"></canvas></div>
         </article>
     </section>
-    <p class="nota">Fuente: Open-Meteo Historical Weather API. Los registros ausentes se muestran como espacios en el gráfico.</p>
+    <p class="nota">Fuente: Open-Meteo Historical Weather API. La desviación porcentual es relativa a la media histórica; no representa un intervalo estadístico de confianza. Los registros ausentes se muestran como espacios en el gráfico.</p>
 </main>
 
 <script>
@@ -80,7 +95,10 @@
     const desde = document.getElementById('desde');
     const hasta = document.getElementById('hasta');
     const boton = document.getElementById('consultar');
+    const fechaComparar = document.getElementById('fechaComparar');
+    const botonComparar = document.getElementById('comparar');
     const estado = document.getElementById('estado');
+    const estadoComparacion = document.getElementById('estadoComparacion');
     let temperaturaChart;
     let lluviaChart;
 
@@ -147,8 +165,8 @@
             }
             dibujar(registros);
             document.getElementById('dias').textContent = String(registros.length);
-            const medias = registros.map(r => r.temperaturaMediaC).filter(v => Number.isFinite(Number(v)));
-            const lluvias = registros.map(r => r.precipitacionMm).filter(v => Number.isFinite(Number(v)));
+            const medias = registros.map(r => r.temperaturaMediaC).filter(v => v != null && Number.isFinite(Number(v)));
+            const lluvias = registros.map(r => r.precipitacionMm).filter(v => v != null && Number.isFinite(Number(v)));
             const media = medias.length ? medias.reduce((a,b) => a + Number(b), 0) / medias.length : null;
             const lluvia = lluvias.length ? lluvias.reduce((a,b) => a + Number(b), 0) : null;
             document.getElementById('media').textContent = numero(media, '°C');
@@ -159,6 +177,41 @@
             mensaje(error.message || 'Ocurrió un error al cargar los datos.', 'error');
         } finally {
             boton.disabled = false;
+        }
+    });
+
+    botonComparar.addEventListener('click', async () => {
+        if (!fechaComparar.value) {
+            estadoComparacion.textContent = 'Selecciona la fecha histórica que quieres comparar.';
+            estadoComparacion.className = 'error';
+            return;
+        }
+        botonComparar.disabled = true;
+        estadoComparacion.textContent = 'Calculando comparación…';
+        estadoComparacion.className = '';
+        document.getElementById('temperaturaActual').textContent = '—';
+        document.getElementById('temperaturaHistorica').textContent = '—';
+        document.getElementById('desviacion').textContent = '—';
+        try {
+            const query = new URLSearchParams({ fecha:fechaComparar.value });
+            const response = await fetch(`/api/historicos/comparacion?${query}`);
+            const body = await response.json();
+            if (!response.ok) throw new Error(body.mensaje || 'No se pudo calcular la comparación.');
+            if (!body.disponible) {
+                estadoComparacion.textContent = body.mensaje || 'No hay datos suficientes para comparar.';
+                return;
+            }
+            document.getElementById('temperaturaActual').textContent = numero(body.temperaturaActualMediaC, '°C');
+            document.getElementById('temperaturaHistorica').textContent = numero(body.temperaturaHistoricaMediaC, '°C');
+            document.getElementById('desviacion').textContent = body.desviacionPorcentual == null
+                ? 'No calculable' : `${Number(body.desviacionPorcentual) > 0 ? '+' : ''}${numero(body.desviacionPorcentual, '%')}`;
+            estadoComparacion.textContent = body.mensaje || 'Comparación disponible.';
+            estadoComparacion.className = 'ok';
+        } catch (error) {
+            estadoComparacion.textContent = error.message || 'Ocurrió un error al comparar las fechas.';
+            estadoComparacion.className = 'error';
+        } finally {
+            botonComparar.disabled = false;
         }
     });
 

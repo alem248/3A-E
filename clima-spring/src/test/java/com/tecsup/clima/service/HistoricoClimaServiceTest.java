@@ -16,10 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class HistoricoClimaServiceTest {
 
@@ -27,14 +23,13 @@ class HistoricoClimaServiceTest {
 
     @Test
     void mapeaRegistrosDiariosYValoresAusentes() throws Exception {
-        RestTemplate restTemplate = mock(RestTemplate.class);
         WeatherProperties properties = properties();
         JsonNode respuesta = mapper.readTree("""
             {"daily":{"time":["2026-10-01","2026-10-02"],
              "temperature_2m_mean":[21.5,null],"temperature_2m_max":[25.0,24.0],
              "temperature_2m_min":[18.0,17.0],"precipitation_sum":[0.0,1.2]}}
             """);
-        when(restTemplate.getForObject(anyString(), eq(JsonNode.class))).thenReturn(respuesta);
+        RestTemplate restTemplate = new StubRestTemplate(respuesta);
 
         SerieHistoricaResponse resultado = new HistoricoClimaService(properties, restTemplate)
             .consultarSerie(LocalDate.parse("2026-10-01"), LocalDate.parse("2026-10-02"), null, null);
@@ -47,9 +42,7 @@ class HistoricoClimaServiceTest {
 
     @Test
     void conservaRespuestaVaciaSinFallar() throws Exception {
-        RestTemplate restTemplate = mock(RestTemplate.class);
-        when(restTemplate.getForObject(anyString(), eq(JsonNode.class)))
-            .thenReturn(mapper.readTree("{\"daily\":{\"time\":[]}}"));
+        RestTemplate restTemplate = new StubRestTemplate(mapper.readTree("{\"daily\":{\"time\":[]}}"));
 
         SerieHistoricaResponse resultado = new HistoricoClimaService(properties(), restTemplate)
             .consultarSerie(LocalDate.parse("2026-10-01"), LocalDate.parse("2026-10-02"), null, null);
@@ -61,7 +54,7 @@ class HistoricoClimaServiceTest {
 
     @Test
     void rechazaRangoInvertido() {
-        HistoricoClimaService servicio = new HistoricoClimaService(properties(), mock(RestTemplate.class));
+        HistoricoClimaService servicio = new HistoricoClimaService(properties(), new StubRestTemplate(null));
         assertThrows(IllegalArgumentException.class, () -> servicio.consultarSerie(
             LocalDate.parse("2026-10-03"), LocalDate.parse("2026-10-02"), null, null));
     }
@@ -73,5 +66,18 @@ class HistoricoClimaServiceTest {
         ReflectionTestUtils.setField(properties, "latitude", -4.35);
         ReflectionTestUtils.setField(properties, "longitude", -81.35);
         return properties;
+    }
+
+    private static class StubRestTemplate extends RestTemplate {
+        private final JsonNode respuesta;
+
+        StubRestTemplate(JsonNode respuesta) {
+            this.respuesta = respuesta;
+        }
+
+        @Override
+        public <T> T getForObject(String url, Class<T> responseType, Object... uriVariables) {
+            return respuesta == null ? null : responseType.cast(respuesta);
+        }
     }
 }
