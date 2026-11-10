@@ -61,6 +61,41 @@ body {
     cursor: pointer;
 }
 
+.menu-principal {
+    display: flex;
+    justify-content: center;
+}
+
+.menu-principal form {
+    margin: 0;
+}
+
+.boton-historicos {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.55rem 1rem;
+    color: #fff;
+    background: var(--acento);
+    border: 1px solid var(--acento);
+    border-radius: 8px;
+    font: inherit;
+    font-weight: 650;
+    cursor: pointer;
+    transition: filter 150ms ease, transform 150ms ease;
+}
+
+.boton-historicos:hover {
+    filter: brightness(1.12);
+    transform: translateY(-1px);
+}
+
+.boton-historicos:focus-visible {
+    outline: 2px solid var(--texto);
+    outline-offset: 3px;
+}
+
 .tarjeta-clima {
     padding: 1rem;
     background: var(--superficie);
