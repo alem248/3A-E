@@ -1,4 +1,6 @@
-import { formatearTsm } from '../domain/nivelRiesgo'
+import { useState } from 'react'
+import { formatearRango, formatearTsm } from '../domain/nivelRiesgo'
+import { contarAlertasPorNivel, obtenerAlertasActivas } from '../domain/alertasTermicas'
 
 const formatearHora = (iso) => {
   if (!iso) return 'Hora no disponible'
@@ -15,7 +17,12 @@ const formatearHora = (iso) => {
 }
 
 const AlertasTemperatura = ({ zonas = [] }) => {
-  const alertas = zonas.filter((zona) => zona.disponible && zona.nivel.id !== 'VERDE')
+  const [nivelSeleccionado, setNivelSeleccionado] = useState('TODAS')
+  const alertas = obtenerAlertasActivas(zonas)
+  const alertasVisibles = nivelSeleccionado === 'TODAS'
+    ? alertas
+    : alertas.filter((alerta) => alerta.nivel.id === nivelSeleccionado)
+  const conteos = contarAlertasPorNivel(alertas)
   const sinDatos = zonas.filter((zona) => !zona.disponible)
 
   return (
@@ -33,17 +40,43 @@ const AlertasTemperatura = ({ zonas = [] }) => {
         </span>
       </div>
 
+      {alertas.length > 0 && (
+        <label className="alertas__filtro">
+          Filtrar por nivel
+          <select value={nivelSeleccionado} onChange={(event) => setNivelSeleccionado(event.target.value)}>
+            <option value="TODAS">Todos los niveles</option>
+            {[...conteos].map(([id]) => (
+              <option key={id} value={id}>{alertas.find((alerta) => alerta.nivel.id === id).nivel.nombre}</option>
+            ))}
+          </select>
+        </label>
+      )}
+
+      {alertas.length > 0 && (
+        <ul className="alertas__resumen" aria-label="Cantidad de alertas por nivel">
+          {[...conteos].map(([id, cantidad]) => {
+            const nivel = alertas.find((alerta) => alerta.nivel.id === id)?.nivel
+            return (
+              <li key={id}>
+                <span style={{ '--nivel-color': nivel.color }}>{nivel.nombre}</span>
+                <strong>{cantidad}</strong>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+
       {alertas.length === 0 ? (
         <div className="alertas__vacio" role="status">
           <span className="alertas__vacio-icono" aria-hidden="true">✓</span>
           <div>
-            <strong>{zonas.length ? 'Sin alertas térmicas activas' : 'Cargando datos térmicos'}</strong>
-            <p>{zonas.length ? 'Las zonas disponibles se encuentran por debajo del umbral de vigilancia.' : 'Las lecturas aparecerán aquí cuando estén disponibles.'}</p>
+            <strong>{zonas.length === 0 ? 'Cargando datos térmicos' : sinDatos.length === zonas.length ? 'Sin lecturas térmicas disponibles' : 'Sin alertas térmicas activas'}</strong>
+            <p>{zonas.length === 0 ? 'Las lecturas aparecerán aquí cuando estén disponibles.' : sinDatos.length === zonas.length ? 'No se puede determinar el riesgo hasta recibir una lectura válida.' : 'Las zonas con lectura se encuentran por debajo del umbral de vigilancia.'}</p>
           </div>
         </div>
       ) : (
         <ul className="alertas__lista">
-          {alertas.map((zona) => (
+          {alertasVisibles.map((zona) => (
             <li className="alerta" key={zona.id} style={{ '--alerta-color': zona.nivel.color }}>
               <span className="alerta__indicador" aria-hidden="true" />
               <div className="alerta__zona">
@@ -57,6 +90,7 @@ const AlertasTemperatura = ({ zonas = [] }) => {
               <div className="alerta__riesgo">
                 <span className="alerta__nivel">{zona.nivel.nombre}</span>
                 <span>{zona.nivel.descripcion}</span>
+                <span className="alerta__umbral">Umbral: {formatearRango(zona.nivel).replace(' C', ' °C')}</span>
               </div>
               <time className="alerta__hora" dateTime={zona.actualizadoEn ?? undefined}>
                 {formatearHora(zona.actualizadoEn)}
@@ -64,6 +98,10 @@ const AlertasTemperatura = ({ zonas = [] }) => {
             </li>
           ))}
         </ul>
+      )}
+
+      {alertas.length > 0 && alertasVisibles.length === 0 && (
+        <p className="alertas__sin-coincidencias" role="status">No hay alertas para el nivel seleccionado.</p>
       )}
 
       {sinDatos.length > 0 && (
