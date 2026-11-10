@@ -93,12 +93,38 @@ const HistoricoPagina = (() => {
             const signo = diferencia > 0 ? '+' : '';
 
             const titulo = document.createElement('strong');
+            titulo.className = 'comparacion-titulo';
             titulo.textContent = 'Situación actual frente al histórico';
-            const detalle = document.createElement('p');
-            detalle.textContent = `Temperatura actual: ${clima.temperature.toFixed(1)} °C · ` +
-                `Promedio histórico de máximas: ${promedio.toFixed(1)} °C · ` +
-                `Diferencia: ${signo}${diferencia.toFixed(1)} °C (${posicion}).`;
-            comparacionEl.replaceChildren(titulo, detalle);
+
+            const sinDiferencia = Math.abs(diferencia) < 0.05;
+            const clase = sinDiferencia ? '' : (diferencia > 0 ? 'diferencia-alta' : 'diferencia-baja');
+            const datos = [
+                { etiqueta: 'Temperatura actual', valor: clima.temperature.toFixed(1) + ' °C', nota: '' },
+                { etiqueta: 'Promedio histórico de máximas', valor: promedio.toFixed(1) + ' °C', nota: '' },
+                { etiqueta: 'Diferencia', valor: signo + diferencia.toFixed(1) + ' °C', nota: posicion, clase }
+            ];
+            const cajas = datos.map((dato) => {
+                const caja = document.createElement('div');
+                const rotulo = document.createElement('span');
+                const valor = document.createElement('strong');
+                rotulo.textContent = dato.etiqueta;
+                valor.textContent = dato.valor;
+                caja.append(rotulo, valor);
+                if (dato.nota) {
+                    const nota = document.createElement('small');
+                    nota.textContent = dato.nota;
+                    caja.append(nota);
+                }
+                if (dato.clase) {
+                    caja.classList.add(dato.clase);
+                }
+                return caja;
+            });
+
+            const grupo = document.createElement('div');
+            grupo.className = 'comparacion-datos';
+            grupo.append(...cajas);
+            comparacionEl.replaceChildren(titulo, grupo);
             comparacionEl.hidden = false;
         } catch (fallo) {
             comparacionEl.replaceChildren();

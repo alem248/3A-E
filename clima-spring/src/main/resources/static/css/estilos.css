@@ -431,18 +431,62 @@ body {
     color: var(--texto);
 }
 
-.historico-comparacion strong {
-    display: block;
-    margin-bottom: 6px;
-}
-
-.historico-comparacion p {
-    margin: 0;
-    font-size: 14px;
-}
-
 .historico-comparacion[hidden] {
     display: none;
+}
+
+.comparacion-titulo {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.comparacion-datos {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.comparacion-datos > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    background: var(--fondo);
+}
+
+.comparacion-datos span,
+.comparacion-datos small {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.comparacion-datos strong {
+    font-size: 16px;
+}
+
+/* El color acompaña al texto de la nota: el sentido se entiende sin depender solo del color */
+.comparacion-datos .diferencia-alta strong {
+    color: #cf222e;
+}
+
+.comparacion-datos .diferencia-baja strong {
+    color: #0969da;
+}
+
+[data-theme="dark"] .comparacion-datos .diferencia-alta strong {
+    color: #ff7b72;
+}
+
+[data-theme="dark"] .comparacion-datos .diferencia-baja strong {
+    color: #58a6ff;
+}
+
+@media (max-width: 720px) {
+    .comparacion-datos {
+        grid-template-columns: 1fr;
+    }
 }
 .grafico-linea {
     stroke-width: 2.5;
