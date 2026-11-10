@@ -27,10 +27,16 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Thymeleaf: pantalla de preferencias de alertas (HU-2) -->
+        <!-- Plantillas Thymeleaf para módulos web complementarios. -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!-- Validacion de peticiones y de reglas de alerta (Bean Validation) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
         <!-- Persistencia (modelo de datos HU-1) -->
