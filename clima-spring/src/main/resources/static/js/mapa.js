@@ -169,6 +169,7 @@ const mapa = (() => {
             }
             const zonas = await respuesta.json();
             renderizarZonas(zonas);
+            document.dispatchEvent(new CustomEvent('clima:zonas-actualizadas', { detail: zonas }));
         } catch (error) {
             console.error('Error al obtener zonas térmicas:', error);
         }

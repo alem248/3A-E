@@ -64,6 +64,8 @@ body {
 .menu-principal {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.65rem;
 }
 
 .menu-principal form {
@@ -94,6 +96,10 @@ body {
 .boton-historicos:focus-visible {
     outline: 2px solid var(--texto);
     outline-offset: 3px;
+}
+
+.enlace-prototipo {
+    text-decoration: none;
 }
 
 .tarjeta-clima {
@@ -441,6 +447,184 @@ body {
 
 [data-theme="dark"] .estado-error {
     color: #ff7b72;
+}
+
+/* Alertas térmicas por zona */
+.alertas-termicas {
+    padding: 1.25rem;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px #17203312;
+}
+
+.alertas-encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+}
+
+.alertas-sobrelinea {
+    margin: 0 0 0.25rem;
+    color: #64748b;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.alertas-descripcion {
+    margin: 0.3rem 0 0;
+    color: #64748b;
+    font-size: 0.88rem;
+}
+
+.alertas-contador {
+    flex: 0 0 auto;
+    padding: 0.3rem 0.7rem;
+    color: #166534;
+    background: #dcfce7;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 750;
+}
+
+.alertas-contador-activo {
+    color: #9a3412;
+    background: #ffedd5;
+}
+
+.alertas-controles {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+
+.alertas-resumen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.alertas-resumen li {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.3rem 0.55rem;
+    background: color-mix(in srgb, var(--nivel-color) 8%, var(--superficie));
+    border: 1px solid color-mix(in srgb, var(--nivel-color) 24%, var(--borde));
+    border-radius: 999px;
+    font-size: 0.76rem;
+}
+
+.alertas-resumen li span {
+    color: var(--nivel-color);
+    font-weight: 700;
+}
+
+.alertas-filtro {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: #64748b;
+    font-size: 0.78rem;
+}
+
+.alertas-filtro select {
+    min-height: 2.25rem;
+    padding: 0.25rem 0.65rem;
+    color: var(--texto);
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    font: inherit;
+}
+
+.alertas-filtro select:focus-visible {
+    outline: 3px solid var(--acento);
+    outline-offset: 2px;
+}
+
+.alertas-lista {
+    display: grid;
+    gap: 0.65rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.alerta-termica {
+    display: grid;
+    grid-template-columns: 7px minmax(120px, 1.1fr) minmax(110px, 0.9fr) minmax(140px, 1fr) auto;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.8rem 0.9rem;
+    background: color-mix(in srgb, var(--alerta-color) 7%, var(--superficie));
+    border: 1px solid color-mix(in srgb, var(--alerta-color) 28%, var(--borde));
+    border-radius: 12px;
+}
+
+.alerta-termica-indicador {
+    width: 7px;
+    height: 42px;
+    background: var(--alerta-color);
+    border-radius: 99px;
+}
+
+.alerta-termica-zona,
+.alerta-termica-temperatura,
+.alerta-termica-riesgo {
+    display: grid;
+    gap: 0.15rem;
+}
+
+.alerta-termica-zona strong { font-size: 0.95rem; }
+.alerta-termica-zona span,
+.alerta-termica-temperatura span,
+.alerta-termica-riesgo > span:not(.alerta-termica-nivel),
+.alerta-termica-hora { color: #64748b; font-size: 0.75rem; }
+.alerta-termica-temperatura strong { font: 700 1.08rem ui-monospace, Consolas, monospace; }
+
+.alerta-termica-nivel {
+    width: fit-content;
+    padding: 0.12rem 0.5rem;
+    color: var(--alerta-color);
+    background: color-mix(in srgb, var(--alerta-color) 13%, var(--superficie));
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 800;
+}
+
+.alerta-termica-umbral { font-family: ui-monospace, Consolas, monospace; }
+.alerta-termica-hora { white-space: nowrap; }
+
+.alertas-estado {
+    margin: 0.5rem 0;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.alertas-estado:empty { display: none; }
+.alertas-sin-datos,
+.alertas-nota { margin: 0.75rem 0 0; color: #64748b; font-size: 0.75rem; }
+.alertas-resumen[hidden],
+.alertas-filtro[hidden],
+.alertas-sin-datos[hidden] { display: none; }
+
+@media (max-width: 720px) {
+    .alertas-termicas { padding: 1rem; }
+    .alertas-encabezado { align-items: flex-start; }
+    .alerta-termica { grid-template-columns: 6px minmax(0, 1fr) minmax(0, 1fr); gap: 0.6rem; }
+    .alerta-termica-indicador { grid-row: span 2; width: 6px; }
+    .alerta-termica-hora { grid-column: 2 / -1; }
+    .alerta-termica-riesgo { grid-column: 2; }
+    .alertas-filtro { align-items: flex-start; flex-direction: column; }
+    .alertas-filtro select { width: 100%; }
 }
 
 /* Estado de la consulta del histórico */

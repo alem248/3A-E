@@ -20,6 +20,8 @@
             <form action="/historicos" method="get">
                 <button class="boton-historicos" type="submit">Ver históricos y tendencias</button>
             </form>
+            <a class="boton-historicos enlace-prototipo" href="/prototipos/baja.html">Prototipo de baja fidelidad</a>
+            <a class="boton-historicos enlace-prototipo" href="/prototipos/alta.html">Prototipo de alta fidelidad</a>
         </nav>
 
         <section class="tarjeta-clima">
@@ -28,6 +30,30 @@
             <p>Longitud: <strong id="longitud">—</strong></p>
             <p>Temperatura: <strong id="temperatura">Cargando...</strong></p>
             <p>Última actualización: <strong id="ultima-actualizacion">—</strong></p>
+        </section>
+
+        <section class="tarjeta-clima alertas-termicas" aria-labelledby="titulo-alertas" aria-live="polite">
+            <div class="alertas-encabezado">
+                <div>
+                    <p class="alertas-sobrelinea">Monitoreo de temperatura superficial del mar</p>
+                    <h2 id="titulo-alertas">Alertas térmicas</h2>
+                    <p class="alertas-descripcion">Temperatura observada y nivel de riesgo por zona costera.</p>
+                </div>
+                <span id="alertas-contador" class="alertas-contador">Cargando</span>
+            </div>
+            <div class="alertas-controles">
+                <ul id="alertas-resumen" class="alertas-resumen" aria-label="Cantidad de alertas por nivel" hidden></ul>
+                <label id="alertas-filtro-contenedor" class="alertas-filtro" for="alertas-filtro" hidden>
+                    Filtrar por nivel
+                    <select id="alertas-filtro">
+                        <option value="TODAS">Todos los niveles</option>
+                    </select>
+                </label>
+            </div>
+            <p id="alertas-estado" class="alertas-estado" role="status">Las lecturas aparecerán aquí cuando estén disponibles.</p>
+            <ul id="alertas-lista" class="alertas-lista" aria-label="Alertas activas por zona"></ul>
+            <p id="alertas-sin-datos" class="alertas-sin-datos" hidden></p>
+            <p class="alertas-nota">Umbrales TSM: vigilancia desde 24 °C · alto desde 26 °C · crítico desde 28 °C.</p>
         </section>
 
         <section class="tarjeta-clima tarjeta-ubicacion">
@@ -81,6 +107,7 @@
     <script src="/js/mapa.js"></script>
     <script src="/js/ubicacion.js"></script>
     <script src="/js/tema.js"></script>
+    <script src="/js/alertas-temperatura.js"></script>
     <script src="/js/historico-calendario.js"></script>
     <script src="/js/historico-grafico.js"></script>
     <script src="/js/historico.js"></script>

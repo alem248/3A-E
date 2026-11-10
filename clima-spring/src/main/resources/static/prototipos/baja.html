@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wireframe de alertas térmicas</title>
+  <link rel="stylesheet" href="baja.css">
+</head>
+<body>
+  <main class="wireframe">
+    <a class="volver" href="/">← Volver a Clima Zona Costera</a>
+    <header>
+      <p>MONITOREO COSTERO</p>
+      <h1>Alertas térmicas</h1>
+      <span>2 alertas</span>
+      <p>Temperatura observada y nivel de riesgo por zona</p>
+    </header>
+    <section aria-label="Alertas activas">
+      <article class="fila">
+        <strong>Piura Norte</strong><span>26.4 °C</span><b>Naranja · Riesgo alto</b><time>Actualizado 10:30</time>
+      </article>
+      <article class="fila">
+        <strong>Tumbes</strong><span>24.8 °C</span><b>Amarillo · Vigilancia</b><time>Actualizado 10:30</time>
+      </article>
+    </section>
+    <details>
+      <summary>Estados adicionales del prototipo</summary>
+      <p class="estado">Cargando: Las lecturas aparecerán aquí cuando estén disponibles.</p>
+      <p class="estado">Sin alertas: Las zonas disponibles se encuentran bajo el umbral de vigilancia.</p>
+      <p class="estado">Sin lectura: La temperatura de esta zona no está disponible.</p>
+    </details>
+    <footer>Vigilancia ≥ 24 °C · Alto ≥ 26 °C · Crítico ≥ 28 °C</footer>
+  </main>
+</body>
+</html>
