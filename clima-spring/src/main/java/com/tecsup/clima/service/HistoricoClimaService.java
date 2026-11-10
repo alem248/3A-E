@@ -1,6 +1,7 @@
 package com.tecsup.clima.service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -129,10 +130,7 @@ public class HistoricoClimaService {
         if (desde == null || hasta == null || hasta.isBefore(desde)) {
             throw new IllegalArgumentException("El rango de fechas no es válido.");
         }
-        if (desde.until(hasta).getDays() < 0) {
-            throw new IllegalArgumentException("El rango de fechas no es válido.");
-        }
-        if (desde.until(hasta).getDays() > MAX_DIAS || desde.plusDays(MAX_DIAS).isBefore(hasta)) {
+        if (ChronoUnit.DAYS.between(desde, hasta) > MAX_DIAS) {
             throw new IllegalArgumentException("El rango máximo de consulta es de 366 días.");
         }
         if (hasta.isAfter(LocalDate.now())) {
