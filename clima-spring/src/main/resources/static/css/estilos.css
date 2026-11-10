@@ -442,3 +442,16 @@ body {
 [data-theme="dark"] .estado-error {
     color: #ff7b72;
 }
+
+/* Estado de la consulta del histórico */
+.estado-error {
+    color: #cf222e;
+}
+
+[data-theme="dark"] .estado-error {
+    color: #ff7b72;
+}
+/* Limita el ancho de la cuadrícula del calendario para celdas más compactas */
+.calendario-grilla {
+    max-width: 560px;
+}
