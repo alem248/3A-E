@@ -398,3 +398,12 @@ body {
     fill: #398bfa;
     opacity: 0.7;
 }
+
+/* Estado de la consulta del histórico */
+.estado-error {
+    color: #cf222e;
+}
+
+[data-theme="dark"] .estado-error {
+    color: #ff7b72;
+}
