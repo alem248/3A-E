@@ -1,0 +1,19 @@
+* { box-sizing: border-box; }
+body { margin: 0; padding: 2rem; color: #111; background: #f0f0f0; font: 16px Arial, sans-serif; }
+.wireframe { max-width: 920px; margin: auto; padding: 1.5rem; border: 2px solid #222; background: white; }
+header { position: relative; padding: 0 0 1rem; border-bottom: 2px solid #222; }
+header p:first-child { margin: 0; font-size: .75rem; }
+h1 { margin: .5rem 0; font-size: 1.6rem; }
+header span { position: absolute; top: 1.3rem; right: 0; padding: .35rem .65rem; border: 1px solid #222; }
+header p:last-child { margin: .5rem 0 0; }
+section { display: grid; gap: .6rem; padding: 1rem 0; }
+.fila { display: grid; grid-template-columns: 1.1fr .7fr 1fr auto; align-items: center; gap: .75rem; padding: .9rem; border: 1px solid #555; }
+.fila span, .fila b { padding: .3rem; border: 1px dashed #777; }
+.fila time { font-size: .8rem; }
+footer { padding-top: .75rem; border-top: 1px solid #555; font-size: .85rem; }
+@media (max-width: 620px) {
+  body { padding: .75rem; }
+  .wireframe { padding: 1rem; }
+  .fila { grid-template-columns: 1fr 1fr; }
+  .fila time { grid-column: 1 / -1; }
+}
