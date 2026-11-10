@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { formatearTsm } from '../domain/nivelRiesgo'
+import { formatearRango, formatearTsm } from '../domain/nivelRiesgo'
 import { contarAlertasPorNivel, obtenerAlertasActivas } from '../domain/alertasTermicas'
 
 const formatearHora = (iso) => {
@@ -90,6 +90,7 @@ const AlertasTemperatura = ({ zonas = [] }) => {
               <div className="alerta__riesgo">
                 <span className="alerta__nivel">{zona.nivel.nombre}</span>
                 <span>{zona.nivel.descripcion}</span>
+                <span className="alerta__umbral">Umbral: {formatearRango(zona.nivel).replace(' C', ' °C')}</span>
               </div>
               <time className="alerta__hora" dateTime={zona.actualizadoEn ?? undefined}>
                 {formatearHora(zona.actualizadoEn)}
