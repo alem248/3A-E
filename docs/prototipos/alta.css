@@ -1,0 +1,27 @@
+* { box-sizing: border-box; }
+body { margin: 0; padding: 2rem; color: #172033; background: #f2f5f9; font: 15px/1.45 Inter, system-ui, sans-serif; }
+.panel { max-width: 1000px; margin: auto; padding: 1.5rem; background: white; border: 1px solid #dbe2ea; border-radius: 18px; box-shadow: 0 14px 40px #1f293710; }
+.cabecera { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+.eyebrow { margin: 0 0 .35rem; color: #64748b; font-size: .7rem; font-weight: 800; letter-spacing: .09em; }
+h1 { margin: 0; font-size: 1.65rem; letter-spacing: -.03em; }
+.cabecera p:last-child { margin: .3rem 0 0; color: #64748b; font-size: .88rem; }
+.contador { flex: none; padding: .35rem .75rem; color: #9a3412; background: #fff1e7; border-radius: 99px; font-size: .8rem; font-weight: 750; }
+.lista { display: grid; gap: .7rem; }
+.alerta { --riesgo: #e87920; display: grid; grid-template-columns: 7px minmax(130px, 1.1fr) minmax(130px, .9fr) minmax(150px, 1fr) auto; align-items: center; gap: 1rem; padding: .85rem 1rem; background: color-mix(in srgb, var(--riesgo) 6%, white); border: 1px solid color-mix(in srgb, var(--riesgo) 27%, #dbe2ea); border-radius: 13px; }
+.alerta--amarillo { --riesgo: #ca8a04; }
+.barra { width: 7px; height: 44px; background: var(--riesgo); border-radius: 99px; }
+.alerta div { display: grid; gap: .12rem; }
+.alerta small, .alerta time { color: #64748b; font-size: .74rem; }
+.temperatura strong { color: #101828; font: 700 1.1rem ui-monospace, monospace; }
+.riesgo b { width: fit-content; padding: .12rem .5rem; color: var(--riesgo); background: color-mix(in srgb, var(--riesgo) 12%, white); border-radius: 99px; font-size: .75rem; }
+footer { margin-top: 1rem; color: #64748b; font-size: .75rem; }
+footer span { padding: 0 .25rem; }
+@media (max-width: 680px) {
+  body { padding: .75rem; }
+  .panel { padding: 1rem; border-radius: 14px; }
+  .cabecera { align-items: flex-start; }
+  .alerta { grid-template-columns: 6px 1fr 1fr; gap: .65rem; padding: .75rem; }
+  .barra { grid-row: span 2; width: 6px; }
+  .alerta time { grid-column: 2 / -1; }
+  footer { line-height: 1.8; }
+}
