@@ -11,6 +11,9 @@ section { display: grid; gap: .6rem; padding: 1rem 0; }
 .fila span, .fila b { padding: .3rem; border: 1px dashed #777; }
 .fila time { font-size: .8rem; }
 footer { padding-top: .75rem; border-top: 1px solid #555; font-size: .85rem; }
+details { padding: .75rem; border: 1px dashed #555; }
+summary { cursor: pointer; font-weight: bold; }
+.estado { margin: .6rem 0 0; padding: .6rem; border: 1px solid #777; }
 @media (max-width: 620px) {
   body { padding: .75rem; }
   .wireframe { padding: 1rem; }
