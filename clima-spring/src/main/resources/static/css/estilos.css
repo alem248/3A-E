@@ -260,3 +260,99 @@ body {
 .historico-grafico[hidden] {
     display: none;
 }
+
+
+/* Calendario mensual del histórico */
+.historico-calendario {
+    margin-top: 16px;
+}
+
+.calendario-leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px;
+    font-size: 14px;
+}
+
+.calendario-leyenda li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.calendario-muestra {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+}
+
+.calendario-mes {
+    margin-bottom: 20px;
+}
+
+.calendario-mes h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+}
+
+.calendario-grilla {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(40px, 1fr));
+    gap: 4px;
+}
+
+.calendario-cabecera {
+    font-size: 12px;
+    text-align: center;
+    opacity: 0.75;
+}
+
+.dia {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 13px;
+    border: 1px solid var(--borde);
+    color: var(--texto);
+    background: var(--superficie);
+}
+
+.dia-vacio {
+    border: none;
+    background: transparent;
+}
+
+.dia-sin-datos,
+.calendario-muestra.dia-sin-datos {
+    background: var(--superficie);
+}
+
+.dia-fresco,
+.calendario-muestra.dia-fresco {
+    background: #9ecbff;
+    color: #0b1d33;
+}
+
+.dia-templado,
+.calendario-muestra.dia-templado {
+    background: #7fd6a1;
+    color: #0b2415;
+}
+
+.dia-calido,
+.calendario-muestra.dia-calido {
+    background: #ffd166;
+    color: #2b1d00;
+}
+
+.dia-muy-calido,
+.calendario-muestra.dia-muy-calido {
+    background: #ef6f4a;
+    color: #2b0d05;
+}
