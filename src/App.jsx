@@ -69,6 +69,10 @@ const App = () => {
   return (
     <div className="app">
       <h1>Clima Zona Costera</h1>
+      <nav className="prototipos-nav" aria-label="Prototipos de alertas">
+        <a className="prototipos-nav__button" href="/prototipos/baja.html">Prototipo de baja fidelidad</a>
+        <a className="prototipos-nav__button prototipos-nav__button--primary" href="/prototipos/alta.html">Prototipo de alta fidelidad</a>
+      </nav>
       <WeatherInfo latitude={weather.latitude} longitude={weather.longitude} temperature={weather.temperature} lastUpdated={lastUpdated} />
       <AlertasTemperatura zonas={zonas} />
       <div className="mapa-contenedor">
