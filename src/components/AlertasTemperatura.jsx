@@ -70,8 +70,8 @@ const AlertasTemperatura = ({ zonas = [] }) => {
         <div className="alertas__vacio" role="status">
           <span className="alertas__vacio-icono" aria-hidden="true">✓</span>
           <div>
-            <strong>{zonas.length ? 'Sin alertas térmicas activas' : 'Cargando datos térmicos'}</strong>
-            <p>{zonas.length ? 'Las zonas disponibles se encuentran por debajo del umbral de vigilancia.' : 'Las lecturas aparecerán aquí cuando estén disponibles.'}</p>
+            <strong>{zonas.length === 0 ? 'Cargando datos térmicos' : sinDatos.length === zonas.length ? 'Sin lecturas térmicas disponibles' : 'Sin alertas térmicas activas'}</strong>
+            <p>{zonas.length === 0 ? 'Las lecturas aparecerán aquí cuando estén disponibles.' : sinDatos.length === zonas.length ? 'No se puede determinar el riesgo hasta recibir una lectura válida.' : 'Las zonas con lectura se encuentran por debajo del umbral de vigilancia.'}</p>
           </div>
         </div>
       ) : (
