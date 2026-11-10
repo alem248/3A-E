@@ -1,5 +1,5 @@
 import { formatearTsm } from '../domain/nivelRiesgo'
-import { obtenerAlertasActivas } from '../domain/alertasTermicas'
+import { contarAlertasPorNivel, obtenerAlertasActivas } from '../domain/alertasTermicas'
 
 const formatearHora = (iso) => {
   if (!iso) return 'Hora no disponible'
@@ -17,6 +17,7 @@ const formatearHora = (iso) => {
 
 const AlertasTemperatura = ({ zonas = [] }) => {
   const alertas = obtenerAlertasActivas(zonas)
+  const conteos = contarAlertasPorNivel(alertas)
   const sinDatos = zonas.filter((zona) => !zona.disponible)
 
   return (
@@ -33,6 +34,20 @@ const AlertasTemperatura = ({ zonas = [] }) => {
           {alertas.length} {alertas.length === 1 ? 'alerta' : 'alertas'}
         </span>
       </div>
+
+      {alertas.length > 0 && (
+        <ul className="alertas__resumen" aria-label="Cantidad de alertas por nivel">
+          {[...conteos].map(([id, cantidad]) => {
+            const nivel = alertas.find((alerta) => alerta.nivel.id === id)?.nivel
+            return (
+              <li key={id}>
+                <span style={{ '--nivel-color': nivel.color }}>{nivel.nombre}</span>
+                <strong>{cantidad}</strong>
+              </li>
+            )
+          })}
+        </ul>
+      )}
 
       {alertas.length === 0 ? (
         <div className="alertas__vacio" role="status">
