@@ -30,6 +30,40 @@
             <p id="estado-ubicacion" role="status"></p>
         </section>
 
+        <section class="tarjeta-clima tarjeta-historico" aria-labelledby="titulo-historico">
+            <h2 id="titulo-historico">Histórico de temporadas</h2>
+            <form id="formulario-historico" class="formulario-historico">
+                <label>Desde
+                    <input type="date" id="historico-desde" name="desde" value="2020-01-01" required>
+                </label>
+                <label>Hasta
+                    <input type="date" id="historico-hasta" name="hasta" value="2023-12-31" required>
+                </label>
+                <fieldset class="meses">
+                    <legend>Meses de temporada</legend>
+                    <div class="meses-opciones">
+                    <label><input type="checkbox" name="mes" value="1" checked> Ene</label>
+                    <label><input type="checkbox" name="mes" value="2" checked> Feb</label>
+                    <label><input type="checkbox" name="mes" value="3" checked> Mar</label>
+                    <label><input type="checkbox" name="mes" value="4" checked> Abr</label>
+                    <label><input type="checkbox" name="mes" value="5"> May</label>
+                    <label><input type="checkbox" name="mes" value="6"> Jun</label>
+                    <label><input type="checkbox" name="mes" value="7"> Jul</label>
+                    <label><input type="checkbox" name="mes" value="8"> Ago</label>
+                    <label><input type="checkbox" name="mes" value="9"> Sep</label>
+                    <label><input type="checkbox" name="mes" value="10"> Oct</label>
+                    <label><input type="checkbox" name="mes" value="11"> Nov</label>
+                    <label><input type="checkbox" name="mes" value="12" checked> Dic</label>
+                    </div>
+                </fieldset>
+                <button type="submit" id="boton-historico">Consultar</button>
+            </form>
+            <p id="estado-historico" role="status"></p>
+            <div id="historico-resumen" class="historico-resumen" hidden></div>
+            <div id="historico-calendario" class="historico-calendario" hidden></div>
+            <div id="historico-grafico" class="historico-grafico" hidden></div>
+        </section>
+
         <div class="mapa-contenedor">
             <div id="mapa"></div>
             <aside id="leyenda" class="leyenda" hidden></aside>

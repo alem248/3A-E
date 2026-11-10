@@ -172,3 +172,91 @@ body {
     opacity: 0.6;
     cursor: wait;
 }
+
+
+/* Histórico de temporadas */
+.formulario-historico {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.formulario-historico label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+}
+
+.formulario-historico input[type="date"] {
+    padding: 6px 8px;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    background: var(--superficie);
+    color: var(--texto);
+}
+
+.meses {
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 0;
+}
+
+.meses-opciones {
+    display: grid;
+    grid-template-columns: repeat(6, auto);
+    gap: 6px 12px;
+}
+
+.meses-opciones label {
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+}
+
+.formulario-historico button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background: var(--acento);
+    color: #fff;
+    cursor: pointer;
+}
+
+.formulario-historico button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.historico-resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.historico-resumen > div {
+    background: var(--fondo);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.historico-resumen span {
+    display: block;
+    font-size: 12px;
+    opacity: 0.75;
+}
+
+.historico-resumen strong {
+    font-size: 18px;
+}
+
+.historico-resumen[hidden],
+.historico-calendario[hidden],
+.historico-grafico[hidden] {
+    display: none;
+}
