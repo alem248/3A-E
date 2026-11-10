@@ -13,6 +13,186 @@ h1 {
   width: 100%;
 }
 
+.alertas {
+  width: min(100% - 2rem, 1040px);
+  box-sizing: border-box;
+  margin: 0 auto 1.5rem;
+  padding: 1.25rem;
+  text-align: left;
+  color: var(--text-h);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+.alertas__encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.alertas__sobrelinea {
+  margin: 0 0 0.25rem;
+  color: var(--text);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.alertas__encabezado h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.alertas__descripcion {
+  margin-top: 0.3rem;
+  color: var(--text);
+  font-size: 0.88rem;
+}
+
+.alertas__contador {
+  flex: 0 0 auto;
+  padding: 0.3rem 0.7rem;
+  color: #166534;
+  background: #dcfce7;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.alertas__contador--activo {
+  color: #9a3412;
+  background: #ffedd5;
+}
+
+.alertas__lista {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.alerta {
+  display: grid;
+  grid-template-columns: 8px minmax(120px, 1.2fr) minmax(110px, 0.8fr) minmax(130px, 1fr) auto;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.8rem 0.9rem;
+  background: color-mix(in srgb, var(--alerta-color) 7%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--alerta-color) 28%, var(--border));
+  border-radius: 12px;
+}
+
+.alerta__indicador {
+  width: 8px;
+  height: 42px;
+  background: var(--alerta-color);
+  border-radius: 99px;
+}
+
+.alerta__zona,
+.alerta__temperatura,
+.alerta__riesgo {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.alerta__zona strong { font-size: 0.95rem; }
+.alerta__zona span,
+.alerta__temperatura span,
+.alerta__riesgo > span:last-child,
+.alerta__hora { color: var(--text); font-size: 0.75rem; }
+.alerta__umbral { font-family: var(--mono); }
+.alerta__temperatura strong { font-family: var(--mono); font-size: 1.08rem; }
+.alerta__nivel {
+  width: fit-content;
+  padding: 0.12rem 0.5rem;
+  color: var(--alerta-color);
+  background: color-mix(in srgb, var(--alerta-color) 13%, var(--bg));
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+.alerta__hora { white-space: nowrap; }
+
+.alertas__resumen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 0.8rem;
+  padding: 0;
+  list-style: none;
+}
+
+.alertas__resumen li {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.55rem;
+  background: color-mix(in srgb, var(--nivel-color) 8%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--nivel-color) 24%, var(--border));
+  border-radius: 999px;
+  font-size: 0.76rem;
+}
+
+.alertas__resumen li span { color: var(--nivel-color); font-weight: 700; }
+.alertas__resumen li strong { color: var(--text-h); }
+
+.alertas__filtro {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.75rem;
+  color: var(--text);
+  font-size: 0.78rem;
+}
+
+.alertas__filtro select {
+  min-height: 2.25rem;
+  padding: 0.25rem 0.65rem;
+  color: var(--text-h);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+}
+
+.alertas__filtro select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.alertas__sin-coincidencias { padding: 0.8rem; color: var(--text); background: var(--code-bg); border-radius: 10px; }
+
+.alertas__vacio {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem;
+  background: color-mix(in srgb, #22c55e 8%, var(--bg));
+  border: 1px solid color-mix(in srgb, #22c55e 25%, var(--border));
+  border-radius: 12px;
+}
+
+.alertas__vacio-icono {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: #15803d;
+  background: #dcfce7;
+  border-radius: 50%;
+  font-weight: 800;
+}
+
+.alertas__vacio strong { font-size: 0.9rem; }
+.alertas__vacio p,
+.alertas__sin-datos,
+.alertas__nota { margin-top: 0.2rem; color: var(--text); font-size: 0.75rem; }
+.alertas__sin-datos { margin-top: 0.8rem; }
+.alertas__nota { margin-top: 0.9rem; }
+
 .leyenda-riesgo {
   position: absolute;
   left: 12px;
@@ -104,6 +284,16 @@ h1 {
 }
 
 @media (max-width: 640px) {
+  .alertas { width: calc(100% - 1rem); padding: 0.9rem; }
+  .alertas__encabezado { align-items: flex-start; }
+  .alertas__encabezado h2 { font-size: 1.25rem; }
+  .alertas__filtro { align-items: flex-start; flex-direction: column; }
+  .alertas__filtro select { width: 100%; }
+  .alerta { grid-template-columns: 6px minmax(0, 1fr) minmax(0, 1fr); gap: 0.6rem; }
+  .alerta__indicador { grid-row: span 2; width: 6px; }
+  .alerta__hora { grid-column: 2 / -1; }
+  .alerta__riesgo { grid-column: 2; }
+  .alerta__umbral { font-size: 0.67rem !important; }
   .leyenda-riesgo {
     left: 8px;
     right: 8px;

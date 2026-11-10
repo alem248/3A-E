@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import Map from './components/Map'
 import WeatherInfo from './components/WeatherInfo'
 import LeyendaRiesgo from './components/LeyendaRiesgo'
+import AlertasTemperatura from './components/AlertasTemperatura'
 import { useAutoRefresh } from './hooks/useAutoRefresh'
 import { consultarTsmPorZonas } from './domain/zonasTermicas'
 import './App.css'
@@ -69,6 +70,7 @@ const App = () => {
     <div className="app">
       <h1>Clima Zona Costera</h1>
       <WeatherInfo latitude={weather.latitude} longitude={weather.longitude} temperature={weather.temperature} lastUpdated={lastUpdated} />
+      <AlertasTemperatura zonas={zonas} />
       <div className="mapa-contenedor">
         <Map latitude={weather.latitude} longitude={weather.longitude} zoom={7} zonas={zonas} />
         <LeyendaRiesgo zonas={zonas} />
