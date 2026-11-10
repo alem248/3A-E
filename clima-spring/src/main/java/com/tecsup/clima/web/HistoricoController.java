@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tecsup.clima.domain.historico.SerieHistoricaResponse;
+import com.tecsup.clima.domain.historico.ComparacionHistoricaResponse;
+import com.tecsup.clima.service.ComparacionHistoricaService;
 import com.tecsup.clima.service.HistoricoClimaService;
 
 /** API de series climáticas diarias históricas. */
@@ -19,9 +21,12 @@ import com.tecsup.clima.service.HistoricoClimaService;
 public class HistoricoController {
 
     private final HistoricoClimaService historicoService;
+    private final ComparacionHistoricaService comparacionService;
 
-    public HistoricoController(HistoricoClimaService historicoService) {
+    public HistoricoController(HistoricoClimaService historicoService,
+                               ComparacionHistoricaService comparacionService) {
         this.historicoService = historicoService;
+        this.comparacionService = comparacionService;
     }
 
     @GetMapping("/serie")
@@ -36,6 +41,23 @@ public class HistoricoController {
         }
         try {
             SerieHistoricaResponse respuesta = historicoService.consultarSerie(desde, hasta, latitud, longitud);
+            return ResponseEntity.ok(respuesta);
+        } catch (IllegalArgumentException error) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", error.getMessage()));
+        }
+    }
+
+    @GetMapping("/comparacion")
+    public ResponseEntity<?> comparar(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam(required = false) Double latitud,
+            @RequestParam(required = false) Double longitud) {
+        if ((latitud == null) != (longitud == null)) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("mensaje", "Envía latitud y longitud juntas, o deja ambas sin indicar."));
+        }
+        try {
+            ComparacionHistoricaResponse respuesta = comparacionService.comparar(fecha, latitud, longitud);
             return ResponseEntity.ok(respuesta);
         } catch (IllegalArgumentException error) {
             return ResponseEntity.badRequest().body(Map.of("mensaje", error.getMessage()));
