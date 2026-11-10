@@ -55,8 +55,8 @@ class ComparacionUbicacionServiceTest {
     @Test
     void compara_usuarioCercaDeZonaNaranja() {
         when(ubicacionService.ultima(7)).thenReturn(ubicacion(-5.19, -80.63));
-        when(comparacionRepository.buscarZonaMasCercana(-5.19, -80.63))
-            .thenReturn(Optional.of(proyeccion(2, false, 26_600.0)));
+        ComparacionZonaProyeccion cercana = proyeccion(2, false, 26_600.0);
+        when(comparacionRepository.buscarZonaMasCercana(-5.19, -80.63)).thenReturn(Optional.of(cercana));
         when(zonaRepository.findById(2)).thenReturn(Optional.of(zona(2, "NARANJA", "#FFA500")));
 
         ComparacionUbicacion r = servicio.comparar(7);
@@ -71,8 +71,8 @@ class ComparacionUbicacionServiceTest {
     @Test
     void compara_puntoDentroDeZonaAmarilla() {
         when(ubicacionService.ultima(8)).thenReturn(ubicacion(-5.0, -81.0));
-        when(comparacionRepository.buscarZonaMasCercana(-5.0, -81.0))
-            .thenReturn(Optional.of(proyeccion(3, true, 0.0)));
+        ComparacionZonaProyeccion dentro = proyeccion(3, true, 0.0);
+        when(comparacionRepository.buscarZonaMasCercana(-5.0, -81.0)).thenReturn(Optional.of(dentro));
         when(zonaRepository.findById(3)).thenReturn(Optional.of(zona(3, "AMARILLO", "#FFFF00")));
 
         ComparacionUbicacion r = servicio.comparar(8);
