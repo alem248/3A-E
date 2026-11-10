@@ -9,6 +9,7 @@ const HistoricoPagina = (() => {
     const resumenEl = document.getElementById('historico-resumen');
     const calendarioEl = document.getElementById('historico-calendario');
     const graficoEl = document.getElementById('historico-grafico');
+    const comparacionEl = document.getElementById('historico-comparacion');
 
     /** Devuelve un mensaje de error, o null si el formulario es valido. Las fechas ISO se comparan como texto. */
     function validarFormulario(desde, hasta, meses) {
@@ -63,8 +64,58 @@ const HistoricoPagina = (() => {
 
     function renderizarResultado(datos) {
         renderizarResumen(datos.resumen);
+        calendarioEl.hidden = false;
+        graficoEl.hidden = false;
         HistoricoCalendario.renderizar(calendarioEl, datos.registros);
         HistoricoGrafico.renderizar(graficoEl, datos.registros);
+        renderizarComparacion(datos.resumen);
+    }
+
+    /** Compara la temperatura actual del punto con el promedio de máximas del histórico consultado. */
+    async function renderizarComparacion(resumen) {
+        if (typeof resumen.temperaturaMaxPromedioC !== 'number') {
+            return;
+        }
+        try {
+            const respuesta = await fetch('/api/weather');
+            if (!respuesta.ok) {
+                return;
+            }
+            const clima = await respuesta.json();
+            if (typeof clima.temperature !== 'number') {
+                return;
+            }
+            const promedio = resumen.temperaturaMaxPromedioC;
+            const diferencia = clima.temperature - promedio;
+            const posicion = Math.abs(diferencia) < 0.05
+                ? 'igual al promedio histórico'
+                : diferencia > 0 ? 'por encima del promedio histórico' : 'por debajo del promedio histórico';
+            const signo = diferencia > 0 ? '+' : '';
+
+            const titulo = document.createElement('strong');
+            titulo.textContent = 'Situación actual frente al histórico';
+            const detalle = document.createElement('p');
+            detalle.textContent = `Temperatura actual: ${clima.temperature.toFixed(1)} °C · ` +
+                `Promedio histórico de máximas: ${promedio.toFixed(1)} °C · ` +
+                `Diferencia: ${signo}${diferencia.toFixed(1)} °C (${posicion}).`;
+            comparacionEl.replaceChildren(titulo, detalle);
+            comparacionEl.hidden = false;
+        } catch (fallo) {
+            comparacionEl.replaceChildren();
+            comparacionEl.hidden = true;
+        }
+    }
+
+    /** Oculta y vacía los resultados de una consulta anterior para no mostrar datos de otras fechas. */
+    function limpiarResultados() {
+        resumenEl.replaceChildren();
+        resumenEl.hidden = true;
+        comparacionEl.replaceChildren();
+        comparacionEl.hidden = true;
+        calendarioEl.replaceChildren();
+        calendarioEl.hidden = true;
+        graficoEl.replaceChildren();
+        graficoEl.hidden = true;
     }
 
     async function consultar(evento) {
@@ -75,6 +126,7 @@ const HistoricoPagina = (() => {
 
         const error = validarFormulario(desde, hasta, meses);
         if (error) {
+            limpiarResultados();
             mostrarEstado(error, true);
             return;
         }
@@ -85,6 +137,7 @@ const HistoricoPagina = (() => {
             const respuesta = await fetch(construirUrl(desde, hasta, meses));
             const datos = await respuesta.json().catch(() => null);
             if (!respuesta.ok) {
+                limpiarResultados();
                 mostrarEstado(datos && datos.mensaje ? datos.mensaje : 'No se pudo obtener el histórico.', true);
                 return;
             }

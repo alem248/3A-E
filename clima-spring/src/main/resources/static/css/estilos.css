@@ -421,6 +421,29 @@ body {
     opacity: 0.8;
 }
 
+/* Comparacion de la situacion actual con el historico */
+.historico-comparacion {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    background: var(--superficie);
+    color: var(--texto);
+}
+
+.historico-comparacion strong {
+    display: block;
+    margin-bottom: 6px;
+}
+
+.historico-comparacion p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.historico-comparacion[hidden] {
+    display: none;
+}
 .grafico-linea {
     stroke-width: 2.5;
     stroke-linejoin: round;
