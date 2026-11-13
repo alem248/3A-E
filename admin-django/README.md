@@ -1,11 +1,11 @@
 # Módulo administrativo Django
 
-Panel de solo consulta desacoplado del backend Spring. Spring mantiene autenticación de negocio y es la fuente de verdad; Django protege las páginas con usuarios `is_staff` y consulta Spring desde el servidor, sin exponer credenciales de servicio al navegador.
+Panel de consulta desacoplado del backend Spring. Django autentica sus propias cuentas y consulta Spring desde el servidor, sin exponer credenciales de servicio al navegador. Las cuentas administradoras (`is_staff`) pueden cambiar la configuración y gestionar cuentas; las cuentas de usuario tienen acceso de solo lectura a las secciones del panel.
 
 ## Requisitos y ejecución local
 
 - Python 3.11+
-- Spring Boot ejecutándose en `http://localhost:8080`
+- Spring Boot ejecutándose en `http://localhost:8081`
 - El endpoint de zonas existente `GET /api/zonas`
 - Un endpoint de historial de lecturas conforme al contrato inferior
 
@@ -16,13 +16,18 @@ python -m venv .venv
 pip install -r requirements.txt
 $env:DJANGO_SECRET_KEY = "clave-local-larga-y-aleatoria"
 $env:DJANGO_DEBUG = "true"
-$env:JAVA_API_BASE_URL = "http://localhost:8080"
+$env:JAVA_API_BASE_URL = "http://localhost:8081"
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver 8000
 ```
 
-Inicia sesión en `/cuentas/login/` con un usuario staff y abre `/historial/`. La selección de una zona consulta el proxy Django con Fetch; Django realiza la llamada de servidor a servidor a Spring, valida los datos y devuelve JSON. El cliente cancela peticiones obsoletas y vuelve a dibujar Chart.js sin refrescar la página.
+Abre `http://localhost:8000/`; si no has iniciado sesión, el panel te lleva a `/cuentas/login/`. Elige el tipo de cuenta que corresponde a tus credenciales:
+
+- **Administrador:** crea un superusuario con `python manage.py createsuperuser`, o usa una cuenta marcada como staff. Puede consultar el panel, cambiar el umbral y gestionar usuarios.
+- **Usuario:** un administrador debe crear la cuenta desde **Gestión de usuarios** y dejar desactivado el permiso de personal (`is_staff`). Puede consultar las secciones y el historial; las opciones de configuración y administración quedan restringidas.
+
+Las cuentas y contraseñas se guardan en la base SQLite local de Django (`db.sqlite3`) y son independientes de las cuentas de Spring. El panel de administración nativo de Django está en `/admin/`. El historial se abre en `/historial/`; la selección de una zona consulta el proxy Django con Fetch. Django consulta Spring desde el servidor, valida la respuesta y devuelve JSON; el cliente actualiza Chart.js sin recargar la página.
 
 ## Contrato que debe exponer Spring
 
@@ -52,10 +57,10 @@ Respuesta JSON esperada:
 
 ## Integración paso a paso
 
-1. Levanta Spring y verifica `GET /api/zonas`.
+1. Levanta Spring en el puerto `8081` y verifica `GET http://localhost:8081/api/zonas`.
 2. Ejecuta la aplicación Spring una vez para que Hibernate agregue `fecha_observacion` en la tabla existente. Las filas históricas previas no tienen fecha; se incluirán nuevas lecturas cuando Spring las registre. El endpoint solo expone el DTO público.
 3. Configura `JAVA_API_BASE_URL`, `JAVA_API_HISTORY_PATH`, `DJANGO_SECRET_KEY` y `DJANGO_ALLOWED_HOSTS` en el entorno de despliegue. Usa HTTPS/TLS entre servicios y guarda secretos fuera del repositorio.
-4. Instala dependencias, migra el almacenamiento local de sesiones y crea un usuario staff. `is_staff` habilita historial y el admin Django; controla esos usuarios desde el sistema operativo de Django.
+4. Instala dependencias, migra el almacenamiento local de sesiones y crea un superusuario. Crea las cuentas de usuario desde **Gestión de usuarios** y deja `is_staff` desactivado; `is_staff` reserva la configuración y la administración nativa a personal autorizado.
 5. Publica `/historial/` detrás de HTTPS y restringe Spring a la red interna o añade autenticación de servicio al endpoint administrativo antes de exponerlo fuera de ella. La plantilla obtiene las zonas; al seleccionar una, `history.js` consulta Django y actualiza el gráfico y la alerta.
 
 ## Estructura

@@ -42,7 +42,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "/cuentas/login/"
 LOGIN_REDIRECT_URL = "/"
-JAVA_API_BASE_URL = os.environ.get("JAVA_API_BASE_URL", "http://localhost:8080").rstrip("/")
+JAVA_API_BASE_URL = os.environ.get("JAVA_API_BASE_URL", "http://localhost:8081").rstrip("/")
 JAVA_API_TIMEOUT_SECONDS = float(os.environ.get("JAVA_API_TIMEOUT_SECONDS", "5"))
 JAVA_API_HISTORY_PATH = os.environ.get(
     "JAVA_API_HISTORY_PATH", "/api/v1/admin/zonas/{zone_id}/historial"
