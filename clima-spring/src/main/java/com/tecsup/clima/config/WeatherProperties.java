@@ -9,6 +9,9 @@ public class WeatherProperties {
     @Value("${weather.open-meteo.url:https://api.open-meteo.com/v1/forecast}")
     private String apiUrl;
 
+    @Value("${weather.open-meteo.archive-url:https://archive-api.open-meteo.com/v1/archive}")
+    private String archiveUrl;
+
     @Value("${weather.open-meteo.latitude:-4.35}")
     private double latitude;
 
@@ -17,6 +20,10 @@ public class WeatherProperties {
 
     public String getApiUrl() {
         return apiUrl;
+    }
+
+    public String getArchiveUrl() {
+        return archiveUrl;
     }
 
     public double getLatitude() {

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prototipo visual de alertas térmicas</title>
+  <link rel="stylesheet" href="alta.css">
+</head>
+<body>
+  <main class="panel">
+    <header class="cabecera">
+      <div><p class="eyebrow">MONITOREO DE TEMPERATURA SUPERFICIAL DEL MAR</p><h1>Alertas térmicas</h1><p>Temperatura observada y nivel de riesgo por zona costera.</p></div>
+      <span class="contador">2 alertas</span>
+    </header>
+    <section class="lista" aria-label="Alertas activas">
+      <article class="alerta alerta--naranja">
+        <span class="barra" aria-hidden="true"></span>
+        <div><strong>Piura Norte</strong><small>Piura</small></div>
+        <div class="temperatura"><strong>26.4 °C</strong><small>Temperatura actual</small></div>
+        <div class="riesgo"><b>Naranja</b><small>Riesgo alto</small></div>
+        <time datetime="2026-11-10T10:30:00-05:00">10 nov · 10:30</time>
+      </article>
+      <article class="alerta alerta--amarillo">
+        <span class="barra" aria-hidden="true"></span>
+        <div><strong>Tumbes</strong><small>Tumbes</small></div>
+        <div class="temperatura"><strong>24.8 °C</strong><small>Temperatura actual</small></div>
+        <div class="riesgo"><b>Amarillo</b><small>Vigilancia / moderado</small></div>
+        <time datetime="2026-11-10T10:30:00-05:00">10 nov · 10:30</time>
+      </article>
+    </section>
+    <footer>Vigilancia desde 24 °C <span>·</span> Riesgo alto desde 26 °C <span>·</span> Crítico desde 28 °C</footer>
+  </main>
+</body>
+</html>

@@ -16,6 +16,22 @@
             </button>
         </header>
 
+        <nav class="menu-principal" aria-label="Navegación principal">
+            <form action="/historicos" method="get">
+                <button class="boton-historicos" type="submit">Ver históricos y tendencias</button>
+            </form>
+            <a class="boton-historicos enlace-prototipo" href="/prototipos/baja.html">Prototipo de baja fidelidad</a>
+            <a class="boton-historicos enlace-prototipo" href="/prototipos/alta.html">Prototipo de alta fidelidad</a>
+            <form action="/preferencias" method="get">
+                <input type="hidden" name="usuarioId" value="1">
+                <button class="boton-historicos" type="submit">Configurar alertas</button>
+            </form>
+        </nav>
+
+        <p style="text-align: center;">
+            <a href="/simulacion.html">Simulador de escenarios de alerta</a>
+        </p>
+
         <section class="tarjeta-clima">
             <h2>Datos del clima</h2>
             <p>Latitud: <strong id="latitud">—</strong></p>
@@ -24,10 +40,69 @@
             <p>Última actualización: <strong id="ultima-actualizacion">—</strong></p>
         </section>
 
+        <section class="tarjeta-clima alertas-termicas" aria-labelledby="titulo-alertas" aria-live="polite">
+            <div class="alertas-encabezado">
+                <div>
+                    <p class="alertas-sobrelinea">Monitoreo de temperatura superficial del mar</p>
+                    <h2 id="titulo-alertas">Alertas térmicas</h2>
+                    <p class="alertas-descripcion">Temperatura observada y nivel de riesgo por zona costera.</p>
+                </div>
+                <span id="alertas-contador" class="alertas-contador">Cargando</span>
+            </div>
+            <div class="alertas-controles">
+                <ul id="alertas-resumen" class="alertas-resumen" aria-label="Cantidad de alertas por nivel" hidden></ul>
+                <label id="alertas-filtro-contenedor" class="alertas-filtro" for="alertas-filtro" hidden>
+                    Filtrar por nivel
+                    <select id="alertas-filtro">
+                        <option value="TODAS">Todos los niveles</option>
+                    </select>
+                </label>
+            </div>
+            <p id="alertas-estado" class="alertas-estado" role="status">Las lecturas aparecerán aquí cuando estén disponibles.</p>
+            <ul id="alertas-lista" class="alertas-lista" aria-label="Alertas activas por zona"></ul>
+            <p id="alertas-sin-datos" class="alertas-sin-datos" hidden></p>
+            <p class="alertas-nota">Umbrales TSM: vigilancia desde 24 °C · alto desde 26 °C · crítico desde 28 °C.</p>
+        </section>
+
         <section class="tarjeta-clima tarjeta-ubicacion">
             <h2>Mi ubicación</h2>
             <button type="button" id="boton-ubicacion">Usar mi ubicación (GPS)</button>
             <p id="estado-ubicacion" role="status"></p>
+        </section>
+
+        <section class="tarjeta-clima tarjeta-historico" aria-labelledby="titulo-historico">
+            <h2 id="titulo-historico">Histórico de temporadas</h2>
+            <form id="formulario-historico" class="formulario-historico">
+                <label>Desde
+                    <input type="date" id="historico-desde" name="desde" value="2020-01-01" required>
+                </label>
+                <label>Hasta
+                    <input type="date" id="historico-hasta" name="hasta" value="2023-12-31" required>
+                </label>
+                <fieldset class="meses">
+                    <legend>Meses de temporada</legend>
+                    <div class="meses-opciones">
+                    <label><input type="checkbox" name="mes" value="1" checked> Ene</label>
+                    <label><input type="checkbox" name="mes" value="2" checked> Feb</label>
+                    <label><input type="checkbox" name="mes" value="3" checked> Mar</label>
+                    <label><input type="checkbox" name="mes" value="4" checked> Abr</label>
+                    <label><input type="checkbox" name="mes" value="5"> May</label>
+                    <label><input type="checkbox" name="mes" value="6"> Jun</label>
+                    <label><input type="checkbox" name="mes" value="7"> Jul</label>
+                    <label><input type="checkbox" name="mes" value="8"> Ago</label>
+                    <label><input type="checkbox" name="mes" value="9"> Sep</label>
+                    <label><input type="checkbox" name="mes" value="10"> Oct</label>
+                    <label><input type="checkbox" name="mes" value="11"> Nov</label>
+                    <label><input type="checkbox" name="mes" value="12" checked> Dic</label>
+                    </div>
+                </fieldset>
+                <button type="submit" id="boton-historico">Consultar</button>
+            </form>
+            <p id="estado-historico" role="status"></p>
+            <div id="historico-resumen" class="historico-resumen" hidden></div>
+            <div id="historico-comparacion" class="historico-comparacion" role="region" aria-label="Comparación con la situación actual" hidden></div>
+            <div id="historico-calendario" class="historico-calendario" hidden></div>
+            <div id="historico-grafico" class="historico-grafico" hidden></div>
         </section>
 
         <div class="mapa-contenedor">
@@ -41,5 +116,9 @@
     <script src="/js/mapa.js"></script>
     <script src="/js/ubicacion.js"></script>
     <script src="/js/tema.js"></script>
+    <script src="/js/alertas-temperatura.js"></script>
+    <script src="/js/historico-calendario.js"></script>
+    <script src="/js/historico-grafico.js"></script>
+    <script src="/js/historico.js"></script>
 </body>
 </html>

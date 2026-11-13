@@ -61,6 +61,47 @@ body {
     cursor: pointer;
 }
 
+.menu-principal {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+
+.menu-principal form {
+    margin: 0;
+}
+
+.boton-historicos {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.55rem 1rem;
+    color: #fff;
+    background: var(--acento);
+    border: 1px solid var(--acento);
+    border-radius: 8px;
+    font: inherit;
+    font-weight: 650;
+    cursor: pointer;
+    transition: filter 150ms ease, transform 150ms ease;
+}
+
+.boton-historicos:hover {
+    filter: brightness(1.12);
+    transform: translateY(-1px);
+}
+
+.boton-historicos:focus-visible {
+    outline: 2px solid var(--texto);
+    outline-offset: 3px;
+}
+
+.enlace-prototipo {
+    text-decoration: none;
+}
+
 .tarjeta-clima {
     padding: 1rem;
     background: var(--superficie);
@@ -171,4 +212,497 @@ body {
 .tarjeta-ubicacion button:disabled {
     opacity: 0.6;
     cursor: wait;
+}
+
+
+/* Histórico de temporadas */
+.formulario-historico {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.formulario-historico label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+}
+
+.formulario-historico input[type="date"] {
+    padding: 6px 8px;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    background: var(--superficie);
+    color: var(--texto);
+}
+
+.meses {
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 0;
+}
+
+.meses-opciones {
+    display: grid;
+    grid-template-columns: repeat(6, auto);
+    gap: 6px 12px;
+}
+
+.meses-opciones label {
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+}
+
+.formulario-historico button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background: var(--acento);
+    color: #fff;
+    cursor: pointer;
+}
+
+.formulario-historico button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.historico-resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.historico-resumen > div {
+    background: var(--fondo);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.historico-resumen span {
+    display: block;
+    font-size: 12px;
+    opacity: 0.75;
+}
+
+.historico-resumen strong {
+    font-size: 18px;
+}
+
+.historico-resumen[hidden],
+.historico-calendario[hidden],
+.historico-grafico[hidden] {
+    display: none;
+}
+
+
+/* Calendario mensual del histórico */
+.historico-calendario {
+    margin-top: 16px;
+}
+
+.calendario-leyenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px;
+    font-size: 14px;
+}
+
+.calendario-leyenda li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.calendario-muestra {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+}
+
+.calendario-mes {
+    margin-bottom: 20px;
+}
+
+.calendario-mes h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+}
+
+.calendario-grilla {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(40px, 1fr));
+    gap: 4px;
+}
+
+.calendario-cabecera {
+    font-size: 12px;
+    text-align: center;
+    opacity: 0.75;
+}
+
+.dia {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 13px;
+    border: 1px solid var(--borde);
+    color: var(--texto);
+    background: var(--superficie);
+}
+
+.dia-vacio {
+    border: none;
+    background: transparent;
+}
+
+.dia-sin-datos,
+.calendario-muestra.dia-sin-datos {
+    background: var(--superficie);
+}
+
+.dia-fresco,
+.calendario-muestra.dia-fresco {
+    background: #9ecbff;
+    color: #0b1d33;
+}
+
+.dia-templado,
+.calendario-muestra.dia-templado {
+    background: #7fd6a1;
+    color: #0b2415;
+}
+
+.dia-calido,
+.calendario-muestra.dia-calido {
+    background: #ffd166;
+    color: #2b1d00;
+}
+
+.dia-muy-calido,
+.calendario-muestra.dia-muy-calido {
+    background: #ef6f4a;
+    color: #2b0d05;
+}
+
+
+/* Gráfico comparativo del histórico */
+.historico-grafico {
+    margin-top: 16px;
+}
+
+.grafico-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.grafico-rejilla {
+    stroke: var(--borde);
+    stroke-width: 1;
+}
+
+.grafico-eje {
+    fill: var(--texto);
+    font-size: 11px;
+    opacity: 0.8;
+}
+
+/* Comparacion de la situacion actual con el historico */
+.historico-comparacion {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    background: var(--superficie);
+    color: var(--texto);
+}
+
+.historico-comparacion[hidden] {
+    display: none;
+}
+
+.comparacion-titulo {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.comparacion-datos {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.comparacion-datos > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    background: var(--fondo);
+}
+
+.comparacion-datos span,
+.comparacion-datos small {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.comparacion-datos strong {
+    font-size: 16px;
+}
+
+/* El color acompaña al texto de la nota: el sentido se entiende sin depender solo del color */
+.comparacion-datos .diferencia-alta strong {
+    color: #cf222e;
+}
+
+.comparacion-datos .diferencia-baja strong {
+    color: #0969da;
+}
+
+[data-theme="dark"] .comparacion-datos .diferencia-alta strong {
+    color: #ff7b72;
+}
+
+[data-theme="dark"] .comparacion-datos .diferencia-baja strong {
+    color: #58a6ff;
+}
+
+@media (max-width: 720px) {
+    .comparacion-datos {
+        grid-template-columns: 1fr;
+    }
+}
+.grafico-linea {
+    stroke-width: 2.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.grafico-linea-max {
+    stroke: #ef6f4a;
+}
+
+.grafico-linea-min {
+    stroke: #398bfa;
+}
+
+.grafico-barra {
+    fill: #398bfa;
+    opacity: 0.7;
+}
+
+/* Estado de la consulta del histórico */
+.estado-error {
+    color: #cf222e;
+}
+
+[data-theme="dark"] .estado-error {
+    color: #ff7b72;
+}
+
+/* Alertas térmicas por zona */
+.alertas-termicas {
+    padding: 1.25rem;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px #17203312;
+}
+
+.alertas-encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+}
+
+.alertas-sobrelinea {
+    margin: 0 0 0.25rem;
+    color: #64748b;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.alertas-descripcion {
+    margin: 0.3rem 0 0;
+    color: #64748b;
+    font-size: 0.88rem;
+}
+
+.alertas-contador {
+    flex: 0 0 auto;
+    padding: 0.3rem 0.7rem;
+    color: #166534;
+    background: #dcfce7;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 750;
+}
+
+.alertas-contador-activo {
+    color: #9a3412;
+    background: #ffedd5;
+}
+
+.alertas-controles {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+
+.alertas-resumen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.alertas-resumen li {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.3rem 0.55rem;
+    background: color-mix(in srgb, var(--nivel-color) 8%, var(--superficie));
+    border: 1px solid color-mix(in srgb, var(--nivel-color) 24%, var(--borde));
+    border-radius: 999px;
+    font-size: 0.76rem;
+}
+
+.alertas-resumen li span {
+    color: var(--nivel-color);
+    font-weight: 700;
+}
+
+.alertas-filtro {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: #64748b;
+    font-size: 0.78rem;
+}
+
+.alertas-filtro select {
+    min-height: 2.25rem;
+    padding: 0.25rem 0.65rem;
+    color: var(--texto);
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    font: inherit;
+}
+
+.alertas-filtro select:focus-visible {
+    outline: 3px solid var(--acento);
+    outline-offset: 2px;
+}
+
+.alertas-lista {
+    display: grid;
+    gap: 0.65rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.alerta-termica {
+    display: grid;
+    grid-template-columns: 7px minmax(120px, 1.1fr) minmax(110px, 0.9fr) minmax(140px, 1fr) auto;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.8rem 0.9rem;
+    background: color-mix(in srgb, var(--alerta-color) 7%, var(--superficie));
+    border: 1px solid color-mix(in srgb, var(--alerta-color) 28%, var(--borde));
+    border-radius: 12px;
+}
+
+.alerta-termica-indicador {
+    width: 7px;
+    height: 42px;
+    background: var(--alerta-color);
+    border-radius: 99px;
+}
+
+.alerta-termica-zona,
+.alerta-termica-temperatura,
+.alerta-termica-riesgo {
+    display: grid;
+    gap: 0.15rem;
+}
+
+.alerta-termica-zona strong { font-size: 0.95rem; }
+.alerta-termica-zona span,
+.alerta-termica-temperatura span,
+.alerta-termica-riesgo > span:not(.alerta-termica-nivel),
+.alerta-termica-hora { color: #64748b; font-size: 0.75rem; }
+.alerta-termica-temperatura strong { font: 700 1.08rem ui-monospace, Consolas, monospace; }
+
+.alerta-termica-nivel {
+    width: fit-content;
+    padding: 0.12rem 0.5rem;
+    color: var(--alerta-color);
+    background: color-mix(in srgb, var(--alerta-color) 13%, var(--superficie));
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 800;
+}
+
+.alerta-termica-umbral { font-family: ui-monospace, Consolas, monospace; }
+.alerta-termica-hora { white-space: nowrap; }
+
+.alertas-estado {
+    margin: 0.5rem 0;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.alertas-estado:empty { display: none; }
+.alertas-sin-datos,
+.alertas-nota { margin: 0.75rem 0 0; color: #64748b; font-size: 0.75rem; }
+.alertas-resumen[hidden],
+.alertas-filtro[hidden],
+.alertas-sin-datos[hidden] { display: none; }
+
+@media (max-width: 720px) {
+    .alertas-termicas { padding: 1rem; }
+    .alertas-encabezado { align-items: flex-start; }
+    .alerta-termica { grid-template-columns: 6px minmax(0, 1fr) minmax(0, 1fr); gap: 0.6rem; }
+    .alerta-termica-indicador { grid-row: span 2; width: 6px; }
+    .alerta-termica-hora { grid-column: 2 / -1; }
+    .alerta-termica-riesgo { grid-column: 2; }
+    .alertas-filtro { align-items: flex-start; flex-direction: column; }
+    .alertas-filtro select { width: 100%; }
+}
+
+/* Estado de la consulta del histórico */
+.estado-error {
+    color: #cf222e;
+}
+
+[data-theme="dark"] .estado-error {
+    color: #ff7b72;
+}
+/* Limita el ancho de la cuadrícula del calendario para celdas más compactas */
+.calendario-grilla {
+    max-width: 560px;
 }
