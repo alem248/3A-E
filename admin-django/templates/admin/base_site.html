@@ -21,4 +21,4 @@
 </nav>
 {% endif %}
 {% endblock %}
-{% block nav-global %}{% if request.user.is_authenticated %}<div class="global-actions"><span>{{ request.user.get_username }}</span><form method="post" action="{% url 'clima_admin:theme' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}"><button class="theme-toggle" type="submit" aria-label="Alternar modo claro u oscuro">◐ <span>Tema</span></button></form></div>{% endif %}{% endblock %}
+{% block nav-global %}{% if request.user.is_authenticated %}<div class="global-actions"><span>{{ request.user.get_username }}</span><form method="post" action="{% url 'clima_admin:theme' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}"><button class="theme-toggle" type="submit" aria-label="Alternar modo claro u oscuro">◐ <span>Tema</span></button></form><form method="post" action="{% url 'panel_logout' %}">{% csrf_token %}<button class="logout-toggle" type="submit">Cerrar sesión</button></form></div>{% endif %}{% endblock %}
