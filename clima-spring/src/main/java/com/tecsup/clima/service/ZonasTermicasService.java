@@ -4,11 +4,13 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.tecsup.clima.domain.NivelRiesgo;
 import com.tecsup.clima.domain.PoligonoUtils;
@@ -32,8 +34,6 @@ import com.tecsup.clima.persistence.ZonaVulnerableRepository;
 @Service
 public class ZonasTermicasService {
 
-    private static final String API_MARINA_URL = "https://marine-api.open-meteo.com/v1/marine";
-
     /** Temperatura baseclimatica de la costa peruana usada para la anomalia. */
     private static final double TEMPERATURA_BASE = 24.0;
 
@@ -44,23 +44,34 @@ public class ZonasTermicasService {
     private final RegistroTsmRepository registroRepository;
     private final NivelRiesgoRepository nivelRepository;
     private final EventoClimaticoRepository eventoRepository;
+    private final String apiMarinaUrl;
 
     public ZonasTermicasService(ZonaVulnerableRepository zonaRepository,
                                 EstacionMonitoreoRepository estacionRepository,
                                 RegistroTsmRepository registroRepository,
                                 NivelRiesgoRepository nivelRepository,
-                                EventoClimaticoRepository eventoRepository) {
+                                EventoClimaticoRepository eventoRepository,
+                                @Value("${weather.marine.url:https://marine-api.open-meteo.com/v1/marine}") String apiMarinaUrl) {
         this.zonaRepository = zonaRepository;
         this.estacionRepository = estacionRepository;
         this.registroRepository = registroRepository;
         this.nivelRepository = nivelRepository;
         this.eventoRepository = eventoRepository;
+        this.apiMarinaUrl = apiMarinaUrl;
     }
 
     /** Zonas vulnerables con su TSM en tiempo real. */
     @Transactional
     public List<ZonaTermica> consultarTsmPorZonas() {
         return consultar(zonaRepository.findAllByOrderByIdAsc());
+    }
+
+    /** Consulta y registra la lectura TSM de una sola zona. */
+    @Transactional
+    public ZonaTermica consultarTsmZona(int zonaId) {
+        ZonaVulnerableEntity zona = zonaRepository.findById(zonaId)
+            .orElseThrow(() -> new RecursoNoEncontradoException("La zona " + zonaId + " no existe"));
+        return consultarZona(zona);
     }
 
     /** Filtro por zona geografica: solo las zonas que contienen el punto. */
@@ -109,7 +120,7 @@ public class ZonasTermicasService {
 
             String url = String.format(
                 "%s?latitude=%s&longitude=%s&current=sea_surface_temperature",
-                API_MARINA_URL, latitudConsulta, longitudConsulta);
+                apiMarinaUrl, latitudConsulta, longitudConsulta);
 
             JsonNode root = restTemplate.getForObject(url, JsonNode.class);
             JsonNode current = root.path("current");
@@ -124,7 +135,9 @@ public class ZonasTermicasService {
             NivelRiesgo nivel = NivelRiesgo.clasificarTemperatura(tsm);
 
             clasificar(zona, nivel);
-            registrarLectura(zona.getId(), centroide, tsm);
+            if (actualizadoEn != null) {
+                registrarLectura(zona.getId(), centroide, tsm, LocalDateTime.parse(actualizadoEn));
+            }
 
             return new ZonaTermica(String.valueOf(zona.getId()), nombre, departamento,
                 centroide[0], centroide[1], poligono,
@@ -145,7 +158,7 @@ public class ZonasTermicasService {
     }
 
     /** DER: REGISTRO_TSM contiene la lectura medida por la estacion. */
-    private void registrarLectura(int zonaId, double[] centroide, double tsm) {
+    private void registrarLectura(int zonaId, double[] centroide, double tsm, LocalDateTime observadaEn) {
         Optional<EventoClimaticoEntity> evento = eventoRepository.findFirstByEstadoIgnoreCase("ACTIVO");
         Optional<EstacionMonitoreoEntity> estacion = estacionRepository.findById(zonaId);
 
@@ -159,6 +172,7 @@ public class ZonasTermicasService {
         registro.setLatitud(BigDecimal.valueOf(centroide[0]));
         registro.setLongitud(BigDecimal.valueOf(centroide[1]));
         registro.setAnomalia(BigDecimal.valueOf(tsm - TEMPERATURA_BASE).setScale(2, java.math.RoundingMode.HALF_UP));
+        registro.setFechaObservacion(observadaEn);
         registroRepository.save(registro);
     }
 

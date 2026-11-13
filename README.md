@@ -107,3 +107,7 @@ de Perú y permite alternar entre calles de OpenStreetMap e imágenes satelitale
 de Esri. El botón de tema alterna entre modo claro y oscuro y conserva la
 preferencia en el navegador. Estas mejoras visuales no modifican la lógica de
 negocio del backend.
+
+## Panel de administración Django
+
+El módulo administrativo Django se ejecuta separado de Spring Boot y consume sus APIs REST. Revisa [`admin-django/README.md`](admin-django/README.md) para instalar dependencias, configurar el entorno, crear usuario staff y arrancar ambos servicios. Spring incorpora el endpoint de historial `GET /api/v1/admin/zonas/{zoneId}/historial`; su primera ejecución agrega la columna `fecha_observacion` y las lecturas nuevas alimentan el gráfico.

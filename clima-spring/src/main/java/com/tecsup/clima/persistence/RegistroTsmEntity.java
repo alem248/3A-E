@@ -1,6 +1,7 @@
 package com.tecsup.clima.persistence;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,6 +43,10 @@ public class RegistroTsmEntity {
 
     @Column(name = "anomalia")
     private BigDecimal anomalia;
+
+    /** Hora de observacion UTC reportada por la fuente marina. */
+    @Column(name = "fecha_observacion")
+    private LocalDateTime fechaObservacion;
 
     public Integer getId() {
         return id;
@@ -89,5 +94,11 @@ public class RegistroTsmEntity {
 
     public void setAnomalia(BigDecimal anomalia) {
         this.anomalia = anomalia;
+    }
+
+    public LocalDateTime getFechaObservacion() { return fechaObservacion; }
+
+    public void setFechaObservacion(LocalDateTime fechaObservacion) {
+        this.fechaObservacion = fechaObservacion;
     }
 }
