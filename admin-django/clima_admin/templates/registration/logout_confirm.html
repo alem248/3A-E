@@ -1,0 +1,23 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% block bodyclass %}panel-auth-body{% endblock %}
+{% block title %}Cerrar sesión | Clima Costero{% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'clima_admin/css/admin-shell.css' %}">{% endblock %}
+{% block content %}
+<main class="panel-login-page">
+  <section class="panel-login-card" aria-labelledby="logout-title">
+    <a class="panel-login-brand" href="{{ login_url }}" aria-label="Clima Costero">
+      <span class="panel-login-mark" aria-hidden="true">C</span>
+      <span>Clima Costero</span>
+    </a>
+    <p class="panel-login-eyebrow">Sesión activa: {{ request.user.get_username }}</p>
+    <h1 id="logout-title">¿Cerrar sesión?</h1>
+    <p class="panel-login-description">Confirma para salir de tu cuenta y volver al inicio de sesión.</p>
+    <form method="post" class="panel-login-form">
+      {% csrf_token %}
+      <button class="panel-login-submit" type="submit">Cerrar sesión</button>
+    </form>
+    <a class="panel-register-back" href="{{ login_url }}">Volver al inicio de sesión</a>
+  </section>
+</main>
+{% endblock %}

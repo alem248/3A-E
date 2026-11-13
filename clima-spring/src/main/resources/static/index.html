@@ -5,15 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clima Zona Costera</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <link rel="stylesheet" href="/css/estilos.css">
+    <link rel="stylesheet" href="/css/estilos.css?v=logout-layout-20261112">
 </head>
 <body>
     <div class="app">
         <header class="encabezado-app">
             <h1>Clima Zona Costera</h1>
-            <button type="button" id="boton-tema" class="boton-tema" aria-pressed="false">
-                <span aria-hidden="true">☾</span> Modo oscuro
-            </button>
+            <div class="acciones-encabezado">
+                <button type="button" id="boton-tema" class="boton-tema" aria-pressed="false">
+                    <span aria-hidden="true">☾</span> Modo oscuro
+                </button>
+                <a class="boton-cerrar-sesion" href="http://localhost:8000/cuentas/cerrar-sesion/">Cerrar sesión</a>
+            </div>
         </header>
 
         <nav class="menu-principal" aria-label="Navegación principal">

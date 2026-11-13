@@ -2,13 +2,13 @@ from datetime import date
 import re
 
 from django.conf import settings
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_http_methods
 from django.views.decorators.http import require_POST
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -54,6 +54,17 @@ class UserRegistrationView(FormView):
         user = form.save()
         login(self.request, user, backend="django.contrib.auth.backends.ModelBackend")
         return super().form_valid(form)
+
+
+@login_required(login_url=settings.LOGIN_URL)
+@require_http_methods(["GET", "POST"])
+def confirm_panel_logout(request):
+    if request.method == "POST":
+        logout(request)
+        return redirect(f"{settings.LOGIN_URL}?logged_out=1")
+    return render(request, "registration/logout_confirm.html", {
+        "login_url": settings.LOGIN_URL,
+    })
 
 
 @staff_member_required(login_url=settings.LOGIN_URL)

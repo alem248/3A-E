@@ -2,9 +2,10 @@
 {% load static %}
 {% block bodyclass %}panel-auth-body{% endblock %}
 {% block title %}Acceso al panel | Clima Costero{% endblock %}
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'clima_admin/css/admin-shell.css' %}">{% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'clima_admin/css/admin-shell.css' %}"><script src="{% static 'clima_admin/js/auth-theme.js' %}" defer></script>{% endblock %}
 {% block content %}
 <main class="panel-login-page">
+  <button class="panel-auth-theme-toggle" type="button" data-auth-theme-toggle aria-pressed="false">☾ Modo oscuro</button>
   <section class="panel-login-card" aria-labelledby="login-title">
     <a class="panel-login-brand" href="/" aria-label="Clima Costero">
       <span class="panel-login-mark" aria-hidden="true">C</span>
@@ -13,6 +14,13 @@
     <p class="panel-login-eyebrow">Acceso seguro</p>
     <h1 id="login-title">Ingresa al panel</h1>
     <p class="panel-login-description">Usa tu cuenta para consultar el monitoreo climático.</p>
+
+    {% if request.GET.logged_out %}
+      <div class="panel-logout-notice" role="status" data-logout-notice>
+        <strong>Sesión cerrada</strong>
+        <span>Has cerrado sesión correctamente. Puedes volver a iniciar sesión.</span>
+      </div>
+    {% endif %}
 
     {% if form.non_field_errors %}
       <div class="panel-login-error" role="alert">{{ form.non_field_errors }}</div>

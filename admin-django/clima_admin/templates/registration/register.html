@@ -2,9 +2,10 @@
 {% load static %}
 {% block bodyclass %}panel-auth-body{% endblock %}
 {% block title %}Crear cuenta | Clima Costero{% endblock %}
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'clima_admin/css/admin-shell.css' %}">{% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'clima_admin/css/admin-shell.css' %}"><script src="{% static 'clima_admin/js/auth-theme.js' %}" defer></script>{% endblock %}
 {% block content %}
 <main class="panel-login-page">
+  <button class="panel-auth-theme-toggle" type="button" data-auth-theme-toggle aria-pressed="false">☾ Modo oscuro</button>
   <section class="panel-login-card panel-register-card" aria-labelledby="register-title">
     <a class="panel-login-brand" href="/" aria-label="Clima Costero">
       <span class="panel-login-mark" aria-hidden="true">C</span>

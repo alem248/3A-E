@@ -29,6 +29,8 @@ Abre `http://localhost:8000/`; si no has iniciado sesión, el panel te lleva a `
 
 Las cuentas y contraseñas se guardan en la base SQLite local de Django (`db.sqlite3`) y son independientes de las cuentas de Spring. `CLIMATE_MAIN_PANEL_URL` controla el destino de las cuentas de usuario y por defecto apunta a `http://localhost:8081/`. El login de Django no autentica al usuario dentro de Spring; solo lo redirige a la página principal. El registro público no verifica el correo: úsalo para desarrollo/MVP y exige verificación antes de habilitarlo en un despliegue público. El panel administrativo Django queda restringido a cuentas staff. El historial se abre en `/historial/`; la selección de una zona consulta el proxy Django con Fetch. Django consulta Spring desde el servidor, valida la respuesta y devuelve JSON; el cliente actualiza Chart.js sin recargar la página.
 
+La página principal de Spring muestra un enlace **Cerrar sesión** que abre una confirmación protegida de Django en `/cuentas/cerrar-sesion/`. La cabecera del panel administrativo también ofrece cierre directo por POST. Ambos flujos invalidan la sesión Django y regresan al login de Django con un aviso de sesión cerrada.
+
 ## Contrato que debe exponer Spring
 
 Spring expone `GET /api/zonas` para el selector y el endpoint de lecturas históricas implementado en `AdminHistoryController`:
