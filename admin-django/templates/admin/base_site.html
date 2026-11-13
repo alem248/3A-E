@@ -4,6 +4,7 @@
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'clima_admin/css/admin-shell.css' %}"><script src="{% static 'clima_admin/js/theme.js' %}" defer></script>{% endblock %}
 {% block branding %}<a class="admin-brand" href="{% url 'clima_admin:dashboard' %}"><span class="admin-brand-mark">C</span>Clima Costero</a>{% endblock %}
 {% block nav-sidebar %}
+{% if request.user.is_authenticated %}
 <nav id="nav-sidebar" class="custom-sidebar" aria-label="Navegación principal">
   <div class="sidebar-section-label">PANEL</div>
   <a href="{% url 'clima_admin:history' %}">◷ <span>Historial climático</span></a>
@@ -11,10 +12,13 @@
   <a href="{% url 'clima_admin:readings' %}">▤ <span>Lecturas</span></a>
   <a href="{% url 'clima_admin:alerts' %}">⚠ <span>Alertas globales</span></a>
   <a href="{% url 'clima_admin:statistics' %}">⌁ <span>Estadísticas</span></a>
+  {% if request.user.is_staff %}
   <div class="sidebar-section-label">SISTEMA</div>
   <a href="{% url 'clima_admin:settings' %}">⚙ <span>Configuración del sitio</span></a>
-  <a href="{% url 'admin:auth_user_changelist' %}">♙ <span>Gestión de usuarios</span></a>
-  <div class="sidebar-bottom"><form method="post" action="{% url 'admin:logout' %}">{% csrf_token %}<button class="sidebar-logout" type="submit">⇥ <span>Cerrar sesión</span></button></form></div>
+  {% endif %}
+  {% if perms.auth.view_user %}<a href="{% url 'admin:auth_user_changelist' %}">♙ <span>Gestión de usuarios</span></a>{% endif %}
+  <div class="sidebar-bottom"><form method="post" action="{% url 'panel_logout' %}">{% csrf_token %}<button class="sidebar-logout" type="submit">⇥ <span>Cerrar sesión</span></button></form></div>
 </nav>
+{% endif %}
 {% endblock %}
-{% block nav-global %}<div class="global-actions"><span>{{ request.user.get_username }}</span><form method="post" action="{% url 'clima_admin:theme' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}"><button class="theme-toggle" type="submit" aria-label="Alternar modo claro u oscuro">◐ <span>Tema</span></button></form></div>{% endblock %}
+{% block nav-global %}{% if request.user.is_authenticated %}<div class="global-actions"><span>{{ request.user.get_username }}</span><form method="post" action="{% url 'clima_admin:theme' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}"><button class="theme-toggle" type="submit" aria-label="Alternar modo claro u oscuro">◐ <span>Tema</span></button></form></div>{% endif %}{% endblock %}

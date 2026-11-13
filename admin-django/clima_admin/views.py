@@ -2,6 +2,7 @@ from datetime import date
 import re
 
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -22,7 +23,7 @@ PERU_REGIONS = [
 ]
 
 
-@staff_member_required
+@login_required
 @require_GET
 def history_page(request):
     try:
@@ -52,7 +53,7 @@ def history_page(request):
     })
 
 
-@staff_member_required
+@login_required
 @require_GET
 def zone_history(request, zone_id):
     if not _ZONE_ID.fullmatch(zone_id):
@@ -83,7 +84,7 @@ def zone_history(request, zone_id):
     return JsonResponse(payload)
 
 
-@staff_member_required
+@login_required
 @require_GET
 def zone_trend(request, zone_id):
     if not _ZONE_ID.fullmatch(zone_id):
@@ -104,7 +105,7 @@ def zone_trend(request, zone_id):
     })
 
 
-@staff_member_required
+@login_required
 @require_GET
 def section_page(request, section):
     api = get_climate_api()
@@ -149,7 +150,7 @@ def save_settings(request):
     return redirect("clima_admin:settings")
 
 
-@staff_member_required
+@login_required
 @require_POST
 def theme_preference(request):
     next_url = request.POST.get("next", "")
