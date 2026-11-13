@@ -4,6 +4,7 @@ import re
 from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -11,12 +12,11 @@ from django.views.decorators.http import require_GET
 from django.views.decorators.http import require_POST
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 
 from .services import JavaApiError, get_climate_api
 from .analytics import worsening_trend
-from .forms import UserRegistrationForm
+from .forms import PanelAuthenticationForm, UserRegistrationForm
 
 _ZONE_ID = re.compile(r"^[A-Za-z0-9_-]{1,40}$")
 PERU_REGIONS = [
@@ -27,13 +27,26 @@ PERU_REGIONS = [
 ]
 
 
+class PanelLoginView(LoginView):
+    authentication_form = PanelAuthenticationForm
+    template_name = "registration/login.html"
+    redirect_authenticated_user = True
+
+    def get_success_url(self):
+        if self.request.user.is_staff:
+            return super().get_success_url()
+        return settings.CLIMATE_MAIN_PANEL_URL
+
+
 class UserRegistrationView(FormView):
     template_name = "registration/register.html"
     form_class = UserRegistrationForm
-    success_url = reverse_lazy("clima_admin:dashboard")
+    success_url = settings.CLIMATE_MAIN_PANEL_URL
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
+            if not request.user.is_staff:
+                return redirect(settings.CLIMATE_MAIN_PANEL_URL)
             return redirect("clima_admin:dashboard")
         return super().dispatch(request, *args, **kwargs)
 
@@ -43,7 +56,7 @@ class UserRegistrationView(FormView):
         return super().form_valid(form)
 
 
-@login_required
+@staff_member_required(login_url=settings.LOGIN_URL)
 @require_GET
 def history_page(request):
     try:
@@ -73,7 +86,7 @@ def history_page(request):
     })
 
 
-@login_required
+@staff_member_required(login_url=settings.LOGIN_URL)
 @require_GET
 def zone_history(request, zone_id):
     if not _ZONE_ID.fullmatch(zone_id):
@@ -104,7 +117,7 @@ def zone_history(request, zone_id):
     return JsonResponse(payload)
 
 
-@login_required
+@staff_member_required(login_url=settings.LOGIN_URL)
 @require_GET
 def zone_trend(request, zone_id):
     if not _ZONE_ID.fullmatch(zone_id):
@@ -125,7 +138,7 @@ def zone_trend(request, zone_id):
     })
 
 
-@login_required
+@staff_member_required(login_url=settings.LOGIN_URL)
 @require_GET
 def section_page(request, section):
     api = get_climate_api()
@@ -143,7 +156,7 @@ def section_page(request, section):
     return render(request, "clima_admin/section.html", context)
 
 
-@staff_member_required
+@staff_member_required(login_url=settings.LOGIN_URL)
 @require_GET
 def settings_page(request):
     error = request.session.pop("settings_error", "")
@@ -155,7 +168,7 @@ def settings_page(request):
     })
 
 
-@staff_member_required
+@staff_member_required(login_url=settings.LOGIN_URL)
 @require_POST
 def save_settings(request):
     try:

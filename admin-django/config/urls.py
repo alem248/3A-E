@@ -2,17 +2,13 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path, reverse_lazy
 
-from clima_admin.forms import PanelAuthenticationForm
-from clima_admin.views import UserRegistrationView
+from clima_admin.views import PanelLoginView, UserRegistrationView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path(
         "cuentas/login/",
-        auth_views.LoginView.as_view(
-            authentication_form=PanelAuthenticationForm,
-            template_name="registration/login.html",
-        ),
+        PanelLoginView.as_view(),
         name="panel_login",
     ),
     path("cuentas/registro/", UserRegistrationView.as_view(), name="panel_register"),

@@ -4,7 +4,7 @@
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'clima_admin/css/admin-shell.css' %}"><script src="{% static 'clima_admin/js/theme.js' %}" defer></script>{% endblock %}
 {% block branding %}<a class="admin-brand" href="{% url 'clima_admin:dashboard' %}"><span class="admin-brand-mark">C</span>Clima Costero</a>{% endblock %}
 {% block nav-sidebar %}
-{% if request.user.is_authenticated %}
+{% if request.user.is_authenticated and request.user.is_staff %}
 <nav id="nav-sidebar" class="custom-sidebar" aria-label="Navegación principal">
   <div class="sidebar-section-label">PANEL</div>
   <a href="{% url 'clima_admin:history' %}">◷ <span>Historial climático</span></a>

@@ -24,10 +24,10 @@ python manage.py runserver 8000
 
 Abre `http://localhost:8000/`; si no has iniciado sesión, el panel te lleva a `/cuentas/login/`. Elige el tipo de cuenta que corresponde a tus credenciales:
 
-- **Administrador:** crea un superusuario con `python manage.py createsuperuser`, o usa una cuenta marcada como staff. Puede consultar el panel, cambiar el umbral y gestionar usuarios.
-- **Usuario:** puede registrarse desde `/cuentas/registro/` o ser creado por un administrador desde **Gestión de usuarios**. El registro público siempre crea cuentas sin permisos de personal (`is_staff`). Puede consultar las secciones y el historial; las opciones de configuración y administración quedan restringidas.
+- **Administrador:** crea un superusuario con `python manage.py createsuperuser`, o usa una cuenta marcada como staff. Después del login se queda en el panel Django, donde puede consultar datos, cambiar el umbral y gestionar usuarios.
+- **Usuario:** puede registrarse desde `/cuentas/registro/` o ser creado por un administrador desde **Gestión de usuarios**. El registro público siempre crea cuentas sin permisos de personal (`is_staff`). Después del login o registro se le dirige a la página principal de Spring, no al panel Django.
 
-Las cuentas y contraseñas se guardan en la base SQLite local de Django (`db.sqlite3`) y son independientes de las cuentas de Spring. El registro público no verifica el correo: úsalo para desarrollo/MVP y exige verificación antes de habilitarlo en un despliegue público. El panel de administración nativo de Django está en `/admin/`. El historial se abre en `/historial/`; la selección de una zona consulta el proxy Django con Fetch. Django consulta Spring desde el servidor, valida la respuesta y devuelve JSON; el cliente actualiza Chart.js sin recargar la página.
+Las cuentas y contraseñas se guardan en la base SQLite local de Django (`db.sqlite3`) y son independientes de las cuentas de Spring. `CLIMATE_MAIN_PANEL_URL` controla el destino de las cuentas de usuario y por defecto apunta a `http://localhost:8081/`. El login de Django no autentica al usuario dentro de Spring; solo lo redirige a la página principal. El registro público no verifica el correo: úsalo para desarrollo/MVP y exige verificación antes de habilitarlo en un despliegue público. El panel administrativo Django queda restringido a cuentas staff. El historial se abre en `/historial/`; la selección de una zona consulta el proxy Django con Fetch. Django consulta Spring desde el servidor, valida la respuesta y devuelve JSON; el cliente actualiza Chart.js sin recargar la página.
 
 ## Contrato que debe exponer Spring
 
