@@ -2,6 +2,7 @@ from datetime import date
 import re
 
 from django.conf import settings
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import JsonResponse
@@ -10,9 +11,12 @@ from django.views.decorators.http import require_GET
 from django.views.decorators.http import require_POST
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.urls import reverse_lazy
+from django.views.generic.edit import FormView
 
 from .services import JavaApiError, get_climate_api
 from .analytics import worsening_trend
+from .forms import UserRegistrationForm
 
 _ZONE_ID = re.compile(r"^[A-Za-z0-9_-]{1,40}$")
 PERU_REGIONS = [
@@ -21,6 +25,22 @@ PERU_REGIONS = [
     "Lima", "Loreto", "Madre de Dios", "Moquegua", "Pasco", "Piura", "Puno",
     "San Martín", "Tacna", "Tumbes", "Ucayali",
 ]
+
+
+class UserRegistrationView(FormView):
+    template_name = "registration/register.html"
+    form_class = UserRegistrationForm
+    success_url = reverse_lazy("clima_admin:dashboard")
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect("clima_admin:dashboard")
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user, backend="django.contrib.auth.backends.ModelBackend")
+        return super().form_valid(form)
 
 
 @login_required

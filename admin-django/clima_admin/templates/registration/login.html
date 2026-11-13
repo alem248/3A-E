@@ -1,5 +1,6 @@
 {% extends "admin/base_site.html" %}
 {% load static %}
+{% block bodyclass %}panel-auth-body{% endblock %}
 {% block title %}Acceso al panel | Clima Costero{% endblock %}
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'clima_admin/css/admin-shell.css' %}">{% endblock %}
 {% block content %}
@@ -49,7 +50,8 @@
 
       <button class="panel-login-submit" type="submit">Iniciar sesión</button>
     </form>
-    <p class="panel-login-footnote">Las cuentas de usuario y administrador se gestionan desde el panel.</p>
+    <p class="panel-login-footnote">Los administradores crean sus credenciales. Los usuarios pueden registrarse.</p>
+    <a class="panel-login-register" href="{% url 'panel_register' %}">Crear cuenta de usuario</a>
   </section>
 </main>
 {% endblock %}

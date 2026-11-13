@@ -25,9 +25,9 @@ python manage.py runserver 8000
 Abre `http://localhost:8000/`; si no has iniciado sesión, el panel te lleva a `/cuentas/login/`. Elige el tipo de cuenta que corresponde a tus credenciales:
 
 - **Administrador:** crea un superusuario con `python manage.py createsuperuser`, o usa una cuenta marcada como staff. Puede consultar el panel, cambiar el umbral y gestionar usuarios.
-- **Usuario:** un administrador debe crear la cuenta desde **Gestión de usuarios** y dejar desactivado el permiso de personal (`is_staff`). Puede consultar las secciones y el historial; las opciones de configuración y administración quedan restringidas.
+- **Usuario:** puede registrarse desde `/cuentas/registro/` o ser creado por un administrador desde **Gestión de usuarios**. El registro público siempre crea cuentas sin permisos de personal (`is_staff`). Puede consultar las secciones y el historial; las opciones de configuración y administración quedan restringidas.
 
-Las cuentas y contraseñas se guardan en la base SQLite local de Django (`db.sqlite3`) y son independientes de las cuentas de Spring. El panel de administración nativo de Django está en `/admin/`. El historial se abre en `/historial/`; la selección de una zona consulta el proxy Django con Fetch. Django consulta Spring desde el servidor, valida la respuesta y devuelve JSON; el cliente actualiza Chart.js sin recargar la página.
+Las cuentas y contraseñas se guardan en la base SQLite local de Django (`db.sqlite3`) y son independientes de las cuentas de Spring. El registro público no verifica el correo: úsalo para desarrollo/MVP y exige verificación antes de habilitarlo en un despliegue público. El panel de administración nativo de Django está en `/admin/`. El historial se abre en `/historial/`; la selección de una zona consulta el proxy Django con Fetch. Django consulta Spring desde el servidor, valida la respuesta y devuelve JSON; el cliente actualiza Chart.js sin recargar la página.
 
 ## Contrato que debe exponer Spring
 

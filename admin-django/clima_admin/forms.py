@@ -1,6 +1,7 @@
 from django import forms
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
-from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import UserCreationForm
 
 
 class PanelAuthenticationForm(AuthenticationForm):
@@ -27,3 +28,20 @@ class PanelAuthenticationForm(AuthenticationForm):
             self.add_error("account_type", "Selecciona Administrador para esta cuenta.")
 
         return cleaned_data
+
+
+class UserRegistrationForm(UserCreationForm):
+    email = forms.EmailField(label="Correo electrónico", required=True)
+
+    class Meta(UserCreationForm.Meta):
+        model = get_user_model()
+        fields = ("username", "email")
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data["email"]
+        user.is_staff = False
+        user.is_superuser = False
+        if commit:
+            user.save()
+        return user

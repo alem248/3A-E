@@ -42,6 +42,12 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "/cuentas/login/"
 LOGIN_REDIRECT_URL = "/"
+AUTH_PASSWORD_VALIDATORS = [
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+]
 JAVA_API_BASE_URL = os.environ.get("JAVA_API_BASE_URL", "http://localhost:8081").rstrip("/")
 JAVA_API_TIMEOUT_SECONDS = float(os.environ.get("JAVA_API_TIMEOUT_SECONDS", "5"))
 JAVA_API_HISTORY_PATH = os.environ.get(

@@ -1,0 +1,36 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% block bodyclass %}panel-auth-body{% endblock %}
+{% block title %}Crear cuenta | Clima Costero{% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'clima_admin/css/admin-shell.css' %}">{% endblock %}
+{% block content %}
+<main class="panel-login-page">
+  <section class="panel-login-card panel-register-card" aria-labelledby="register-title">
+    <a class="panel-login-brand" href="/" aria-label="Clima Costero">
+      <span class="panel-login-mark" aria-hidden="true">C</span>
+      <span>Clima Costero</span>
+    </a>
+    <p class="panel-login-eyebrow">Registro de usuario</p>
+    <h1 id="register-title">Crea tu cuenta</h1>
+    <p class="panel-login-description">Regístrate para consultar el monitoreo climático.</p>
+    <div class="panel-register-note">Las cuentas creadas aquí tienen acceso de consulta. No pueden administrar usuarios ni cambiar la configuración.</div>
+
+    <form method="post" class="panel-login-form panel-register-form">
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="panel-login-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+
+      {% for field in form %}
+        <div class="panel-login-field">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<div class="helptext">{{ field.help_text|safe }}</div>{% endif %}
+          {% if field.errors %}<div class="panel-field-error" role="alert">{{ field.errors }}</div>{% endif %}
+        </div>
+      {% endfor %}
+
+      <button class="panel-login-submit" type="submit">Crear cuenta de usuario</button>
+    </form>
+    <a class="panel-register-back" href="{% url 'panel_login' %}">Ya tengo una cuenta · Iniciar sesión</a>
+  </section>
+</main>
+{% endblock %}

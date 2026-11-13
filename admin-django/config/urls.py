@@ -3,6 +3,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import include, path, reverse_lazy
 
 from clima_admin.forms import PanelAuthenticationForm
+from clima_admin.views import UserRegistrationView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -14,6 +15,7 @@ urlpatterns = [
         ),
         name="panel_login",
     ),
+    path("cuentas/registro/", UserRegistrationView.as_view(), name="panel_register"),
     path(
         "cuentas/logout/",
         auth_views.LogoutView.as_view(next_page=reverse_lazy("panel_login")),
