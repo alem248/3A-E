@@ -22,6 +22,9 @@ class JavaClimateApi:
     def zones(self):
         return self._get_json("/api/zonas")
 
+    def rules(self):
+        return self._get_json("/api/reglas")
+
     def history(self, zone_id, start=None, end=None):
         path = settings.JAVA_API_HISTORY_PATH.format(zone_id=zone_id)
         params = {key: value for key, value in {"desde": start, "hasta": end}.items() if value}

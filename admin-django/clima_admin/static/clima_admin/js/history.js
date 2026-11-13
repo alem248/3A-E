@@ -2,6 +2,7 @@
   const app = document.querySelector("#history-app");
   if (!app) return;
   const select = document.querySelector("#zone-select");
+  const regionSelect = document.querySelector("#region-select");
   const status = document.querySelector("#history-status");
   const caption = document.querySelector("#chart-caption");
   const alertBadge = document.querySelector("#alert-indicator");
@@ -12,6 +13,26 @@
   let chart;
   let activeController;
   let requestSequence = 0;
+
+  regionSelect.addEventListener("change", () => {
+    const region = regionSelect.value;
+    const catalog = JSON.parse(document.querySelector("#zone-catalog")?.textContent || "[]");
+    const available = catalog.filter(zone => zone.departamento === region);
+    select.replaceChildren(new Option(available.length ? "Selecciona una zona…" : "Sin cobertura en esta región", ""));
+    available.forEach(zone => select.add(new Option(zone.nombre, zone.id)));
+    select.disabled = available.length === 0;
+    if (available.length === 1) {
+      select.value = String(available[0].id);
+      select.dispatchEvent(new Event("change"));
+    } else {
+      requestSequence += 1;
+      if (activeController) activeController.abort();
+      if (chart) { chart.destroy(); chart = undefined; }
+      alertBadge.classList.add("d-none");
+      trendBadge.classList.add("hidden");
+      status.textContent = available.length ? "Selecciona una zona para consultar sus datos." : "Esta región aún no cuenta con zonas conectadas a la API climática.";
+    }
+  });
 
   function showAlert(payload) {
     const threshold = Number(payload.umbralAlerta);

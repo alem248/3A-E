@@ -1,0 +1,21 @@
+{% extends "admin/base.html" %}
+{% load static %}
+{% block title %}{{ title }} | Clima Costero{% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'clima_admin/css/admin-shell.css' %}"><script src="{% static 'clima_admin/js/theme.js' %}" defer></script>{% endblock %}
+{% block branding %}<a class="admin-brand" href="{% url 'clima_admin:dashboard' %}"><span class="admin-brand-mark">C</span>Clima Costero</a>{% endblock %}
+{% block nav-sidebar %}
+<nav id="nav-sidebar" class="custom-sidebar" aria-label="Navegación principal">
+  <div class="sidebar-section-label">PANEL</div>
+  <a href="{% url 'clima_admin:dashboard' %}">▦ <span>Panel de control</span></a>
+  <a href="{% url 'clima_admin:zones' %}">⌖ <span>Zonas</span></a>
+  <a href="{% url 'clima_admin:readings' %}">▤ <span>Lecturas</span></a>
+  <a href="{% url 'clima_admin:alerts' %}">⚠ <span>Alertas</span></a>
+  <a href="{% url 'clima_admin:statistics' %}">⌁ <span>Estadísticas</span></a>
+  <div class="sidebar-section-label">SISTEMA</div>
+  <a href="{% url 'clima_admin:history' %}">◷ <span>Historial</span></a>
+  <a href="{% url 'clima_admin:settings' %}">⚙ <span>Configuración</span></a>
+  <a href="{% url 'admin:auth_user_changelist' %}">♙ <span>Usuarios</span></a>
+  <div class="sidebar-bottom"><span>Administración</span><br>Clima Costero · Django</div>
+</nav>
+{% endblock %}
+{% block nav-global %}<div class="global-actions"><span>{{ request.user.get_username }}</span><form method="post" action="{% url 'clima_admin:theme' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}"><button class="theme-toggle" type="submit" aria-label="Alternar modo claro u oscuro">◐ <span>Tema</span></button></form></div>{% endblock %}

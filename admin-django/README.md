@@ -74,3 +74,9 @@ Bootstrap y Chart.js se cargan desde CDN; en producción, fija CSP y política d
 Django expone `GET /api/zonas/{zoneId}/tendencia/`, protegido con la misma sesión staff. El servicio pide a Spring las lecturas de los últimos tres días y devuelve `patronEmpeoramiento` como booleano, junto con la ventana y la variación mínima configurada. El patrón se activa si existen al menos tres lecturas dentro de la ventana y cada uno de los dos cambios consecutivos sube al menos el umbral configurado (por defecto `0.5 °C`). El indicador se muestra al lado del gráfico. Ajusta `CLIMATE_TREND_MIN_VARIATION` en el entorno, por ejemplo `1.0` para exigir un aumento de 1 °C entre lecturas consecutivas.
 
 Al cambiar de zona, el navegador solicita simultáneamente el historial y la evaluación de tendencia. La evaluación usa lecturas históricas de Spring; no crea un modelo Django paralelo ni duplica el repositorio de datos.
+
+## Interfaz administrativa unificada
+
+La plantilla `templates/admin/base_site.html` redefine el branding, la navegación lateral y el control de tema para las páginas estándar de Django Admin, incluidos los formularios y la gestión de usuarios. Las páginas del panel extienden esa misma plantilla base. El tema claro/oscuro se conserva en `localStorage` del navegador. La sección Configuración guarda el umbral de tendencia en la sesión activa; para un valor global persistente, establece `CLIMATE_TREND_MIN_VARIATION` en el entorno.
+
+El selector del historial contiene las 25 regiones del Perú y filtra las zonas que realmente llegan desde `GET /api/zonas`. La API actual solo tiene cobertura para Tumbes, Piura, Lambayeque y La Libertad (seis estaciones); las otras regiones aparecen en el selector, pero informan que todavía no tienen cobertura. No se fabrican datos para completar regiones faltantes. Zonas, lecturas actuales y reglas usan los endpoints existentes de Spring; los indicadores estadísticos sin API histórica permanecen como no disponibles.
