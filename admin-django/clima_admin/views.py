@@ -1,12 +1,14 @@
 from datetime import date
 import re
 
+from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
 
 from .services import JavaApiError, get_climate_api
+from .analytics import worsening_trend
 
 _ZONE_ID = re.compile(r"^[A-Za-z0-9_-]{1,40}$")
 
@@ -58,3 +60,23 @@ def zone_history(request, zone_id):
     except JavaApiError:
         return JsonResponse({"error": "No se pudo consultar el historial de la zona."}, status=502)
     return JsonResponse(payload)
+
+
+@staff_member_required
+@require_GET
+def zone_trend(request, zone_id):
+    if not _ZONE_ID.fullmatch(zone_id):
+        return JsonResponse({"error": "Identificador de zona inválido."}, status=400)
+    try:
+        payload = get_climate_api().trend(zone_id)
+        points = payload["puntos"]
+        pattern = worsening_trend(payload)
+    except (JavaApiError, KeyError, TypeError):
+        return JsonResponse({"error": "No se pudo evaluar la tendencia de la zona."}, status=502)
+    return JsonResponse({
+        "zonaId": zone_id,
+        "patronEmpeoramiento": pattern,
+        "registrosEvaluados": min(len(points), 3),
+        "variacionMinima": settings.CLIMATE_TREND_MIN_VARIATION,
+        "ventanaDias": 3,
+    })

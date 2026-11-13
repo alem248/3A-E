@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 import httpx
+from datetime import timedelta
+from django.utils import timezone
 
 
 class JavaApiError(Exception):
@@ -28,6 +30,10 @@ class JavaClimateApi:
             raise JavaApiError("La API devolvió un historial con formato inválido.")
         return payload
 
+    def trend(self, zone_id):
+        today = timezone.localdate()
+        return self.history(zone_id, (today - timedelta(days=2)).isoformat(), today.isoformat())
+
     def _get_json(self, path, params=None):
         try:
             response = self.client.get(path, params=params)
@@ -41,3 +47,5 @@ def get_climate_api():
     if not settings.JAVA_API_BASE_URL:
         raise ImproperlyConfigured("Configura JAVA_API_BASE_URL para conectar Django con Spring.")
     return JavaClimateApi()
+
+

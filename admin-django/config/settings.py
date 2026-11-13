@@ -46,6 +46,7 @@ JAVA_API_TIMEOUT_SECONDS = float(os.environ.get("JAVA_API_TIMEOUT_SECONDS", "5")
 JAVA_API_HISTORY_PATH = os.environ.get(
     "JAVA_API_HISTORY_PATH", "/api/v1/admin/zonas/{zone_id}/historial"
 )
+CLIMATE_TREND_MIN_VARIATION = float(os.environ.get("CLIMATE_TREND_MIN_VARIATION", "0.5"))
 if not SECRET_KEY and not DEBUG:
     raise RuntimeError("Define DJANGO_SECRET_KEY fuera del modo DEBUG.")
 if not DEBUG:

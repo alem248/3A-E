@@ -6,6 +6,8 @@
   const caption = document.querySelector("#chart-caption");
   const alertBadge = document.querySelector("#alert-indicator");
   const alertText = document.querySelector("#alert-text");
+  const trendBadge = document.querySelector("#trend-indicator");
+  const trendCaption = document.querySelector("#trend-caption");
   const canvas = document.querySelector("#history-chart");
   let chart;
   let activeController;
@@ -54,6 +56,7 @@
     if (activeController) activeController.abort();
     if (chart) { chart.destroy(); chart = undefined; }
     alertBadge.classList.add("d-none");
+    trendBadge.classList.add("hidden");
     if (!zoneId) {
       status.textContent = "Selecciona una zona para consultar sus datos.";
       caption.textContent = "Selecciona una zona para consultar sus datos.";
@@ -65,13 +68,21 @@
     caption.textContent = select.selectedOptions[0].text;
     const template = app.dataset.historyUrlTemplate;
     const url = template.replace("ZONE_ID", encodeURIComponent(zoneId));
+    const trendUrl = app.dataset.trendUrlTemplate.replace("ZONE_ID", encodeURIComponent(zoneId));
     try {
-      const response = await fetch(url, { headers: { Accept: "application/json" }, signal: activeController.signal });
+      const [response, trendResponse] = await Promise.all([
+        fetch(url, { headers: { Accept: "application/json" }, signal: activeController.signal }),
+        fetch(trendUrl, { headers: { Accept: "application/json" }, signal: activeController.signal }),
+      ]);
       const payload = await response.json();
+      const trend = trendResponse.ok ? await trendResponse.json() : null;
       if (!response.ok) throw new Error(payload.error || "No se pudo cargar el historial.");
       if (thisRequest !== requestSequence) return;
       if (!Array.isArray(payload.puntos)) throw new Error("La respuesta de historial no tiene el formato esperado.");
       render(payload);
+      if (trend?.patronEmpeoramiento === true) trendBadge.classList.remove("hidden");
+      if (trend) trendCaption.textContent = `Tendencia: ${trend.patronEmpeoramiento ? "empeoramiento" : "sin empeoramiento"} · variación mínima ${trend.variacionMinima} °C por lectura`;
+      else trendCaption.textContent = "No fue posible evaluar la tendencia.";
       status.textContent = payload.puntos.length ? "Historial actualizado." : "La zona no tiene lecturas en este período.";
     } catch (error) {
       if (error.name === "AbortError" || thisRequest !== requestSequence) return;

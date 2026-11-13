@@ -68,3 +68,9 @@ Respuesta JSON esperada:
 - `clima-spring/.../AdminHistoryController.java`: API HTTP de historial para el módulo Django.
 
 Bootstrap y Chart.js se cargan desde CDN; en producción, fija CSP y política de integridad de recursos según el proceso de despliegue, o sirve versiones revisadas desde archivos estáticos locales.
+
+## Evaluación automática de tendencia
+
+Django expone `GET /api/zonas/{zoneId}/tendencia/`, protegido con la misma sesión staff. El servicio pide a Spring las lecturas de los últimos tres días y devuelve `patronEmpeoramiento` como booleano, junto con la ventana y la variación mínima configurada. El patrón se activa si existen al menos tres lecturas dentro de la ventana y cada uno de los dos cambios consecutivos sube al menos el umbral configurado (por defecto `0.5 °C`). El indicador se muestra al lado del gráfico. Ajusta `CLIMATE_TREND_MIN_VARIATION` en el entorno, por ejemplo `1.0` para exigir un aumento de 1 °C entre lecturas consecutivas.
+
+Al cambiar de zona, el navegador solicita simultáneamente el historial y la evaluación de tendencia. La evaluación usa lecturas históricas de Spring; no crea un modelo Django paralelo ni duplica el repositorio de datos.

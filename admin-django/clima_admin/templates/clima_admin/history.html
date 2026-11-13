@@ -3,33 +3,21 @@
 {% block title %}Historial climático | Administración{% endblock %}
 {% block extrastyle %}
   {{ block.super }}
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/dashboard.css' %}">
 {% endblock %}
 {% block content %}
-<div class="container-fluid py-3" id="history-app" data-history-url-template="{% url 'clima_admin:zone_history' 'ZONE_ID' %}">
-  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-    <div><h1 class="h2 mb-1">Historial climático</h1><p class="text-muted mb-0">Consulta las lecturas y alertas por zona.</p></div>
-    <div class="d-flex align-items-center gap-2">
-      <label for="zone-select" class="form-label mb-0">Zona</label>
-      <select id="zone-select" class="form-select" aria-label="Seleccionar zona">
-        <option value="">Selecciona una zona…</option>
-        {% for zone in zones %}<option value="{{ zone.id }}">{{ zone.nombre }}{% if zone.departamento %} — {{ zone.departamento }}{% endif %}</option>{% endfor %}
-      </select>
-    </div>
-  </div>
-  {% if api_unavailable %}<div class="alert alert-warning" role="status">No fue posible cargar el catálogo de zonas. Revisa la conexión con Spring.</div>{% endif %}
-  <div class="row g-4">
-    <section class="col-12" aria-labelledby="chart-title">
-      <div class="card shadow-sm"><div class="card-body">
-        <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
-          <div><h2 id="chart-title" class="h5">Lecturas históricas</h2><p id="chart-caption" class="text-muted small mb-0">Selecciona una zona para consultar sus datos.</p></div>
-          <span id="alert-indicator" class="badge rounded-pill text-bg-danger d-none" role="status" aria-live="polite"><span aria-hidden="true">⚠</span> <span id="alert-text">Alerta activa</span></span>
-        </div>
-        <div id="history-status" class="text-muted" role="status" aria-live="polite">Esperando selección.</div>
-        <div style="height: min(52vh, 440px); min-height: 260px"><canvas id="history-chart" aria-label="Gráfico del historial por zona" role="img"></canvas></div>
-      </div></div>
-    </section>
-  </div>
+<div class="dashboard" id="history-app" data-history-url-template="{% url 'clima_admin:zone_history' 'ZONE_ID' %}" data-trend-url-template="{% url 'clima_admin:zone_trend' 'ZONE_ID' %}">
+  <aside class="sidebar"><a class="brand" href="{% url 'clima_admin:history' %}"><span class="brand-mark">C</span><span>Clima<span class="brand-light">Costero</span></span></a><p class="sidebar-label">ADMINISTRACIÓN</p><nav><a class="nav-item" href="{% url 'admin:index' %}"><span>▦</span> Panel de control</a><a class="nav-item active" href="{% url 'clima_admin:history' %}"><span>⌁</span> Historial climático</a><a class="nav-item" href="{% url 'admin:index' %}"><span>⚙</span> Configuración</a></nav><div class="sidebar-foot">Módulo de monitoreo<br><span>v1.0 · Django</span></div></aside>
+  <main class="main-panel">
+    <header class="topbar"><span>Administración <span class="crumb">/</span> Historial</span><span class="user-chip">{{ request.user.get_username|default:"Administrador" }}</span></header>
+    <section class="page-heading"><div><p class="eyebrow">MONITOREO Y ANÁLISIS</p><h1>Historial climático</h1><p>Consulta la evolución de las lecturas y detecta cambios de tendencia.</p></div><div class="zone-picker"><label for="zone-select">Zona de monitoreo</label><select id="zone-select" aria-label="Seleccionar zona"><option value="">Selecciona una zona…</option>{% for zone in zones %}<option value="{{ zone.id }}">{{ zone.nombre }}{% if zone.departamento %} — {{ zone.departamento }}{% endif %}</option>{% endfor %}</select></div></section>
+    {% if api_unavailable %}<div class="connection-banner error" role="status"><span class="banner-icon">!</span><div><strong>No se pudo conectar con Spring</strong><p>Verifica que el servicio Java esté en ejecución.</p></div></div>{% else %}<div class="connection-banner" role="status"><span class="banner-icon">✓</span><div><strong>Conexión con Spring establecida</strong><p>Catálogo de zonas cargado exitosamente.</p></div><span class="connection-state"><i></i> Servicio activo</span></div>{% endif %}
+    <section class="chart-card" aria-labelledby="chart-title"><div class="card-heading"><div><h2 id="chart-title">Lecturas históricas</h2><p id="chart-caption">Selecciona una zona para consultar sus datos.</p></div><div class="chart-tools"><span id="trend-indicator" class="trend-badge hidden" role="status" aria-live="polite"><span aria-hidden="true">⚠</span> Tendencia en empeoramiento</span><span id="alert-indicator" class="alert-badge hidden" role="status" aria-live="polite"><span aria-hidden="true">●</span> <span id="alert-text">Alerta activa</span></span></div></div><div id="history-status" class="chart-status">Esperando selección.</div><div class="chart-wrap"><canvas id="history-chart" aria-label="Gráfico del historial por zona" role="img"></canvas></div><footer class="chart-footer"><span><i class="legend-dot"></i> Temperatura superficial del mar</span><span id="trend-caption">Evaluación de tendencia: últimos 3 registros</span></footer></section>
+    <p class="page-foot">Clima Costero · Panel de administración</p>
+  </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script src="{% static 'clima_admin/js/history.js' %}" defer></script>
