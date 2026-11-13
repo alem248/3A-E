@@ -1,0 +1,14 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Iniciar sesión{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width: 28rem">
+  <h1 class="h3 mb-3">Administración climática</h1>
+  {% if form.errors %}<div class="alert alert-danger" role="alert">Usuario o contraseña incorrectos.</div>{% endif %}
+  <form method="post" action="{{ app_path }}">{% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <div class="mb-3"><label class="form-label" for="id_username">Usuario</label><input class="form-control" id="id_username" name="username" autocomplete="username" required autofocus></div>
+    <div class="mb-3"><label class="form-label" for="id_password">Contraseña</label><input class="form-control" id="id_password" name="password" type="password" autocomplete="current-password" required></div>
+    <button class="btn btn-primary" type="submit">Iniciar sesión</button>
+  </form>
+</div>
+{% endblock %}
