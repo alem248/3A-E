@@ -1,5 +1,5 @@
-{% extends "admin/base_site.html" %}
-{% block content %}
+{% extends "clima_admin/base.html" %}
+{% block page_content %}
 <section class="section-page"><div class="section-heading"><p class="eyebrow">CLIMA COSTERO · ADMINISTRACIÓN</p><h1>{{ section.title }}</h1><p>{{ notice }}</p></div>
 {% if section.key == "dashboard" or section.key == "statistics" %}<div class="metric-grid"><article class="metric-card"><span>Zonas monitoreadas</span><strong>{{ items|length }}</strong><small>Conectadas actualmente a Spring</small></article><article class="metric-card"><span>Registros disponibles</span><strong>—</strong><small>Consultar historial por zona</small></article><article class="metric-card"><span>Tendencias activas</span><strong>—</strong><small>Evaluar en Historial</small></article></div>{% endif %}
 <div class="section-card"><h2>{% if section.key == "alerts" %}Reglas de alerta{% elif section.key == "readings" %}Lecturas actuales por zona{% else %}Catálogo de zonas conectadas{% endif %}</h2>

@@ -34,10 +34,21 @@ def history_page(request):
         api_unavailable = True
     else:
         api_unavailable = False
+    zonas_disponibles = zones if isinstance(zones, list) else []
+    count = len(zonas_disponibles)
+    active_alerts = sum(
+        1 for zone in zonas_disponibles
+        if isinstance(zone.get("nivel"), dict)
+        and zone["nivel"].get("id") in {"NARANJA", "ROJO"}
+    )
+    available = sum(1 for zone in zonas_disponibles if zone.get("disponible") is True)
     return render(request, "clima_admin/history.html", {
-        "zones": zones,
+        "zones": zonas_disponibles,
         "regions": PERU_REGIONS,
         "api_unavailable": api_unavailable,
+        "zones_count": count,
+        "active_alerts": active_alerts,
+        "available_percent": round(100 * available / count) if count else 0,
     })
 
 

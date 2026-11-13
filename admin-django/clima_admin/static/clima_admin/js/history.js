@@ -111,4 +111,5 @@
       alertBadge.classList.add("d-none");
     }
   });
+  document.querySelector("#refresh-zones")?.addEventListener("click", () => window.location.reload());
 })();

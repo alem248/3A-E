@@ -6,16 +6,15 @@
 {% block nav-sidebar %}
 <nav id="nav-sidebar" class="custom-sidebar" aria-label="Navegación principal">
   <div class="sidebar-section-label">PANEL</div>
-  <a href="{% url 'clima_admin:dashboard' %}">▦ <span>Panel de control</span></a>
-  <a href="{% url 'clima_admin:zones' %}">⌖ <span>Zonas</span></a>
+  <a href="{% url 'clima_admin:history' %}">◷ <span>Historial climático</span></a>
+  <a href="{% url 'clima_admin:zones' %}">⌖ <span>Zonas y regiones</span></a>
   <a href="{% url 'clima_admin:readings' %}">▤ <span>Lecturas</span></a>
-  <a href="{% url 'clima_admin:alerts' %}">⚠ <span>Alertas</span></a>
+  <a href="{% url 'clima_admin:alerts' %}">⚠ <span>Alertas globales</span></a>
   <a href="{% url 'clima_admin:statistics' %}">⌁ <span>Estadísticas</span></a>
   <div class="sidebar-section-label">SISTEMA</div>
-  <a href="{% url 'clima_admin:history' %}">◷ <span>Historial</span></a>
-  <a href="{% url 'clima_admin:settings' %}">⚙ <span>Configuración</span></a>
-  <a href="{% url 'admin:auth_user_changelist' %}">♙ <span>Usuarios</span></a>
-  <div class="sidebar-bottom"><span>Administración</span><br>Clima Costero · Django</div>
+  <a href="{% url 'clima_admin:settings' %}">⚙ <span>Configuración del sitio</span></a>
+  <a href="{% url 'admin:auth_user_changelist' %}">♙ <span>Gestión de usuarios</span></a>
+  <div class="sidebar-bottom"><form method="post" action="{% url 'admin:logout' %}">{% csrf_token %}<button class="sidebar-logout" type="submit">⇥ <span>Cerrar sesión</span></button></form></div>
 </nav>
 {% endblock %}
 {% block nav-global %}<div class="global-actions"><span>{{ request.user.get_username }}</span><form method="post" action="{% url 'clima_admin:theme' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}"><button class="theme-toggle" type="submit" aria-label="Alternar modo claro u oscuro">◐ <span>Tema</span></button></form></div>{% endblock %}
