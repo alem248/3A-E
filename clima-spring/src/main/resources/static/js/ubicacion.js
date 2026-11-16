@@ -83,6 +83,34 @@ const ubicacion = (() => {
         return `Ubicación guardada (${coordenadas}). Estás en ${registrada.zona.nombre}.${alertas}`;
     }
 
+    // Clasifica la última ubicación frente a las zonas del fenómeno (GET /api/usuarios/{id}/comparacion)
+    function describirComparacion(comparacion) {
+        if (comparacion.estado === 'EN_ZONA') {
+            return `Comparación: estás dentro de ${comparacion.zonaNombre} (nivel ${comparacion.nivelRiesgo}).`;
+        }
+
+        if (comparacion.estado === 'CERCA') {
+            return `Comparación: estás a ${Number(comparacion.distanciaKm).toFixed(1)} km de ${comparacion.zonaNombre} (nivel ${comparacion.nivelRiesgo}).`;
+        }
+
+        return 'Comparación: estás fuera de las zonas vulnerables.';
+    }
+
+    async function cargarComparacion() {
+        const contenedor = document.getElementById('comparacion-ubicacion');
+
+        try {
+            const respuesta = await fetch(`/api/usuarios/${USUARIO_ID}/comparacion`);
+            if (!respuesta.ok) {
+                contenedor.textContent = '';
+                return;
+            }
+            contenedor.textContent = describirComparacion(await respuesta.json());
+        } catch (error) {
+            contenedor.textContent = '';
+        }
+    }
+
     // Debe llamarse desde un clic: los navegadores bloquean el diálogo de permiso sin gesto del usuario
     async function solicitarYRegistrar() {
         const boton = document.getElementById('boton-ubicacion');
@@ -93,6 +121,7 @@ const ubicacion = (() => {
             const posicion = await obtenerPosicionActual();
             const registrada = await registrarEnServidor(posicion);
             mostrarEstado(describir(registrada));
+            await cargarComparacion();
 
             if (window.mapa && window.mapa.centrarEnLatLng) {
                 window.mapa.centrarEnLatLng(posicion.latitud, posicion.longitud);
@@ -110,6 +139,8 @@ const ubicacion = (() => {
         if (await consultarPermiso() === 'denied') {
             mostrarEstado(MENSAJES_ERROR_GPS[1]);
         }
+
+        cargarComparacion();
     }
 
     return { inicializar, solicitarYRegistrar };
