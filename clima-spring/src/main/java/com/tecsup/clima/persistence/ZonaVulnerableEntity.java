@@ -31,6 +31,9 @@ public class ZonaVulnerableEntity {
     @Column(name = "poligono", length = 2000)
     private String poligono;
 
+    @Column(name = "prioritaria", nullable = false, columnDefinition = "boolean default false")
+    private boolean prioritaria = false;
+
     public Integer getId() {
         return id;
     }
@@ -53,5 +56,13 @@ public class ZonaVulnerableEntity {
 
     public void setPoligono(String poligono) {
         this.poligono = poligono;
+    }
+
+    public boolean isPrioritaria() {
+        return prioritaria;
+    }
+
+    public void setPrioritaria(boolean prioritaria) {
+        this.prioritaria = prioritaria;
     }
 }

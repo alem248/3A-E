@@ -64,6 +64,15 @@
             <p class="alertas-nota">Umbrales TSM: vigilancia desde 24 °C · alto desde 26 °C · crítico desde 28 °C.</p>
         </section>
 
+        <section class="tarjeta-clima zonas-prioritarias" aria-labelledby="titulo-zonas-prioritarias">
+            <div class="zonas-prioritarias-cabecera">
+                <h2 id="titulo-zonas-prioritarias">Zonas prioritarias</h2>
+                <p>Marca con la estrella las zonas que quieras mantener al inicio de esta lista.</p>
+            </div>
+            <p id="zonas-prioritarias-estado" class="zonas-prioritarias-estado" role="status">Cargando zonas...</p>
+            <ul id="zonas-prioritarias-lista" class="zonas-prioritarias-lista" aria-label="Zonas de monitoreo ordenadas por prioridad"></ul>
+        </section>
+
         <section class="tarjeta-clima tarjeta-ubicacion">
             <h2>Mi ubicación</h2>
             <button type="button" id="boton-ubicacion">Usar mi ubicación (GPS)</button>
@@ -118,6 +127,7 @@
     <script src="/js/ubicacion.js"></script>
     <script src="/js/tema.js"></script>
     <script src="/js/alertas-temperatura.js"></script>
+    <script src="/js/zonas-prioritarias.js"></script>
     <script src="/js/historico-calendario.js"></script>
     <script src="/js/historico-grafico.js"></script>
     <script src="/js/historico.js"></script>
