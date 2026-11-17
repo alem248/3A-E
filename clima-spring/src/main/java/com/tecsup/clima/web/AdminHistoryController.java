@@ -24,4 +24,9 @@ public class AdminHistoryController {
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta) {
         return history.consultar(zoneId, desde, hasta);
     }
+
+    @GetMapping("/{zoneId}/ultimas-lecturas")
+    public AdminHistoryResponse ultimasLecturas(@PathVariable int zoneId) {
+        return history.ultimasLecturas(zoneId);
+    }
 }
