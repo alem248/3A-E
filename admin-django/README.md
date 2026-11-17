@@ -71,7 +71,7 @@ Bootstrap y Chart.js se cargan desde CDN; en producción, fija CSP y política d
 
 ## Evaluación automática de tendencia
 
-Django expone `GET /api/zonas/{zoneId}/tendencia/`, protegido con la misma sesión staff. El servicio pide a Spring las lecturas de los últimos tres días y devuelve `patronEmpeoramiento` como booleano, junto con la ventana y la variación mínima configurada. El patrón se activa si existen al menos tres lecturas dentro de la ventana y cada uno de los dos cambios consecutivos sube al menos el umbral configurado (por defecto `0.5 °C`). El indicador se muestra al lado del gráfico. Ajusta `CLIMATE_TREND_MIN_VARIATION` en el entorno, por ejemplo `1.0` para exigir un aumento de 1 °C entre lecturas consecutivas.
+Django expone `GET /api/zonas/{zoneId}/tendencia/`, protegido con la misma sesión staff. El servicio pide a Spring las tres lecturas más recientes mediante `GET /api/v1/admin/zonas/{zoneId}/ultimas-lecturas` y devuelve `patronEmpeoramiento` como booleano, junto con el número de registros evaluados y la variación mínima configurada. Sin tres lecturas válidas devuelve `false`. El patrón se activa si cada uno de los dos cambios cronológicos consecutivos sube al menos el umbral configurado (por defecto `0.5 °C`). El indicador se muestra al lado del gráfico. Ajusta `CLIMATE_TREND_MIN_VARIATION` en el entorno, por ejemplo `1.0` para exigir un aumento de 1 °C entre lecturas consecutivas.
 
 Al cambiar de zona, el navegador solicita simultáneamente el historial y la evaluación de tendencia. La evaluación usa lecturas históricas de Spring; no crea un modelo Django paralelo ni duplica el repositorio de datos.
 
