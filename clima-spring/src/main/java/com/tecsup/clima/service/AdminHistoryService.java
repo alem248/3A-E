@@ -3,6 +3,7 @@ package com.tecsup.clima.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -39,6 +40,21 @@ public class AdminHistoryService {
                 zoneId, inicio.atStartOfDay(), fin.atTime(LocalTime.MAX))
             .stream().limit(5000)
             .map(this::comoPunto).toList();
+        ZonasTermicas.Zona zona = ZonasTermicas.getZona(zoneId);
+        boolean alerta = puntos.stream().anyMatch(p -> p.valor() >= 28.0);
+        return new AdminHistoryResponse(Integer.toString(zoneId), zona != null ? zona.getNombre() : Integer.toString(zoneId),
+            "°C", NivelRiesgo.ROJO.getUmbralInferior(), alerta, puntos);
+    }
+
+    @Transactional(readOnly = true)
+    public AdminHistoryResponse ultimasLecturas(int zoneId) {
+        if (!zonas.existsById(zoneId)) throw new RecursoNoEncontradoException("Zona no encontrada");
+        List<AdminHistoryResponse.PuntoHistorial> puntos = registros
+            .findTop3ByEstacion_IdOrderByFechaObservacionDesc(zoneId)
+            .stream()
+            .sorted(Comparator.comparing(RegistroTsmEntity::getFechaObservacion))
+            .map(this::comoPunto)
+            .toList();
         ZonasTermicas.Zona zona = ZonasTermicas.getZona(zoneId);
         boolean alerta = puntos.stream().anyMatch(p -> p.valor() >= 28.0);
         return new AdminHistoryResponse(Integer.toString(zoneId), zona != null ? zona.getNombre() : Integer.toString(zoneId),
