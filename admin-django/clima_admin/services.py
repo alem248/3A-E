@@ -1,8 +1,6 @@
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 import httpx
-from datetime import timedelta
-from django.utils import timezone
 
 
 class JavaApiError(Exception):
@@ -34,8 +32,11 @@ class JavaClimateApi:
         return payload
 
     def trend(self, zone_id):
-        today = timezone.localdate()
-        return self.history(zone_id, (today - timedelta(days=2)).isoformat(), today.isoformat())
+        path = settings.JAVA_API_TREND_HISTORY_PATH.format(zone_id=zone_id)
+        payload = self._get_json(path)
+        if not isinstance(payload, dict) or not isinstance(payload.get("puntos"), list):
+            raise JavaApiError("La API devolvió un historial con formato inválido.")
+        return payload
 
     def _get_json(self, path, params=None):
         try:
