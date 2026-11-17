@@ -14,4 +14,6 @@ public interface RegistroTsmRepository extends JpaRepository<RegistroTsmEntity, 
 
     List<RegistroTsmEntity> findByEstacion_IdAndFechaObservacionBetweenOrderByFechaObservacionAsc(
         Integer estacionId, LocalDateTime desde, LocalDateTime hasta);
+
+    List<RegistroTsmEntity> findTop3ByEstacion_IdOrderByFechaObservacionDesc(Integer estacionId);
 }
