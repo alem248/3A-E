@@ -9,5 +9,7 @@ public interface ZonaVulnerableRepository extends JpaRepository<ZonaVulnerableEn
 
     List<ZonaVulnerableEntity> findAllByOrderByIdAsc();
 
+    List<ZonaVulnerableEntity> findAllByOrderByPrioritariaDescIdAsc();
+
     List<ZonaVulnerableEntity> findByNivelRiesgo(NivelRiesgoEntity nivelRiesgo);
 }
