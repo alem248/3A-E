@@ -41,19 +41,22 @@ public class EvaluacionAlertasService {
     private final NivelRiesgoRepository nivelRepository;
     private final AlertaPreventivaRepository alertaRepository;
     private final Clock clock;
+    private final NotificacionService notificacionService;
 
     public EvaluacionAlertasService(ReglasAlertaProperties properties,
                                     ZonasTermicasService zonasService,
                                     ZonaVulnerableRepository zonaRepository,
                                     NivelRiesgoRepository nivelRepository,
                                     AlertaPreventivaRepository alertaRepository,
-                                    Clock clock) {
+                                    Clock clock,
+                                    NotificacionService notificacionService) {
         this.motor = new MotorReglasAlerta(properties.reglas());
         this.zonasService = zonasService;
         this.zonaRepository = zonaRepository;
         this.nivelRepository = nivelRepository;
         this.alertaRepository = alertaRepository;
         this.clock = clock;
+        this.notificacionService = notificacionService;
     }
 
     public List<ReglaAlerta> getReglas() {
@@ -133,6 +136,7 @@ public class EvaluacionAlertasService {
         alerta.setFechaEmision(ahora);
         alerta.setVigenciaHasta(ahora.plusHours(regla.vigenciaHoras()));
         AlertaPreventivaEntity guardada = alertaRepository.save(alerta);
+        notificacionService.notificarNuevaAlerta(guardada);
 
         log.info("Alerta {} creada por la regla '{}' (zona {}, TSM {} C)",
             guardada.getId(), regla.nombre(), regla.zonaId(), temperatura);
