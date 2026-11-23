@@ -175,7 +175,7 @@ public class DatosInicialesLoader implements CommandLineRunner {
                 EstacionMonitoreoEntity estacion = new EstacionMonitoreoEntity();
                 estacion.setId(id);
                 estacion.setFuente(fuente);
-                estacion.setTipo("MARINA");
+                estacion.setTipo(zona.getTipo());
                 estacion.setLatitud(BigDecimal.valueOf(zona.getLatitud()));
                 estacion.setLongitud(BigDecimal.valueOf(zona.getLongitud()));
                 estacionRepository.save(estacion);
