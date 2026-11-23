@@ -1,0 +1,94 @@
+{% extends "clima_admin/base.html" %}
+{% load static %}
+{% block title %}Registro y gestión de usuarios | Administración{% endblock %}
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/dashboard.css' %}">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/paginas.css' %}">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/panel-diseno.css' %}">
+{% endblock %}
+{% block page_content %}
+<div class="pagina">
+  <section class="hero-admin">
+    <div>
+      <p class="crumbs">Inicio › Usuarios</p>
+      <h1>Registro y gestión de usuarios</h1>
+      <p class="texto-suave mb-0">Ubicación de cada usuario según su último registro GPS. Las alertas de zona avisan a quienes están en la zona afectada.</p>
+    </div>
+    <div class="hero-admin-hora">Actualizado<strong>{% now "H:i" %}</strong></div>
+  </section>
+
+  {% if error %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endif %}
+
+  <div class="usuarios-barra">
+    <label class="buscador-pill">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <input id="buscar-usuario" type="search" placeholder="Buscar por nombre, correo o rol…" aria-label="Buscar usuario">
+    </label>
+    <a class="btn-nuevo" href="{% url 'clima_admin:usuario_nuevo' %}">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M19 8v6M16 11h6"/></svg>
+      Nuevo usuario
+    </a>
+  </div>
+
+  <section class="dash-card panel-brillo">
+    <div class="tabla-wrap">
+      <table id="tabla-usuarios" class="tabla-usuarios">
+        <thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Departamento</th><th>Zona actual</th><th>Última ubicación</th><th class="text-end">Acciones</th></tr></thead>
+        <tbody>
+        {% for u in usuarios %}
+        <tr>
+          <td>
+            <div class="usuario-celda">
+              <span class="avatar">{{ u.nombres|default:"—"|slice:":2"|upper }}</span>
+              <span>{{ u.nombres|default:"—" }}</span>
+            </div>
+          </td>
+          <td>{{ u.email }}</td>
+          <td><span class="rol-pill {% if u.rol == 'ADMIN' %}rol-admin{% endif %}">{{ u.rol }}</span></td>
+          <td>{{ u.departamento|default:"—" }}</td>
+          <td>
+            <span class="zona-texto">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+              {% if u.zonaNombre %}{{ u.zonaNombre }}<span class="zona-distrito">{% if u.nivelZona == "VERDE" %}Fuera de peligro{% elif u.nivelZona == "AMARILLO" %}Vigilancia{% elif u.nivelZona == "NARANJA" %}Riesgo medio{% elif u.nivelZona == "ROJO" %}Peligro{% else %}Sin datos{% endif %}</span>{% elif u.tieneUbicacion %}<span class="zona-fuera">Sin zona monitoreada</span>{% if u.distrito or u.departamento %}<span class="zona-distrito">{{ u.distrito|default:u.departamento }}</span>{% endif %}{% else %}Sin ubicación{% endif %}
+            </span>
+          </td>
+          <td>{{ u.fechaUbicacion|default:"—" }}</td>
+          <td class="text-end text-nowrap">
+            {% if u.tieneUbicacion and not u.zonaNombre %}
+            <form method="post" action="{% url 'clima_admin:usuario_monitorear' usuario_id=u.id %}" class="d-inline">{% csrf_token %}
+              <button class="accion" type="submit" style="color:#38bdf8;border-color:rgba(56,189,248,.6)">Monitorear zona</button>
+            </form>
+            {% endif %}
+            <a class="accion accion-editar" href="{% url 'clima_admin:usuario_detalle' usuario_id=u.id %}">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>Editar
+            </a>
+            <form method="post" action="{% url 'clima_admin:usuario_eliminar' usuario_id=u.id %}" class="d-inline" onsubmit="return confirm('¿Eliminar este usuario? Se borrarán su ubicación, preferencias e historial de notificaciones.');">{% csrf_token %}
+              <button class="accion accion-eliminar" type="submit">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Eliminar
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="vacio">No hay usuarios registrados.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="page-foot">Clima Costero · Panel de administración</p>
+</div>
+<script>
+document.getElementById('buscar-usuario').addEventListener('input', (evento) => {
+  const texto = evento.target.value.trim().toLowerCase();
+  document.querySelectorAll('#tabla-usuarios tbody tr').forEach((fila) => {
+    fila.hidden = texto !== '' && !fila.textContent.toLowerCase().includes(texto);
+  });
+});
+</script>
+{% endblock %}
