@@ -48,6 +48,35 @@ public enum NivelRiesgo {
         return SIN_DATOS;
     }
 
+    /** Calor (temperatura del aire, en °C) para regiones del interior. */
+    public static NivelRiesgo clasificarCalor(Double celsius) {
+        if (celsius == null || !Double.isFinite(celsius)) {
+            return SIN_DATOS;
+        }
+        if (celsius < 28.0) return VERDE;
+        if (celsius < 30.0) return AMARILLO;
+        if (celsius < 33.0) return NARANJA;
+        return ROJO;
+    }
+
+    /** Lluvia (mm por hora) para regiones del interior. */
+    public static NivelRiesgo clasificarLluvia(Double milimetrosPorHora) {
+        if (milimetrosPorHora == null || !Double.isFinite(milimetrosPorHora)) {
+            return SIN_DATOS;
+        }
+        if (milimetrosPorHora < 1.0) return VERDE;
+        if (milimetrosPorHora < 5.0) return AMARILLO;
+        if (milimetrosPorHora < 10.0) return NARANJA;
+        return ROJO;
+    }
+
+    /** El nivel mas alto de los dos, ignorando los que no tienen datos. */
+    public static NivelRiesgo maximo(NivelRiesgo a, NivelRiesgo b) {
+        if (a == SIN_DATOS) return b;
+        if (b == SIN_DATOS) return a;
+        return a.ordinal() >= b.ordinal() ? a : b;
+    }
+
     public String getId() {
         return id;
     }
