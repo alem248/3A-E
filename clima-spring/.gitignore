@@ -13,3 +13,6 @@ target/
 
 ### OS ###
 .DS_Store
+
+# Base H2 local
+data/
