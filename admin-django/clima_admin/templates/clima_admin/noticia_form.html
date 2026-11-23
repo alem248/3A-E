@@ -1,0 +1,45 @@
+{% extends "clima_admin/base.html" %}
+{% load static %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'clima_admin/css/panel-diseno.css' %}">{% endblock %}
+{% block page_content %}
+<div class="container-fluid px-0" style="max-width: 46rem">
+  <a href="{% url 'clima_admin:noticias' %}">← Volver a noticias</a>
+  <h1 class="h3 my-3">{{ title }}</h1>
+  <form method="post" enctype="multipart/form-data" class="section-card p-4 noticia-form"
+        action="{% if noticia %}{% url 'clima_admin:noticia_editar' noticia.id %}{% else %}{% url 'clima_admin:noticia_nueva' %}{% endif %}">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label" for="titulo">Título</label>
+      <input class="form-control" id="titulo" name="titulo" maxlength="200" required value="{{ valores.titulo|default:'' }}">
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="resumen">Resumen (máximo 600 caracteres)</label>
+      <textarea class="form-control" id="resumen" name="resumen" rows="4" maxlength="600" required>{{ valores.resumen|default:'' }}</textarea>
+    </div>
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <label class="form-label" for="categoria">Categoría</label>
+        <input class="form-control" id="categoria" name="categoria" maxlength="40" value="{{ valores.categoria|default:'' }}" placeholder="General">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="departamento">Dirigida a</label>
+        <select class="form-select" id="departamento" name="departamento">
+          <option value="" {% if not valores.departamento %}selected{% endif %}>Todos los departamentos</option>
+          {% for d in departamentos %}
+          <option value="{{ d }}" {% if d == valores.departamento %}selected{% endif %}>{{ d }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="mb-4">
+      <label class="form-label" for="imagen">Foto de la noticia (opcional, JPG, PNG o WEBP, máximo 2 MB)</label>
+      {% if noticia.tieneImagen %}
+      <div class="mb-2"><img src="{% url 'clima_admin:noticia_imagen' noticia.id %}" alt="" style="max-width:220px;border-radius:12px"></div>
+      <div class="small text-muted mb-2">Sube otra imagen para reemplazar la actual.</div>
+      {% endif %}
+      <input class="form-control" type="file" id="imagen" name="imagen" accept="image/jpeg,image/png,image/webp">
+    </div>
+    <button class="btn btn-primary" type="submit">{% if noticia %}Guardar cambios{% else %}Publicar noticia{% endif %}</button>
+  </form>
+</div>
+{% endblock %}
