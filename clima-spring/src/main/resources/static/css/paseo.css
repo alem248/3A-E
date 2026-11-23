@@ -1,0 +1,221 @@
+/* Paseo animado: la persona camina y los árboles aparecen solo al inicio (izquierda)
+   y cuando está por desaparecer (derecha). Solo presentación; no recibe clics. */
+
+.paseo-zona {
+    position: relative;
+}
+
+@media (min-width: 1200px) {
+    .paseo-zona {
+        padding-top: 92px;
+    }
+}
+
+.paseo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--altura-clima, 250px);
+    z-index: 3;
+    pointer-events: none;
+    overflow: hidden;
+    border-radius: 22px;
+}
+
+/* Oscurecimiento del lado lluvioso */
+.paseo::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 50%;
+    background: linear-gradient(90deg, rgba(30, 58, 95, 0), rgba(30, 58, 95, .28));
+    animation: ciclo-paseo-lluvia 14s linear infinite;
+}
+
+/* Lluvia */
+.paseo-lluvia {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    bottom: 0;
+    width: 50%;
+    background-image: repeating-linear-gradient(104deg, transparent 0 11px, rgba(205, 228, 255, .75) 11px 12px);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 35%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 35%);
+    animation: ciclo-paseo-lluvia 14s linear infinite, caer-paseo .55s linear infinite;
+}
+
+/* Árboles: misma altura que la persona, apoyados en el mismo suelo */
+.paseo-arbol {
+    position: absolute;
+    bottom: 4px;
+    width: 84px;
+    height: 142px;
+}
+
+.paseo-arbol svg {
+    width: 100%;
+    height: 100%;
+    transform-origin: 50% 100%;
+    animation: mecer-arbol 2.6s ease-in-out infinite;
+}
+
+.paseo-arbol-inicio {
+    left: 0;
+    animation: aparece-inicio 14s linear infinite;
+}
+
+.paseo-arbol-final {
+    right: 0;
+    animation: aparece-final 14s linear infinite;
+}
+
+.paseo-arbol-final svg {
+    transform: scaleX(-1);
+}
+
+/* Arbustos: aparecen junto a los árboles */
+.paseo-arbusto {
+    position: absolute;
+    bottom: 4px;
+    width: 76px;
+    height: 46px;
+}
+
+.paseo-arbusto svg {
+    width: 100%;
+    height: 100%;
+}
+
+.paseo-arbusto-inicio {
+    left: 86px;
+    animation: aparece-inicio 14s linear infinite;
+}
+
+.paseo-arbusto-final {
+    right: 86px;
+    animation: aparece-final 14s linear infinite;
+}
+
+.paseo-arbusto-final svg {
+    transform: scaleX(-1);
+}
+
+/* Persona */
+.paseo-persona {
+    position: absolute;
+    bottom: 4px;
+    left: 16%;
+    width: 90px;
+    height: 142px;
+    opacity: 0;
+    animation: caminar-paseo 14s linear infinite;
+}
+
+.paseo-persona svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    transform-origin: 50% 100%;
+    animation: rebote-paso .5s ease-in-out infinite;
+}
+
+.paseo-persona .paso-a,
+.paseo-persona .paso-b {
+    transform-box: view-box;
+    transform-origin: 35px 74px;
+    animation: paso 1s ease-in-out infinite;
+}
+
+.paseo-persona .paso-b {
+    animation-direction: reverse;
+}
+
+.paseo-persona .brazo-p {
+    transform-box: view-box;
+    transform-origin: 25px 38px;
+    animation: brazo-paseo 1s ease-in-out infinite;
+}
+
+.paseo-persona .brazo-p.opuesto {
+    transform-origin: 44px 38px;
+    animation-direction: reverse;
+}
+
+/* Paraguas: aparece solo cuando llueve */
+.paseo-paraguas {
+    opacity: 0;
+    animation: ciclo-paseo-lluvia 14s linear infinite;
+}
+
+@keyframes ciclo-paseo-lluvia {
+    0%, 44% { opacity: 0; }
+    56%, 100% { opacity: 1; }
+}
+
+@keyframes caer-paseo {
+    from { transform: translateY(0); }
+    to { transform: translateY(40px); }
+}
+
+/* Al inicio del ciclo hay árboles a la izquierda; se alejan cuando la persona avanza */
+@keyframes aparece-inicio {
+    0% { opacity: 1; }
+    12% { opacity: 1; }
+    18% { opacity: 0; }
+    95% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Al final del ciclo aparecen a la derecha, cuando la persona está por desaparecer */
+@keyframes aparece-final {
+    0%, 66% { opacity: 0; }
+    76% { opacity: 1; }
+    92% { opacity: 1; }
+    97% { opacity: 0; }
+    100% { opacity: 0; }
+}
+
+@keyframes mecer-arbol {
+    0%, 100% { transform: rotate(-1.5deg); }
+    50% { transform: rotate(1.5deg); }
+}
+
+@keyframes caminar-paseo {
+    0% { left: 16%; opacity: 0; }
+    4% { opacity: 1; }
+    80% { left: 80%; opacity: 1; }
+    90% { left: 80%; opacity: 0; }
+    100% { left: 10%; opacity: 0; }
+}
+
+@keyframes rebote-paso {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-4px) rotate(2deg); }
+}
+
+@keyframes paso {
+    0%, 100% { transform: rotate(-32deg); }
+    50% { transform: rotate(32deg); }
+}
+
+@keyframes brazo-paseo {
+    0%, 100% { transform: rotate(14deg); }
+    50% { transform: rotate(-14deg); }
+}
+
+/* Solo cuando las dos tarjetas de clima van una al lado de la otra */
+@media (max-width: 1199px) {
+    .paseo {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .paseo {
+        display: none;
+    }
+}
