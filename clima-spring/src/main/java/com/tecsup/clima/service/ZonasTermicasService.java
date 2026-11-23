@@ -2,8 +2,13 @@ package com.tecsup.clima.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -37,6 +42,8 @@ public class ZonasTermicasService {
     /** Temperatura baseclimatica de la costa peruana usada para la anomalia. */
     private static final double TEMPERATURA_BASE = 24.0;
 
+    private static final String API_CLIMA = "https://api.open-meteo.com/v1/forecast";
+
     private final RestTemplate restTemplate = new RestTemplate();
 
     private final ZonaVulnerableRepository zonaRepository;
@@ -62,9 +69,18 @@ public class ZonasTermicasService {
 
     /** Zonas vulnerables con su TSM en tiempo real. */
     @Transactional
-    public List<ZonaTermica> consultarTsmPorZonas() {
-        return consultar(zonaRepository.findAllByOrderByIdAsc());
+    public synchronized List<ZonaTermica> consultarTsmPorZonas() {
+        if (cacheZonas != null && Instant.now().isBefore(cacheZonasHasta)) {
+            return cacheZonas;
+        }
+        List<ZonaTermica> resultado = consultar(sinDuplicadosPorNombre(zonaRepository.findAllByOrderByIdAsc()));
+        cacheZonas = resultado;
+        cacheZonasHasta = Instant.now().plus(Duration.ofMinutes(10));
+        return resultado;
     }
+
+    private List<ZonaTermica> cacheZonas;
+    private Instant cacheZonasHasta = Instant.EPOCH;
 
     /** Consulta y registra la lectura TSM de una sola zona. */
     @Transactional
@@ -88,6 +104,98 @@ public class ZonasTermicasService {
         return consultar(filtradas);
     }
 
+    /** Zona que ya cubre la ubicacion o que tiene el mismo nombre: evita duplicados. */
+    public Optional<ZonaVulnerableEntity> buscarZonaExistente(String nombre, String departamento,
+                                                             double latitud, double longitud) {
+        return zonaRepository.findAllByOrderByIdAsc().stream()
+            .filter(zona -> (zona.getNombre() != null && zona.getNombre().equals(nombre)
+                    && Objects.equals(zona.getDepartamento(), departamento))
+                || PoligonoUtils.contiene(PoligonoUtils.desdeWkt(zona.getPoligono()), latitud, longitud))
+            .findFirst();
+    }
+
+    /** Oculta zonas repetidas (mismo nombre y departamento) en la vista. */
+    private List<ZonaVulnerableEntity> sinDuplicadosPorNombre(List<ZonaVulnerableEntity> zonas) {
+        Set<String> vistos = new HashSet<>();
+        List<ZonaVulnerableEntity> resultado = new ArrayList<>();
+        for (ZonaVulnerableEntity zona : zonas) {
+            String clave = zona.getNombre() != null
+                ? zona.getNombre() + "|" + zona.getDepartamento()
+                : "id:" + zona.getId();
+            if (vistos.add(clave)) {
+                resultado.add(zona);
+            }
+        }
+        return resultado;
+    }
+
+    /**
+     * Crea una zona que cubre la ubicacion y la costa con mar mas cercana, con su
+     * estacion marina para que el sistema la monitoree como las demas zonas.
+     */
+    @Transactional
+    public ZonaVulnerableEntity crearZonaParaUbicacion(String nombre, String departamento,
+                                                      double latitud, double longitud) {
+        boolean continental = ZonasTermicas.esContinental(departamento);
+        double[] costa = continental ? new double[] {latitud, longitud} : buscarCostaConMar(latitud, longitud);
+        if (costa == null) {
+            throw new IllegalStateException("No se encontró mar cercano a esta ubicación.");
+        }
+
+        int nuevoId = zonaRepository.findAllByOrderByIdAsc().stream()
+            .mapToInt(ZonaVulnerableEntity::getId).max().orElse(0) + 1;
+
+        EstacionMonitoreoEntity referencia = estacionRepository.findAll().stream().findFirst()
+            .orElseThrow(() -> new IllegalStateException("No hay fuente oficial de datos configurada."));
+        EstacionMonitoreoEntity estacion = new EstacionMonitoreoEntity();
+        estacion.setId(nuevoId);
+        estacion.setFuente(referencia.getFuente());
+        estacion.setTipo(continental ? "CONTINENTAL" : "MARINA");
+        estacion.setLatitud(BigDecimal.valueOf(costa[0]));
+        estacion.setLongitud(BigDecimal.valueOf(costa[1]));
+        estacionRepository.save(estacion);
+
+        double margen = 0.05;
+        double latMin = Math.min(latitud, costa[0]) - margen;
+        double latMax = Math.max(latitud, costa[0]) + margen;
+        double lonMin = Math.min(longitud, costa[1]) - margen;
+        double lonMax = Math.max(longitud, costa[1]) + margen;
+        List<List<Double>> poligono = List.of(
+            List.of(latMin, lonMin), List.of(latMin, lonMax),
+            List.of(latMax, lonMax), List.of(latMax, lonMin));
+
+        ZonaVulnerableEntity zona = new ZonaVulnerableEntity();
+        zona.setId(nuevoId);
+        zona.setNombre(nombre);
+        zona.setDepartamento(departamento);
+        zona.setPoligono(PoligonoUtils.aWkt(poligono));
+        zona.setNivelRiesgo(nivelRepository.findByNombre(NivelRiesgo.SIN_DATOS.getId()).orElse(null));
+        return zonaRepository.save(zona);
+    }
+
+    /** Avanza hacia el oeste hasta encontrar un punto donde la API marina entrega temperatura del mar. */
+    private double[] buscarCostaConMar(double latitud, double longitud) {
+        for (int paso = 0; paso <= 60; paso++) {
+            double lon = longitud - paso * 0.05;
+            if (temperaturaMarina(latitud, lon) != null) {
+                return new double[] {latitud, lon};
+            }
+        }
+        return null;
+    }
+
+    private Double temperaturaMarina(double latitud, double longitud) {
+        try {
+            String url = String.format("%s?latitude=%s&longitude=%s&current=sea_surface_temperature",
+                apiMarinaUrl, String.valueOf(latitud), String.valueOf(longitud));
+            JsonNode root = restTemplate.getForObject(url, JsonNode.class);
+            double valor = root.path("current").path("sea_surface_temperature").asDouble(Double.NaN);
+            return Double.isNaN(valor) ? null : valor;
+        } catch (Exception error) {
+            return null;
+        }
+    }
+
     private List<ZonaTermica> consultar(List<ZonaVulnerableEntity> zonas) {
         List<ZonaTermica> resultado = new ArrayList<>();
 
@@ -107,8 +215,10 @@ public class ZonasTermicasService {
         }
 
         ZonasTermicas.Zona catalogo = ZonasTermicas.getZona(zona.getId());
-        String nombre = catalogo != null ? catalogo.getNombre() : String.valueOf(zona.getId());
-        String departamento = catalogo != null ? catalogo.getDepartamento() : "Costa norte";
+        String nombre = catalogo != null ? catalogo.getNombre()
+            : (zona.getNombre() != null ? zona.getNombre() : String.valueOf(zona.getId()));
+        String departamento = catalogo != null ? catalogo.getDepartamento()
+            : (zona.getDepartamento() != null ? zona.getDepartamento() : "Costa norte");
 
         try {
             EstacionMonitoreoEntity estacion = estacionRepository
@@ -117,6 +227,11 @@ public class ZonasTermicasService {
 
             double latitudConsulta = estacion != null ? estacion.getLatitud().doubleValue() : centroide[0];
             double longitudConsulta = estacion != null ? estacion.getLongitud().doubleValue() : centroide[1];
+
+            if (estacion != null && "CONTINENTAL".equals(estacion.getTipo())) {
+                return consultarZonaContinental(zona, poligono, centroide, nombre, departamento,
+                    latitudConsulta, longitudConsulta);
+            }
 
             String url = String.format(
                 "%s?latitude=%s&longitude=%s&current=sea_surface_temperature",
@@ -142,6 +257,40 @@ public class ZonasTermicasService {
             return new ZonaTermica(String.valueOf(zona.getId()), nombre, departamento,
                 centroide[0], centroide[1], poligono,
                 tsm, actualizadoEn, nivel, true);
+        } catch (Exception error) {
+            return sinDatos(zona, poligono, nombre, departamento, centroide, null);
+        }
+    }
+
+    /** Zona del interior: nivel por calor (temperatura del aire) y lluvia. */
+    private ZonaTermica consultarZonaContinental(ZonaVulnerableEntity zona, List<List<Double>> poligono,
+                                                 double[] centroide, String nombre, String departamento,
+                                                 double latitud, double longitud) {
+        try {
+            String url = String.format("%s?latitude=%s&longitude=%s&current=temperature_2m,precipitation",
+                API_CLIMA, String.valueOf(latitud), String.valueOf(longitud));
+            JsonNode root = restTemplate.getForObject(url, JsonNode.class);
+            JsonNode current = root.path("current");
+
+            Double temperatura = current.path("temperature_2m").asDouble(Double.NaN) * 1.0;
+            Double lluvia = current.path("precipitation").asDouble(Double.NaN) * 1.0;
+            String actualizadoEn = current.path("time").asText(null);
+
+            if (temperatura.isNaN()) {
+                return sinDatos(zona, poligono, nombre, departamento, centroide, actualizadoEn);
+            }
+
+            NivelRiesgo nivel = NivelRiesgo.maximo(
+                NivelRiesgo.clasificarCalor(temperatura), NivelRiesgo.clasificarLluvia(lluvia.isNaN() ? null : lluvia));
+
+            clasificar(zona, nivel);
+            if (actualizadoEn != null) {
+                registrarLectura(zona.getId(), centroide, temperatura, LocalDateTime.parse(actualizadoEn));
+            }
+
+            return new ZonaTermica(String.valueOf(zona.getId()), nombre, departamento,
+                centroide[0], centroide[1], poligono,
+                temperatura, actualizadoEn, nivel, true);
         } catch (Exception error) {
             return sinDatos(zona, poligono, nombre, departamento, centroide, null);
         }
@@ -180,8 +329,10 @@ public class ZonasTermicasService {
         double[] centroide = PoligonoUtils.centroide(poligono);
         ZonasTermicas.Zona catalogo = ZonasTermicas.getZona(zona.getId());
 
-        String nombre = catalogo != null ? catalogo.getNombre() : String.valueOf(zona.getId());
-        String departamento = catalogo != null ? catalogo.getDepartamento() : "Costa norte";
+        String nombre = catalogo != null ? catalogo.getNombre()
+            : (zona.getNombre() != null ? zona.getNombre() : String.valueOf(zona.getId()));
+        String departamento = catalogo != null ? catalogo.getDepartamento()
+            : (zona.getDepartamento() != null ? zona.getDepartamento() : "Costa norte");
 
         return sinDatos(zona, poligono, nombre, departamento, centroide, null);
     }
