@@ -1,0 +1,27 @@
+/* Escena 3D de la cabecera: el panel crece para ocupar el hueco vacío.
+   Solo presentación; si Three.js no carga, se conserva el SVG. */
+@media (min-width: 1200px) {
+    .cabecera-panel {
+        min-height: 300px;
+    }
+
+    .paseo-zona {
+        padding-top: 0;
+    }
+}
+
+.cabecera-panel .escena canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.cabecera-panel.es-3d .escena {
+    opacity: 1;
+}
+
+.cabecera-panel.es-3d .escena svg {
+    display: none;
+}
