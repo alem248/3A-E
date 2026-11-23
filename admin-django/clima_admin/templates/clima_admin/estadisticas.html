@@ -1,0 +1,95 @@
+{% extends "clima_admin/base.html" %}
+{% load static %}
+{% block title %}Estadísticas | Administración{% endblock %}
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/dashboard.css' %}">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/paginas.css' %}">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/panel-diseno.css' %}">
+{% endblock %}
+{% block page_content %}
+<div class="pagina">
+  <section class="hero-admin">
+    <div>
+      <p class="crumbs">Inicio › Análisis</p>
+      <h1>Estadísticas</h1>
+      <p class="texto-suave mb-0">Resumen del estado actual de las zonas conectadas a Spring.</p>
+    </div>
+    <div class="hero-admin-hora">Actualizado<strong>{% now "H:i" %}</strong></div>
+  </section>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-md-6 col-xl-3">
+      <article class="kpi kpi-azul">
+        <div class="kpi-icono" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+        <div><span>Zonas monitoreadas</span><strong>{{ zones_count }}</strong></div>
+      </article>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+      <article class="kpi kpi-verde">
+        <div class="kpi-icono" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg></div>
+        <div><span>Con lectura disponible</span><strong>{{ disponibles }}</strong></div>
+      </article>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+      <article class="kpi kpi-naranja">
+        <div class="kpi-icono" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg></div>
+        <div><span>Temperatura promedio</span><strong>{% if temp_promedio is not None %}{{ temp_promedio }} °C{% else %}—{% endif %}</strong></div>
+        {% if spark_temps %}<svg class="spark" viewBox="0 0 90 28" preserveAspectRatio="none"><polyline points="{{ spark_temps }}"/></svg>{% endif %}
+      </article>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+      <article class="kpi kpi-rojo">
+        <div class="kpi-icono" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div>
+        <div><span>Rango de temperatura</span><strong>{% if temp_min is not None %}{{ temp_min }} – {{ temp_max }} °C{% else %}—{% endif %}</strong></div>
+        {% if spark_temps %}<svg class="spark" viewBox="0 0 90 28" preserveAspectRatio="none"><polyline points="{{ spark_temps }}"/></svg>{% endif %}
+      </article>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-lg-6">
+      <section class="dash-card panel-brillo">
+        <h2 class="titulo-icono">
+          <span class="titulo-caja" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>
+          Distribución por nivel
+        </h2>
+        {% for n in niveles %}
+        <div class="stat-fila">
+          <span class="stat-nombre">{{ n.nombre }}</span>
+          <div class="stat-pista"><i style="width: {% widthratio n.total zones_count 100 %}%; --c: {{ n.color }}"></i></div>
+          <span class="stat-valor" style="--c: {{ n.color }}">{{ n.total }}</span>
+        </div>
+        {% empty %}
+        <p class="text-muted mb-0">Sin zonas para mostrar.</p>
+        {% endfor %}
+      </section>
+    </div>
+    <div class="col-12 col-lg-6">
+      <section class="dash-card panel-brillo">
+        <h2 class="titulo-icono">
+          <span class="titulo-caja" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+          Zonas por región
+        </h2>
+        <div class="tabla-wrap">
+          <table class="tabla-usuarios">
+            <thead><tr><th>Región</th><th>Zonas</th><th>Con riesgo</th></tr></thead>
+            <tbody>
+              {% for d in departamentos %}
+              <tr><td>{{ d.nombre }}</td><td>{{ d.zonas }}</td><td>{{ d.con_riesgo }}</td></tr>
+              {% empty %}
+              <tr><td colspan="3" class="vacio">Sin zonas para mostrar.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <p class="page-foot">Clima Costero · Panel de administración</p>
+</div>
+{% endblock %}

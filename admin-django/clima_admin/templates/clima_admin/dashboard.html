@@ -1,0 +1,297 @@
+{% extends "clima_admin/base.html" %}
+{% load static %}
+{% block page_content %}
+<style>
+  .mapa-usuarios-card #mapa-usuarios { height: 440px; border-radius: 14px; background: radial-gradient(circle at 45% 40%, #103a66 0%, #071a33 70%); box-shadow: inset 0 0 60px rgba(34, 211, 238, .12); }
+  .mapa-usuarios-card .leaflet-container { background: transparent; }
+  .peru-contorno path { filter: drop-shadow(0 0 10px rgba(56, 189, 248, .7)); }
+  .leyenda-mapa { display: flex; gap: 16px; font-size: 12px; color: #9fb8d6; margin-bottom: 8px; }
+  .leyenda-mapa i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; box-shadow: 0 0 8px currentColor; }
+  .marcador-usuario { filter: drop-shadow(0 0 6px #22d3ee); }
+  .etiqueta-ubicacion { background: rgba(7, 26, 51, .92); color: #e0f7ff; border: 1px solid #22d3ee; border-radius: 6px; font-weight: 600; font-size: 12px; box-shadow: 0 0 10px rgba(34, 211, 238, .35); }
+  .etiqueta-ubicacion::before { display: none; }
+  .mapa-usuarios-card .leaflet-tooltip { background: #0b1f3a; color: #e5edf7; border: 1px solid #22d3ee; }
+
+  /* Rediseño del encabezado, tarjetas y radar */
+  .hero-admin { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 22px 26px; border-radius: 18px; background: linear-gradient(120deg, #0b2a4f 0%, #0a1f3d 55%, #0d3157 100%); border: 1px solid rgba(34, 211, 238, .35); box-shadow: 0 0 30px rgba(34, 211, 238, .12); overflow: hidden; margin-bottom: 14px; }
+  .hero-admin::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 38px, rgba(56, 189, 248, .06) 39px 40px); pointer-events: none; }
+  .hero-admin h1 { font-size: 28px; font-weight: 800; margin: 4px 0; background: linear-gradient(90deg, #ffffff, #67e8f9); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero-admin .crumbs { font-size: 12px; color: #7fb6ff; margin: 0; }
+  .estado-activo { display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; padding: 3px 10px; border-radius: 999px; background: rgba(34, 197, 94, .12); color: #4ade80; font-size: 11px; font-weight: 700; letter-spacing: .5px; }
+  .estado-activo::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e; animation: latido 1.6s ease-in-out infinite; }
+  @keyframes latido { 50% { opacity: .35; } }
+  .hero-admin-hora { position: relative; text-align: right; color: #9fb8d6; font-size: 12px; }
+  .hero-admin-hora strong { display: block; font-size: 22px; color: #e0f7ff; font-weight: 700; }
+
+  .kpi { position: relative; overflow: hidden; border-radius: 14px; padding: 16px 18px; background: linear-gradient(160deg, #102a4c, #0b1f3a); border: 1px solid rgba(56, 189, 248, .25); box-shadow: 0 0 22px rgba(56, 189, 248, .10); transition: transform .2s, box-shadow .2s; }
+  .kpi:hover { transform: translateY(-2px); box-shadow: 0 0 28px rgba(56, 189, 248, .25); }
+  .kpi::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: linear-gradient(90deg, transparent, #22d3ee, transparent); }
+  .kpi strong { font-size: 28px; font-weight: 800; color: #f1f8ff; display: block; }
+  .kpi span { font-size: 12px; color: #9fb8d6; letter-spacing: .3px; }
+  .kpi-icono { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 20px; box-shadow: 0 0 16px currentColor; }
+
+  .zona-mini { position: relative; border-radius: 12px; padding: 12px 14px; background: linear-gradient(150deg, #0f2c50, #0a1f3b); border: 1px solid rgba(56, 189, 248, .18); transition: transform .2s, box-shadow .2s; }
+  .zona-mini:hover { transform: translateY(-2px); box-shadow: 0 0 20px rgba(56, 189, 248, .2); }
+  .zona-mini .punto { width: 10px; height: 10px; box-shadow: 0 0 10px currentColor; }
+  .zona-mini strong { font-size: 14px; }
+  .zona-mini .text-end strong { font-size: 18px; color: #f1f8ff; }
+
+  .mapa-usuarios-card { background: linear-gradient(160deg, #0c2544, #081a33); }
+  .radar-contenedor { position: relative; border-radius: 14px; overflow: hidden; }
+  .mapa-usuarios-card #mapa-usuarios { height: 460px; border-radius: 14px; background: radial-gradient(circle at 50% 50%, #0f3d6b 0%, #06172e 70%); background-image: repeating-radial-gradient(circle at 50% 50%, transparent 0 79px, rgba(56, 189, 248, .14) 80px 81px); }
+  .radar-barrido { position: absolute; left: 50%; top: 50%; width: 150%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: conic-gradient(from 0deg, rgba(34, 211, 238, 0) 0deg, rgba(34, 211, 238, .22) 35deg, rgba(34, 211, 238, 0) 60deg); pointer-events: none; z-index: 450; animation: barrido 7s linear infinite; }
+  @keyframes barrido { to { transform: translate(-50%, -50%) rotate(360deg); } }
+  .radar-marcador { background: none !important; border: none !important; }
+  .radar-punto { position: relative; display: block; width: 28px; height: 28px; }
+  .radar-punto b { position: absolute; inset: 8px; border-radius: 50%; background: var(--c); box-shadow: 0 0 12px var(--c); }
+  .radar-punto i { position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--c); opacity: 0; animation: onda 2.4s ease-out infinite; }
+  .radar-punto i + i { animation-delay: 1.2s; }
+  @keyframes onda { 0% { transform: scale(.3); opacity: .9; } 100% { transform: scale(1.8); opacity: 0; } }
+
+  #header { padding-top: 12px; padding-bottom: 12px; }
+  .admin-brand { padding: 4px 0; font-size: 18px; }
+  .kpi { display: flex; align-items: center; gap: 14px; }
+  .kpi-texto { flex: 1; min-width: 0; }
+  .kpi-icono { flex-shrink: 0; width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; }
+  .kpi-icono svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .kpi-azul { border-color: rgba(96, 165, 250, .45); color: #60a5fa; }
+  .kpi-cian { border-color: rgba(34, 211, 238, .45); color: #22d3ee; }
+  .kpi-rojo { border-color: rgba(248, 113, 113, .5); color: #f87171; }
+  .kpi-verde { border-color: rgba(74, 222, 128, .45); color: #4ade80; }
+  .kpi-azul .kpi-icono { background: rgba(96, 165, 250, .15); }
+  .kpi-cian .kpi-icono { background: rgba(34, 211, 238, .15); }
+  .kpi-rojo .kpi-icono { background: rgba(248, 113, 113, .15); }
+  .kpi-verde .kpi-icono { background: rgba(74, 222, 128, .15); }
+  .kpi .spark { position: absolute; right: 14px; bottom: 12px; width: 90px; height: 28px; }
+  .kpi .spark polyline { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; }
+  .en-vivo { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #4ade80; }
+  .en-vivo i { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e; animation: latido 1.6s ease-in-out infinite; }
+  .kpi .en-vivo { position: absolute; right: 16px; top: 16px; }
+
+  .zona-tarjeta { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; background: linear-gradient(150deg, #0f2c50, #0a1f3b); border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); box-shadow: inset 3px 0 0 var(--c); transition: transform .2s, box-shadow .2s; }
+  .zona-tarjeta:hover { transform: translateY(-2px); box-shadow: 0 0 18px color-mix(in srgb, var(--c) 35%, transparent), inset 3px 0 0 var(--c); }
+  .zona-punto { width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 10px var(--c); flex-shrink: 0; }
+  .zona-info { flex: 1; min-width: 0; }
+  .zona-info strong, .zona-indice strong { display: block; font-size: 14px; color: #f1f8ff; }
+  .zona-info small { color: #9fb8d6; font-size: 11px; }
+  .zona-indice { text-align: right; }
+  .zona-indice strong { font-size: 16px; }
+  .etiqueta-nivel { display: inline-block; margin-top: 2px; padding: 1px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; color: var(--c, #9fb8d6); background: color-mix(in srgb, var(--c) 18%, transparent); }
+
+  .clima-card .clima-cuerpo { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .clima-icono { width: 120px; height: 100px; filter: drop-shadow(0 0 14px rgba(251, 191, 36, .35)); flex-shrink: 0; }
+
+  .distribucion { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 14px; border-radius: 12px; background: #081a33; }
+  .barras { flex: 1; display: grid; gap: 14px; }
+  .barra-fila { display: grid; grid-template-columns: 70px 1fr 40px; align-items: center; gap: 10px; }
+  .barra-nombre { font-size: 13px; color: #d6e6f7; }
+  .barra-pista { height: 10px; border-radius: 999px; background: #13294b; overflow: hidden; }
+  .barra-pista i { display: block; height: 100%; border-radius: 999px; background: var(--c); box-shadow: 0 0 12px var(--c); }
+  .barra-valor { display: inline-grid; place-items: center; min-width: 32px; height: 26px; border-radius: 8px; border: 1px solid var(--c); color: var(--c); font-weight: 700; font-size: 13px; }
+  .donut { position: relative; width: 150px; height: 150px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 22px rgba(56, 189, 248, .15); }
+  .donut::after { content: ""; position: absolute; inset: 24px; border-radius: 50%; background: #081a33; }
+  .donut span { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; font-size: 24px; font-weight: 800; color: #f1f8ff; z-index: 1; line-height: 1; }
+  .donut small { display: block; font-size: 11px; font-weight: 500; color: #9fb8d6; margin-top: 4px; }
+
+  .alerta-tarjeta { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; margin-bottom: 8px; background: linear-gradient(90deg, color-mix(in srgb, var(--c) 14%, transparent), transparent 70%); border: 1px solid color-mix(in srgb, var(--c) 35%, transparent); }
+  .alerta-icono { width: 24px; height: 24px; flex-shrink: 0; fill: none; stroke: var(--c); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .alerta-texto { flex: 1; min-width: 0; }
+  .alerta-texto strong { display: block; font-size: 13px; color: #f1f8ff; }
+  .alerta-texto small { color: #9fb8d6; font-size: 11px; }
+  .alerta-temp { font-size: 18px; font-weight: 800; color: var(--c); }
+  .alerta-temp small { font-size: 11px; font-weight: 500; margin-left: 2px; color: #9fb8d6; }
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<div class="container-fluid px-0">
+  <section class="hero-admin">
+    <div>
+      <p class="crumbs">Inicio › Panel de administración</p>
+      <h1>Panel de Administración</h1>
+      <p class="mb-0 text-muted">Resumen general del sistema <span class="estado-activo">Sistema activo</span></p>
+    </div>
+    <div class="hero-admin-hora">Actualizado<strong>{{ ahora|date:"H:i" }}</strong></div>
+  </section>
+
+  {% if api_error %}<div class="alert alert-warning" role="alert">No fue posible conectar con Spring. Verifica el estado del servicio.</div>{% endif %}
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="kpi kpi-azul">
+        <div class="kpi-icono"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div>
+        <div class="kpi-texto"><span>Usuarios registrados</span><strong>{% if usuarios_total is not None %}{{ usuarios_total }}{% else %}—{% endif %}</strong></div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="kpi kpi-cian">
+        <div class="kpi-icono"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></div>
+        <div class="kpi-texto"><span>Zonas monitoreadas</span><strong>{{ zonas|length }}</strong></div>
+        {% if spark_zonas %}<svg class="spark" viewBox="0 0 90 28" preserveAspectRatio="none"><polyline points="{{ spark_zonas }}"/></svg>{% endif %}
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="kpi kpi-rojo">
+        <div class="kpi-icono"><svg viewBox="0 0 24 24"><path d="M12 3 2 21h20z"/><path d="M12 10v5M12 18h.01"/></svg></div>
+        <div class="kpi-texto"><span>Alertas activas</span><strong>{{ alertas_activas }}</strong></div>
+        {% if spark_alertas %}<svg class="spark" viewBox="0 0 90 28" preserveAspectRatio="none"><polyline points="{{ spark_alertas }}"/></svg>{% endif %}
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="kpi kpi-verde">
+        <div class="kpi-icono"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div class="kpi-texto"><span>Última actualización</span><strong>{{ ahora|date:"H:i" }}</strong></div>
+        <span class="en-vivo"><i></i>En vivo</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12">
+      <div class="dash-card mapa-usuarios-card">
+        <h2>Mapa de usuarios <span>{{ ubicaciones|length }} ubicaciones</span></h2>
+        <div class="leyenda-mapa">
+          <span><i style="background:#38bdf8"></i>Fuera de peligro</span>
+          <span><i style="background:#f97316"></i>Riesgo medio</span>
+          <span><i style="background:#ef4444"></i>Peligro</span>
+        </div>
+        {% if ubicaciones_error %}<p class="text-warning small mb-2">No se pudieron cargar las ubicaciones desde Spring. Revisa que Spring esté reiniciado.</p>{% endif %}
+        <div class="radar-contenedor"><div id="mapa-usuarios"></div><div class="radar-barrido"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-lg-8">
+      <div class="dash-card">
+        <h2>Zonas monitoreadas <span>{{ zonas|length }} zonas</span></h2>
+        <div class="row g-2">
+          {% for z in zonas %}
+          <div class="col-12 col-md-6 col-xl-4">
+            <div class="zona-tarjeta" style="--c: {{ z.nivel.color|default:'#64748b' }}">
+              <span class="zona-punto"></span>
+              <div class="zona-info"><strong>{{ z.nombre }}</strong><small>{{ z.departamento|default:"" }}</small></div>
+              <div class="zona-indice"><strong>{% if z.tsm is not None %}{{ z.tsm }} °C{% else %}—{% endif %}</strong><span class="etiqueta-nivel">{{ z.nivel.nombre|default:"Sin lectura" }}</span></div>
+            </div>
+          </div>
+          {% empty %}
+          <p class="text-muted mb-0">No hay zonas disponibles.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-4">
+      <div class="dash-card clima-card">
+        <h2>Clima actual</h2>
+        <div class="clima-cuerpo">
+          <div>
+            {% if temperatura is not None %}<p class="temp">{{ temperatura|floatformat:1 }} °C</p>{% else %}<p class="text-muted">No se pudo obtener el clima en este momento.</p>{% endif %}
+            <p class="text-muted small mb-0">Consulta en tiempo real desde Spring.</p>
+          </div>
+          <svg class="clima-icono" viewBox="0 0 120 100" aria-hidden="true">
+            <defs><radialGradient id="sol-grad" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fde68a"/><stop offset="100%" stop-color="#f59e0b"/></radialGradient></defs>
+            <g stroke="#fbbf24" stroke-width="3" stroke-linecap="round"><line x1="100" y1="38" x2="108" y2="38"/><line x1="72" y1="10" x2="72" y2="2"/><line x1="44" y1="38" x2="36" y2="38"/><line x1="91.8" y1="18.2" x2="97.5" y2="12.5"/><line x1="52.2" y1="18.2" x2="46.5" y2="12.5"/><line x1="91.8" y1="57.8" x2="97.5" y2="63.5"/></g>
+            <circle cx="72" cy="38" r="22" fill="url(#sol-grad)"/>
+            <path d="M30 80a18 18 0 0 1 2-36 26 26 0 0 1 50-4 20 20 0 0 1 4 40z" fill="#e2e8f0"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-lg-7">
+      <div class="dash-card">
+        <h2>Distribución por nivel</h2>
+        <div class="distribucion">
+          <div class="barras">
+            {% for n in niveles %}
+            <div class="barra-fila">
+              <span class="barra-nombre">{{ n.nombre }}</span>
+              <div class="barra-pista"><i style="width: {% widthratio n.total zonas|length 100 %}%; --c: {{ n.color|default:'#64748b' }}"></i></div>
+              <span class="barra-valor" style="--c: {{ n.color|default:'#64748b' }}">{{ n.total }}</span>
+            </div>
+            {% empty %}
+            <p class="text-muted mb-0">Sin lecturas para mostrar.</p>
+            {% endfor %}
+          </div>
+          <div class="donut" style="background: {{ donut }};"><span>{{ zonas|length }}<small>zonas</small></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-5">
+      <div class="dash-card">
+        <h2>Alertas recientes <span class="en-vivo"><i></i>En vivo</span></h2>
+        {% for z in zonas_riesgo %}
+        <div class="alerta-tarjeta" style="--c: {{ z.nivel.color|default:'#64748b' }}">
+          <svg class="alerta-icono" viewBox="0 0 24 24"><path d="M12 3 2 21h20z"/><path d="M12 10v5M12 18h.01"/></svg>
+          <div class="alerta-texto"><strong>{{ z.nivel.nombre }} en {{ z.nombre }}</strong><small>{{ z.departamento|default:"" }}</small></div>
+          <span class="alerta-temp">{{ z.tsm|default:"—" }}<small>°C</small></span>
+        </div>
+        {% empty %}
+        <p class="text-muted mb-0">Sin alertas activas.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{{ ubicaciones|json_script:"datos-ubicaciones" }}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const mapa = L.map('mapa-usuarios', { attributionControl: false, zoomControl: false, dragging: false,
+    scrollWheelZoom: false, doubleClickZoom: false, boxZoom: false, keyboard: false, touchZoom: false });
+
+  fetch("{% static 'clima_admin/data/peru.geojson' %}")
+    .then(respuesta => respuesta.json())
+    .then(geo => {
+      const contorno = L.geoJSON(geo, {
+        className: 'peru-contorno',
+        style: { color: '#38bdf8', weight: 1.6, fillColor: '#0f3d6b', fillOpacity: 0.9 }
+      }).addTo(mapa);
+      mapa.fitBounds(contorno.getBounds(), { padding: [12, 12] });
+    });
+
+  const usuarios = JSON.parse(document.getElementById('datos-ubicaciones').textContent);
+  const prioridad = { ROJO: 3, NARANJA: 2, AMARILLO: 2 };
+  const colores = { ROJO: '#ef4444', NARANJA: '#f97316', AMARILLO: '#f97316' };
+
+  // Usuarios en el mismo punto (por ejemplo, todos en Lima) se agrupan para que no se tapen.
+  const grupos = new Map();
+  usuarios.forEach(usuario => {
+    const clave = `${Number(usuario.latitud).toFixed(4)},${Number(usuario.longitud).toFixed(4)}`;
+    if (!grupos.has(clave)) grupos.set(clave, []);
+    grupos.get(clave).push(usuario);
+  });
+
+  grupos.forEach(miembros => {
+    const peor = miembros.reduce((a, b) => ((prioridad[b.nivel] || 0) > (prioridad[a.nivel] || 0) ? b : a));
+    const color = colores[peor.nivel] || '#38bdf8';
+    const punto = [Number(peor.latitud), Number(peor.longitud)];
+    const icono = L.divIcon({
+      className: 'radar-marcador',
+      html: `<span class="radar-punto" style="--c:${color}"><i></i><i></i><b></b></span>`,
+      iconSize: [28, 28], iconAnchor: [14, 14]
+    });
+    const marcador = L.marker(punto, { icon: icono }).addTo(mapa);
+
+    const detalle = document.createElement('div');
+    miembros.forEach(usuario => {
+      const bloque = document.createElement('div');
+      bloque.className = 'popup-usuario';
+      const nombre = document.createElement('strong');
+      nombre.textContent = usuario.nombre || 'Usuario';
+      const zona = document.createElement('div');
+      zona.textContent = [usuario.distrito, usuario.zonaNombre].filter(Boolean).join(' · ') || 'Sin zona';
+      bloque.append(nombre, zona);
+      detalle.append(bloque);
+    });
+    marcador.bindPopup(detalle, { className: 'popup-ubicacion' });
+
+    const lugar = peor.distrito || peor.departamento || peor.zonaNombre || 'Sin ubicación';
+    const texto = miembros.length > 1 ? `${lugar} · ${miembros.length}` : lugar;
+    marcador.bindTooltip(texto, {
+      permanent: true, direction: 'top', offset: [0, -10], className: 'etiqueta-ubicacion'
+    });
+  });
+});
+</script>
+{% endblock %}
