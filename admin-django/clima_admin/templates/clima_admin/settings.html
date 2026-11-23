@@ -1,4 +1,77 @@
 {% extends "clima_admin/base.html" %}
-{% block page_content %}<section class="section-page"><div class="section-heading"><p class="eyebrow">SISTEMA</p><h1>Configuración</h1><p>Preferencias del panel y control de acceso administrativo.</p></div>
-{% if success %}<div class="notice success">{{ success }}</div>{% endif %}{% if error %}<div class="notice error">{{ error }}</div>{% endif %}
-<div class="settings-grid"><article class="section-card"><h2>Análisis de tendencia</h2><p>Variación mínima entre lecturas consecutivas para activar la alerta.</p><form method="post" action="{% url 'clima_admin:save_settings' %}">{% csrf_token %}<label for="trend-threshold">Umbral (°C)</label><input id="trend-threshold" name="trend_threshold" type="number" min="0.1" max="10" step="0.1" value="{{ threshold }}" required><button type="submit">Guardar preferencia</button></form></article><article class="section-card"><h2>Usuarios administradores</h2><p>Gestiona usuarios y permisos con las herramientas protegidas de Django.</p><a class="action-link" href="{% url 'admin:auth_user_changelist' %}">Abrir gestión de usuarios →</a></article><article class="section-card"><h2>Apariencia</h2><p>Usa el control <strong>Tema</strong> de la cabecera para alternar entre modo claro y oscuro. La preferencia queda guardada en este navegador.</p></article></div></section>{% endblock %}
+{% load static %}
+{% block title %}Configuración | Administración{% endblock %}
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/dashboard.css' %}">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/paginas.css' %}">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/panel-diseno.css' %}">
+{% endblock %}
+{% block page_content %}
+<div class="pagina">
+  <section class="hero-admin">
+    <div>
+      <p class="crumbs">Inicio › Sistema</p>
+      <h1>Configuración</h1>
+      <p class="texto-suave mb-0">Preferencias del panel y control de acceso administrativo.</p>
+    </div>
+    <div class="hero-admin-hora">Actualizado<strong>{% now "H:i" %}</strong></div>
+  </section>
+
+  {% if success %}<div class="notice success">{{ success }}</div>{% endif %}
+  {% if error %}<div class="notice error">{{ error }}</div>{% endif %}
+
+  <div class="row g-3 align-items-stretch ajustes-fila">
+    <div class="col-12 col-lg-6 d-flex">
+      <section class="ajuste-tarjeta">
+        <div class="ajuste-cabecera">
+          <span class="ajuste-icono" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/><path d="M4 21V14M9 21V11M14 21V15M19 21V9"/></svg></span>
+          <div>
+            <h2>Análisis de tendencia</h2>
+            <p>Variación mínima entre lecturas consecutivas para activar la alerta.</p>
+          </div>
+        </div>
+        <form method="post" action="{% url 'clima_admin:save_settings' %}" class="ajustes-form">
+          {% csrf_token %}
+          <label for="trend-threshold">Umbral (°C)</label>
+          <input id="trend-threshold" class="form-control" name="trend_threshold" type="number" min="0.1" max="10" step="0.1" value="{{ threshold }}" required>
+          <button type="submit" class="btn-acc">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h7V3"/><path d="M8 14h8"/></svg>
+            Guardar preferencia
+          </button>
+        </form>
+        <svg class="ajuste-grafico" viewBox="0 0 300 120" aria-hidden="true">
+          <g class="barras"><rect x="150" y="80" width="18" height="40"/><rect x="180" y="62" width="18" height="58"/><rect x="210" y="45" width="18" height="75"/><rect x="240" y="30" width="18" height="90"/></g>
+          <polyline points="20,100 60,88 100,90 130,60 160,30 190,46 220,16 260,6 300,20"/>
+          <g class="puntos"><circle cx="60" cy="88" r="3"/><circle cx="130" cy="60" r="3"/><circle cx="160" cy="30" r="3"/><circle cx="220" cy="16" r="3"/><circle cx="260" cy="6" r="3"/></g>
+        </svg>
+      </section>
+    </div>
+    <div class="col-12 col-lg-6 d-flex">
+      <section class="ajuste-tarjeta ajuste-tarjeta-usuarios">
+        <div class="ajuste-cabecera">
+          <span class="ajuste-icono" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.8"/><path d="M16 14.5a5.5 5.5 0 0 1 6 5.5"/></svg></span>
+          <div>
+            <h2>Usuarios administradores</h2>
+            <p>Gestiona usuarios y permisos con las herramientas protegidas de Django.</p>
+          </div>
+        </div>
+        <a class="btn-acc btn-acc-link" href="{% url 'admin:auth_user_changelist' %}">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M19 8v6M16 11h6"/></svg>
+          Abrir gestión de usuarios →
+        </a>
+        <svg class="ajuste-escudo" viewBox="0 0 120 140" aria-hidden="true">
+          <path d="M60 6 110 24v38c0 34-22 60-50 72C32 122 10 96 10 62V24z"/>
+          <circle cx="60" cy="58" r="16"/><path d="M36 110c4-16 14-24 24-24s20 8 24 24"/>
+          <circle class="check" cx="104" cy="112" r="14"/><path class="check-marca" d="M97 112l5 5 10-10"/>
+        </svg>
+      </section>
+    </div>
+  </div>
+
+  <p class="page-foot">Clima Costero · Panel de administración</p>
+</div>
+{% endblock %}

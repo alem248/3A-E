@@ -1,0 +1,91 @@
+{% extends "clima_admin/base.html" %}
+{% load static %}
+{% block title %}Alertas globales | Administración{% endblock %}
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/dashboard.css' %}">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/paginas.css' %}">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/panel-diseno.css' %}">
+{% endblock %}
+{% block page_content %}
+<div class="pagina">
+  <section class="hero-admin">
+    <div>
+      <p class="crumbs">Inicio › Alertas</p>
+      <h1>Alertas globales</h1>
+      <p class="texto-suave mb-0">{{ notice }}</p>
+    </div>
+    <div class="hero-admin-hora">Actualizado<strong>{% now "H:i" %}</strong></div>
+  </section>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-md-6">
+      <article class="kpi kpi-rojo">
+        <div class="kpi-icono" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
+        <div><span>Reglas configuradas</span><strong>{{ reglas_total }}</strong></div>
+      </article>
+    </div>
+    <div class="col-12 col-md-6">
+      <article class="kpi kpi-cian">
+        <div class="kpi-icono" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+        <div><span>Zonas con regla</span><strong>{{ zonas_con_regla }}</strong></div>
+      </article>
+    </div>
+  </div>
+
+  <section class="dash-card panel-brillo">
+    <div class="regla-cabecera">
+      <h2>Reglas de alerta</h2>
+      <input id="buscar-regla" class="buscador" type="search" placeholder="Buscar regla…" aria-label="Buscar regla">
+    </div>
+    {% if items %}
+    <div class="tabla-wrap">
+      <table class="tabla-reglas">
+        <thead><tr><th>Regla</th><th>Zona</th><th>Umbral</th><th>Nivel</th><th>Condición</th></tr></thead>
+        <tbody id="cuerpo-reglas">
+          {% for item in items %}
+          <tr style="--c: {{ item.nivel.color|default:'#64748b' }}">
+            <td>
+              <div class="regla-celda">
+                <svg class="regla-termometro" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M14 14.8V4a2 2 0 0 0-4 0v10.8a4 4 0 1 0 4 0z"/></svg>
+                <span class="regla-nombre">{{ item.nombre }}</span>
+              </div>
+            </td>
+            <td><span class="zona-badge">{{ item.zonaId }}</span></td>
+            <td><span class="umbral">{{ item.temperaturaUmbral }} °C</span></td>
+            <td><span class="nivel-pill">{{ item.nivel.nombre|default:"—" }}</span></td>
+            <td>
+              <span class="condicion">
+                {% if item.nivel.umbralInferior is not None and item.nivel.umbralSuperior is not None %}{{ item.nivel.umbralInferior }} – {{ item.nivel.umbralSuperior }} °C
+                {% elif item.nivel.umbralSuperior is not None %}menor que {{ item.nivel.umbralSuperior }} °C
+                {% elif item.nivel.umbralInferior is not None %}≥ {{ item.nivel.umbralInferior }} °C
+                {% else %}≥ {{ item.temperaturaUmbral }} °C{% endif %}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <script>
+      document.getElementById('buscar-regla').addEventListener('input', (evento) => {
+        const texto = evento.target.value.trim().toLowerCase();
+        document.querySelectorAll('#cuerpo-reglas tr').forEach((fila) => {
+          fila.hidden = texto !== '' && !fila.textContent.toLowerCase().includes(texto);
+        });
+      });
+    </script>
+    {% else %}
+    <div class="vacio-bloque">
+      <p>No hay reglas de alerta para mostrar.</p>
+      <small>Verifica que el servicio de Spring esté en ejecución.</small>
+    </div>
+    {% endif %}
+  </section>
+
+  <p class="page-foot">Clima Costero · Panel de administración</p>
+</div>
+{% endblock %}
