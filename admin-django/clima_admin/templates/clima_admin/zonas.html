@@ -1,0 +1,88 @@
+{% extends "clima_admin/base.html" %}
+{% load static %}
+{% block title %}Zonas y regiones | Administración{% endblock %}
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/dashboard.css' %}">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/historial.css' %}">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/zonas.css' %}">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/panel-diseno.css' %}">
+{% endblock %}
+{% block page_content %}
+<div class="zonas-page">
+  <section class="hero-admin">
+    <div>
+      <p class="crumbs">Inicio › Administración</p>
+      <h1>Zonas y regiones</h1>
+      <p class="texto-suave mb-0">{{ notice }}</p>
+    </div>
+    <div class="hero-admin-hora">Actualizado<strong>{% now "H:i" %}</strong></div>
+  </section>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-md-4">
+      <article class="kpi">
+        <div class="kpi-icono azul" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+        <div><span>Zonas conectadas</span><strong>{{ zones_count }}</strong></div>
+      </article>
+    </div>
+    <div class="col-12 col-md-4">
+      <article class="kpi">
+        <div class="kpi-icono rojo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
+        <div><span>Con riesgo naranja o rojo</span><strong>{{ con_riesgo }}</strong></div>
+      </article>
+    </div>
+    <div class="col-12 col-md-4">
+      <article class="kpi">
+        <div class="kpi-icono cian" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div><span>Sin lectura disponible</span><strong>{{ sin_lectura }}</strong></div>
+      </article>
+    </div>
+  </div>
+
+  <section class="dash-card panel-brillo panel-brillo">
+    <div class="zonas-card-head">
+      <h2>Catálogo de zonas conectadas</h2>
+      <span>{{ zones_count }} zonas</span>
+    </div>
+
+    {% if items %}
+    <div class="zonas-table-wrap">
+      <table>
+        <thead>
+          <tr><th>Zona</th><th>Región</th><th>Temperatura</th><th>Riesgo</th><th>Estado</th></tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td><span class="zona-nombre">{{ item.nombre }}</span></td>
+            <td>{{ item.departamento|default:"—" }}</td>
+            <td><span class="temp-valor">{% if item.tsm is not None %}{{ item.tsm }} °C{% else %}—{% endif %}</span></td>
+            <td>
+              <span class="riesgo-pill">
+                <i class="punto" style="background: {{ item.nivel.color|default:'#64748b' }}" aria-hidden="true"></i>
+                {{ item.nivel.nombre|default:"Sin nivel" }}
+              </span>
+            </td>
+            <td>
+              {% if item.disponible %}<span class="estado ok">Disponible</span>{% else %}<span class="estado sin">Sin lectura</span>{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="zonas-empty">
+      <p>No hay zonas conectadas en este momento.</p>
+      <small>Verifica que el servicio de Spring esté en ejecución.</small>
+    </div>
+    {% endif %}
+  </section>
+
+  <p class="page-foot">Clima Costero · Panel de administración</p>
+</div>
+{% endblock %}
