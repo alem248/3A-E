@@ -73,6 +73,7 @@ function crearBadge(nivel, texto) {
 }
 
 function crearOpciones() {
+    selectorEscenario.innerHTML = "";
     Object.entries(ESCENARIOS).forEach(([clave, escenario]) => {
         const opcion = document.createElement("option");
         opcion.value = clave;
