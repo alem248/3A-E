@@ -1,0 +1,681 @@
+/* Página principal, versión compacta.
+   Se carga después de estilos.css y fotos-zonas.css; reutiliza sus variables de tema
+   y no modifica el marcado ni la lógica de las alertas. */
+
+body.pagina-body {
+    font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    background:
+        radial-gradient(800px 420px at 10% -10%, rgba(14, 165, 233, 0.16), transparent 60%),
+        radial-gradient(640px 380px at 100% 0%, rgba(37, 99, 235, 0.12), transparent 55%),
+        var(--fondo);
+}
+
+.app.pagina {
+    max-width: 1120px;
+    gap: 0.75rem;
+    padding: 0.8rem 1rem 1.25rem;
+}
+
+.icono {
+    width: 1em;
+    height: 1em;
+    flex: 0 0 auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* ---------- Cabecera compacta ---------- */
+
+.cabecera {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    min-height: 96px;
+    padding: 0.8rem 1.1rem;
+    overflow: hidden;
+    border-radius: 16px;
+    color: #e2e8f0;
+    background: #071a33;
+    box-shadow: 0 16px 36px -26px rgba(7, 26, 51, 0.9);
+}
+
+.cabecera-arte {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.cabecera::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(90deg, rgba(7, 26, 51, 0.95) 35%, rgba(7, 26, 51, 0.1) 80%);
+    pointer-events: none;
+}
+
+.cabecera-texto {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.cabecera-logo {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 auto;
+}
+
+.cabecera h1 {
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(1.25rem, 2.6vw, 1.6rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-align: left;
+}
+
+.cabecera-texto p {
+    margin: 0.15rem 0 0;
+    color: #bcd3ea;
+    font-size: 0.8rem;
+}
+
+.cabecera-acciones {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+
+.cabecera-pildora {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    color: #e0f2fe;
+    background: rgba(8, 20, 36, 0.55);
+    font-size: 0.74rem;
+    font-weight: 600;
+    backdrop-filter: blur(6px);
+}
+
+.cabecera-pildora .icono {
+    width: 0.9rem;
+    height: 0.9rem;
+}
+
+.cabecera .boton-tema {
+    position: static;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.8rem;
+    color: #ffffff;
+    background: rgba(8, 20, 36, 0.55);
+    border-color: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(6px);
+}
+
+/* ---------- Menú en una sola fila ---------- */
+
+.menu-principal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.35rem;
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--superficie) 85%, transparent);
+    backdrop-filter: blur(10px);
+}
+
+.menu-principal form {
+    margin: 0;
+}
+
+.menu-principal .boton-historicos {
+    gap: 0.4rem;
+    min-height: 34px;
+    padding: 0.35rem 0.75rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    background: linear-gradient(135deg, var(--acento), #0ea5e9);
+    box-shadow: 0 8px 16px -12px rgba(37, 99, 235, 0.9);
+}
+
+/* ---------- Tarjetas base ---------- */
+
+.tarjeta-clima {
+    position: relative;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--superficie) 92%, transparent);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 12px 26px -22px rgba(15, 23, 42, 0.5);
+    overflow: hidden;
+}
+
+/* Franja de color superior: une todas las tarjetas */
+.tarjeta-clima::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--acento), #38bdf8);
+    opacity: 0.8;
+}
+
+.tarjeta-clima h2 {
+    margin: 0 0 0.45rem;
+    font-size: 0.92rem;
+    letter-spacing: -0.01em;
+}
+
+.titulo-tarjeta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.titulo-tarjeta .icono {
+    width: 1.05rem;
+    height: 1.05rem;
+    color: var(--acento);
+}
+
+.etiqueta {
+    display: block;
+    margin: 0 0 0.15rem;
+    color: #64748b;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* ---------- Clima y ubicación ---------- */
+
+.fila-clima {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 0.75rem;
+}
+
+.tarjeta-clima-actual {
+    background:
+        radial-gradient(220px 130px at 100% 0%, rgba(56, 189, 248, 0.22), transparent 70%),
+        color-mix(in srgb, var(--superficie) 92%, transparent);
+}
+
+.clima-principal {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.icono-sol {
+    width: 56px;
+    height: 56px;
+    flex: 0 0 auto;
+    filter: drop-shadow(0 6px 12px rgba(14, 165, 233, 0.25));
+}
+
+.temperatura-valor {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 2.6rem);
+    line-height: 1;
+    font-weight: 750;
+    letter-spacing: -0.04em;
+}
+
+.temperatura-valor strong {
+    font-weight: inherit;
+}
+
+.datos-linea {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0.6rem 0 0;
+}
+
+.datos-linea > div {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    padding: 0.25rem 0.55rem;
+    border: 1px solid var(--borde);
+    border-radius: 999px;
+    background: var(--fondo);
+    font-size: 0.78rem;
+}
+
+.datos-linea dt {
+    color: #64748b;
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.datos-linea dd {
+    margin: 0;
+    font-weight: 650;
+}
+
+.tarjeta-ubicacion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    background:
+        linear-gradient(170deg, color-mix(in srgb, #0ea5e9 10%, var(--superficie)) 0%, var(--superficie) 70%);
+}
+
+.tarjeta-ubicacion .descripcion {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.8rem;
+}
+
+.tarjeta-ubicacion button {
+    align-self: flex-start;
+    min-height: 34px;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 650;
+}
+
+.tarjeta-ubicacion #estado-ubicacion,
+.tarjeta-ubicacion #comparacion-ubicacion {
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+/* ---------- Mapa: protagonista ---------- */
+
+.tarjeta-mapa .mapa-contenedor {
+    gap: 0.6rem;
+}
+
+.tarjeta-mapa #mapa {
+    height: 280px;
+    border-radius: 12px;
+}
+
+.tarjeta-mapa .leyenda {
+    width: 200px;
+    padding: 0.7rem;
+    border-radius: 12px;
+    font-size: 0.82rem;
+}
+
+/* ---------- Alertas en cuadrícula compacta ---------- */
+
+.alertas-termicas {
+    background:
+        linear-gradient(180deg, color-mix(in srgb, #0ea5e9 8%, var(--superficie)) 0, var(--superficie) 90px);
+}
+
+.alertas-encabezado {
+    margin-bottom: 0.35rem;
+}
+
+.alertas-sobrelinea {
+    font-size: 0.6rem;
+}
+
+.alertas-descripcion {
+    font-size: 0.8rem;
+}
+
+.alertas-controles {
+    margin-bottom: 0.45rem;
+}
+
+.alertas-lista {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.5rem;
+}
+
+.alerta-termica {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.2rem 0.4rem;
+    padding: 0.35rem 0.5rem;
+    border-left: 3px solid var(--alerta-color);
+    border-radius: 10px;
+}
+
+.alerta-termica .alerta-termica-indicador {
+    display: none;
+}
+
+.alerta-termica-zona,
+.alerta-termica-hora {
+    grid-column: 1 / -1;
+}
+
+.alerta-termica-zona strong {
+    font-size: 0.84rem;
+}
+
+.alerta-termica-temperatura strong {
+    font-size: 0.86rem;
+}
+
+.alerta-termica-riesgo {
+    font-size: 0.72rem;
+}
+
+.alerta-termica.con-foto {
+    grid-template-columns: 1fr 1fr;
+    padding: 0.3rem 0.4rem 0.4rem;
+}
+
+.alerta-foto {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: 66px;
+    object-fit: cover;
+    border-radius: 7px;
+    box-shadow: none;
+}
+
+/* ---------- Histórico: formulario a la izquierda, resultados a la derecha ---------- */
+
+.tarjeta-historico {
+    display: grid;
+    grid-template-columns: 290px minmax(0, 1fr);
+    column-gap: 1rem;
+    align-items: start;
+}
+
+.tarjeta-historico > h2 {
+    grid-column: 1 / -1;
+}
+
+.formulario-historico {
+    grid-column: 1;
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 0.7rem;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    background: var(--fondo);
+}
+
+.formulario-historico > label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    color: #64748b;
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.formulario-historico input[type="date"] {
+    width: 100%;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    background: var(--superficie);
+    color: var(--texto);
+    font: inherit;
+    font-size: 0.82rem;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+.formulario-historico button {
+    width: 100%;
+    min-height: 36px;
+    padding: 0.35rem 1rem;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--acento), #0ea5e9);
+    color: #ffffff;
+    font-size: 0.84rem;
+    font-weight: 650;
+    box-shadow: 0 8px 16px -12px rgba(37, 99, 235, 0.9);
+}
+
+.meses {
+    width: 100%;
+    margin: 0;
+    padding: 0.4rem 0.5rem 0.5rem;
+    border: 1px dashed var(--borde);
+    border-radius: 10px;
+    background: var(--superficie);
+}
+
+.meses legend {
+    padding: 0 0.3rem;
+    color: #64748b;
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.meses-opciones {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.3rem;
+}
+
+.meses-opciones label {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.3rem;
+    border: 1px solid var(--borde);
+    border-radius: 999px;
+    background: var(--fondo);
+    color: var(--texto);
+    font-size: 0.76rem;
+    cursor: pointer;
+    transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.meses-opciones label:hover {
+    border-color: var(--acento);
+}
+
+.meses-opciones label input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.meses-opciones label:has(input:checked) {
+    border-color: var(--acento);
+    background: var(--acento);
+    color: #ffffff;
+    font-weight: 650;
+}
+
+.meses-opciones label:has(input:focus-visible) {
+    outline: 2px solid var(--texto);
+    outline-offset: 2px;
+}
+
+#estado-historico,
+#historico-resumen,
+#historico-comparacion,
+#historico-calendario,
+#historico-grafico {
+    grid-column: 2;
+}
+
+#estado-historico {
+    margin: 0 0 0.4rem;
+    font-size: 0.82rem;
+}
+
+.historico-resumen {
+    margin-top: 0;
+}
+
+.historico-grafico {
+    padding: 8px;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    background: var(--fondo);
+}
+
+/* ---------- Pie compacto ---------- */
+
+.pie-pagina {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.5rem;
+}
+
+.pie-tarjeta {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--superficie) 92%, transparent);
+    color: #64748b;
+    font-size: 0.76rem;
+    line-height: 1.35;
+}
+
+.pie-icono {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 auto;
+    border-radius: 8px;
+    color: var(--acento);
+    background: color-mix(in srgb, var(--acento) 14%, var(--superficie));
+}
+
+.pie-icono .icono {
+    width: 0.95rem;
+    height: 0.95rem;
+}
+
+.pie-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+}
+
+.pie-texto strong {
+    color: var(--texto);
+    font-size: 0.8rem;
+}
+
+.pie-texto a {
+    color: var(--acento);
+    font-weight: 700;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 860px) {
+    .fila-clima {
+        grid-template-columns: 1fr;
+    }
+
+    .tarjeta-historico {
+        grid-template-columns: 1fr;
+    }
+
+    .formulario-historico,
+    #estado-historico,
+    #historico-resumen,
+    #historico-comparacion,
+    #historico-calendario,
+    #historico-grafico {
+        grid-column: 1;
+        grid-row: auto;
+    }
+}
+
+@media (max-width: 720px) {
+    .cabecera {
+        flex-wrap: wrap;
+    }
+
+    .cabecera-arte {
+        opacity: 0.35;
+    }
+
+    .cabecera-acciones {
+        width: 100%;
+        margin-left: 0;
+        justify-content: flex-start;
+    }
+
+    .menu-principal {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-x: auto;
+    }
+
+    .menu-principal .boton-historicos {
+        white-space: nowrap;
+    }
+
+    .meses-opciones {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .tarjeta-mapa #mapa {
+        height: 240px;
+    }
+
+    .tarjeta-mapa .leyenda {
+        width: 100%;
+    }
+}
+
+@media (max-width: 560px) {
+    .app.pagina {
+        padding: 0.6rem 0.6rem 1rem;
+    }
+
+    .icono-sol {
+        width: 46px;
+        height: 46px;
+    }
+
+    .alertas-lista {
+        grid-template-columns: 1fr;
+    }
+
+    .meses-opciones {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}

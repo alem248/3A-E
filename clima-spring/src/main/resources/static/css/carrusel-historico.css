@@ -1,0 +1,196 @@
+/* Carrusel del calendario y disposición de resultados del histórico
+   (ver js/carrusel-historico.js). Solo presentación. */
+
+/* Botón Limpiar: restablece el formulario y borra los resultados sin recargar */
+.boton-limpiar {
+    width: 100%;
+    min-height: 34px;
+    margin-top: .4rem;
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--texto);
+    font: inherit;
+    font-size: .82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .2s ease, color .2s ease;
+}
+
+.boton-limpiar:hover,
+.boton-limpiar:focus-visible {
+    border-color: var(--acento);
+    color: var(--acento);
+    outline: none;
+}
+
+/* Disposición: formulario a la izquierda, resultados pegados a la derecha */
+.tarjeta-historico {
+    grid-template-columns: 260px minmax(0, 1fr);
+}
+
+.formulario-historico {
+    align-self: start;
+}
+
+.historico-resultados {
+    grid-column: 2;
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    min-width: 0;
+}
+
+#estado-historico {
+    margin: 0;
+    font-size: 0.82rem;
+}
+
+.historico-resultados .historico-resumen,
+.historico-resultados .historico-comparacion,
+.historico-resultados .historico-calendario,
+.historico-resultados .historico-grafico {
+    margin: 0;
+}
+
+/* Carrusel */
+.carrusel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    outline: none;
+}
+
+.carrusel:focus-visible {
+    box-shadow: 0 0 0 2px var(--acento);
+    border-radius: 12px;
+}
+
+.carrusel-titulo {
+    margin: 0;
+    text-align: center;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--texto);
+}
+
+.carrusel-fila {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) 36px;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.carrusel-boton {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid var(--borde);
+    border-radius: 50%;
+    background: var(--superficie);
+    color: var(--texto);
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 150ms ease, color 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.carrusel-boton:hover {
+    background: var(--acento);
+    border-color: var(--acento);
+    color: #ffffff;
+    transform: scale(1.06);
+}
+
+.carrusel-boton:focus-visible {
+    outline: 2px solid var(--texto);
+    outline-offset: 2px;
+}
+
+.carrusel.sin-navegacion .carrusel-boton {
+    visibility: hidden;
+}
+
+.carrusel-pista {
+    min-width: 0;
+}
+
+.carrusel-pista > .calendario-mes {
+    display: none;
+    margin: 0;
+}
+
+.carrusel-pista > .calendario-mes.activo {
+    display: block;
+    animation: carrusel-entra 260ms ease both;
+}
+
+/* El nombre del mes ya aparece en el título del carrusel */
+.carrusel .calendario-mes h3 {
+    display: none;
+}
+
+.carrusel .calendario-grilla {
+    max-width: 340px;
+    margin: 0 auto;
+    gap: 3px;
+}
+
+.carrusel .calendario-cabecera {
+    font-size: 11px;
+}
+
+.carrusel .dia {
+    font-size: 12px;
+}
+
+@keyframes carrusel-entra {
+    from {
+        opacity: 0;
+        transform: translateX(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .carrusel-pista > .calendario-mes.activo {
+        animation: none;
+    }
+}
+
+@media (max-width: 860px) {
+    .tarjeta-historico {
+        grid-template-columns: 1fr;
+    }
+
+    .historico-resultados {
+        grid-column: 1;
+        grid-row: auto;
+    }
+}
+
+@media (max-width: 560px) {
+    .carrusel-fila {
+        grid-template-columns: 32px minmax(0, 1fr) 32px;
+        gap: 0.3rem;
+    }
+
+    .carrusel-boton {
+        width: 32px;
+        height: 32px;
+        font-size: 1.1rem;
+    }
+}
+
+.historico-fuente {
+    margin: 12px 0 0;
+    font-size: 0.8rem;
+    opacity: 0.75;
+}
