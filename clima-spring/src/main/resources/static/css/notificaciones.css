@@ -1,0 +1,62 @@
+/* Campanita de avisos dentro de la barra lateral. */
+.sesion-campana {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+}
+
+.contador-notificaciones {
+    min-width: 1.4rem;
+    padding: .05rem .4rem;
+    border-radius: 999px;
+    background: #ef4444;
+    color: #fff;
+    font-size: .72rem;
+}
+
+.contador-notificaciones[hidden] {
+    display: none;
+}
+
+.panel-notificaciones {
+    max-height: 260px;
+    overflow-y: auto;
+    padding: .5rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .08);
+}
+
+.panel-notificaciones[hidden] {
+    display: none;
+}
+
+.lista-notificaciones {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+}
+
+.notificacion,
+.notificacion-vacia {
+    padding: .5rem .6rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .06);
+    font-size: .8rem;
+}
+
+.notificacion.no-leida {
+    border-left: 3px solid #f59e0b;
+}
+
+.notificacion p {
+    margin: .2rem 0;
+}
+
+.notificacion small,
+.notificacion-vacia {
+    opacity: .75;
+}
