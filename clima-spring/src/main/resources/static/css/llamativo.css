@@ -1,0 +1,311 @@
+/* Acabado visual: monitoreo de temperatura, cabecera y noticias.
+   Solo presentación. Se carga al final para sobrescribir los estilos anteriores. */
+
+/* ---------- Cabecera ---------- */
+.cabecera-panel {
+    min-height: 190px;
+    padding: 1.4rem 1.6rem;
+    border-radius: 26px;
+    box-shadow: 0 22px 44px rgba(6, 34, 74, .28);
+}
+
+.cabecera-panel::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 46px;
+    background: linear-gradient(180deg, transparent, #f7fbff);
+    clip-path: polygon(0 60%, 14% 40%, 32% 65%, 52% 35%, 72% 62%, 88% 38%, 100% 58%, 100% 100%, 0 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.saludo {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .25rem .75rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .16);
+    backdrop-filter: blur(6px);
+    font-weight: 600;
+}
+
+.cabecera-texto-panel h1 {
+    font-size: clamp(1.7rem, 3vw, 2.4rem);
+    letter-spacing: -.01em;
+}
+
+.subtitulo {
+    font-style: italic;
+    color: #ffd166;
+    opacity: 1;
+}
+
+.cabecera-pildora,
+.boton-tema {
+    backdrop-filter: blur(6px);
+}
+
+.cabecera-pildora {
+    background: rgba(255, 255, 255, .18);
+    border: 1px solid rgba(255, 255, 255, .25);
+}
+
+/* ---------- Monitoreo de temperatura (alertas) ---------- */
+.alertas-termicas {
+    padding: 1.2rem 1.3rem 1.1rem;
+    border-radius: 22px;
+    background: linear-gradient(160deg, #ffffff 0%, #eef6ff 100%);
+    box-shadow: 0 14px 34px rgba(11, 58, 115, .12);
+}
+
+.alertas-encabezado h2 {
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.alertas-sobrelinea {
+    color: #2563eb;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-size: .72rem;
+}
+
+.alertas-lista {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: .9rem;
+    margin-top: .8rem;
+}
+
+.alerta-termica {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 190px;
+    padding: .9rem;
+    overflow: hidden;
+    border: 0;
+    border-radius: 18px;
+    background: linear-gradient(160deg, #0b3a73, #1d6fb0);
+    color: #fff;
+    box-shadow: 0 10px 22px rgba(6, 34, 74, .22);
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.alerta-termica:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 30px rgba(6, 34, 74, .3);
+}
+
+/* Barra de color del nivel en el borde superior */
+.alerta-termica::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--alerta-color, #94a3b8);
+    z-index: 2;
+}
+
+.alerta-termica .alerta-termica-indicador {
+    display: none;
+}
+
+/* Foto de fondo con degradado para que el texto se lea */
+.alerta-termica.con-foto > .alerta-foto,
+.alerta-termica > .alerta-foto {
+    position: absolute !important;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    border-radius: 0;
+    z-index: 0;
+}
+
+.alerta-termica::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(6, 34, 74, .05) 0%, rgba(6, 34, 74, .55) 55%, rgba(6, 34, 74, .92) 100%);
+    z-index: 1;
+}
+
+.alerta-termica > *:not(.alerta-foto):not(.alerta-termica-indicador) {
+    position: relative;
+    z-index: 2;
+}
+
+.alerta-termica-zona strong {
+    font-size: .98rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.alerta-termica-zona span {
+    display: block;
+    font-size: .74rem;
+    opacity: .8;
+}
+
+.alerta-termica-temperatura {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: .3rem .5rem;
+    margin-top: .3rem;
+}
+
+.alerta-termica-temperatura strong {
+    font-size: 1.7rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.alerta-termica-temperatura span {
+    font-size: .7rem;
+    opacity: .8;
+}
+
+.alerta-termica-riesgo {
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+    margin-top: .4rem;
+}
+
+.alerta-termica-nivel {
+    align-self: flex-start;
+    padding: .15rem .6rem;
+    border-radius: 999px;
+    background: var(--alerta-color, #94a3b8);
+    color: #fff;
+    font-size: .7rem;
+    font-weight: 700;
+}
+
+.alerta-termica-riesgo > span:not(.alerta-termica-nivel) {
+    font-size: .72rem;
+    opacity: .85;
+}
+
+.alerta-termica-umbral,
+.alerta-termica-hora {
+    font-size: .66rem;
+    opacity: .7;
+}
+
+/* ---------- Noticias del clima ---------- */
+.noticias {
+    padding: .3rem;
+}
+
+.noticias-encabezado {
+    padding: .8rem 1rem;
+    border-radius: 18px;
+    background: linear-gradient(90deg, #ffffff, #e6f1ff);
+    box-shadow: 0 8px 20px rgba(11, 58, 115, .08);
+}
+
+.noticias-titulo {
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.noticias-titulo .icono {
+    width: 42px;
+    height: 42px;
+    padding: .55rem;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #2563eb, #22a7f0);
+    color: #fff;
+    stroke: #fff;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, .35);
+}
+
+.noticias-lista {
+    gap: .7rem;
+}
+
+.noticia {
+    grid-template-columns: 170px minmax(0, 1fr);
+    gap: 1rem;
+    padding: .7rem;
+    border: 0;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 10px 24px rgba(11, 58, 115, .1);
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.noticia:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 30px rgba(11, 58, 115, .16);
+}
+
+.noticia-imagen {
+    width: 170px;
+    height: 110px;
+    border-radius: 14px;
+}
+
+.noticia-etiqueta {
+    padding: .2rem .7rem;
+    font-size: .74rem;
+}
+
+.noticia-titulo {
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.noticia-resumen {
+    font-size: .86rem;
+    -webkit-line-clamp: 2;
+}
+
+.noticia-leer {
+    margin-top: .3rem;
+    padding: .35rem .95rem;
+    border: 0;
+    background: linear-gradient(90deg, #2563eb, #22a7f0);
+    color: #fff;
+    box-shadow: 0 6px 14px rgba(37, 99, 235, .3);
+    font-size: .8rem;
+}
+
+.noticia-leer:hover,
+.noticia-leer:focus-visible {
+    background: linear-gradient(90deg, #1d4ed8, #0ea5e9);
+    color: #fff;
+}
+
+[data-theme="dark"] .alertas-termicas,
+[data-theme="dark"] .noticias-encabezado,
+[data-theme="dark"] .noticia {
+    background: #0f2643;
+    color: #e6f1ff;
+}
+
+@media (max-width: 560px) {
+    .noticia {
+        grid-template-columns: 110px minmax(0, 1fr);
+    }
+
+    .noticia-imagen {
+        width: 110px;
+        height: 84px;
+    }
+
+    .alertas-lista {
+        grid-template-columns: 1fr 1fr;
+    }
+}

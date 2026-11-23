@@ -1,0 +1,365 @@
+/* Diseño tipo dashboard: barra lateral, cabecera con animación y cuadrícula.
+   Solo presentación: no cambia IDs, endpoints ni la lógica de js/. */
+
+.panel-body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #eaf4fc 0%, #f7fbff 100%);
+    color: var(--texto, #0b1f3a);
+}
+
+.panel {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    min-height: 100vh;
+}
+
+/* ---------- Barra lateral ---------- */
+.barra-lateral {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: .9rem;
+    padding: 1.2rem .9rem;
+    overflow-y: auto;
+    background: linear-gradient(180deg, #06224a 0%, #0b3a73 60%, #1d6fb0 100%);
+    color: #e6f1ff;
+    border-radius: 0 24px 24px 0;
+}
+
+.marca {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    padding: .3rem .4rem;
+    color: inherit;
+    text-decoration: none;
+}
+
+.marca-icono {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+}
+
+.marca-texto strong {
+    display: block;
+    font-size: 1rem;
+    line-height: 1.15;
+}
+
+.marca-texto small {
+    opacity: .75;
+    font-size: .75rem;
+}
+
+.navegacion {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+}
+
+.navegacion-secundaria {
+    font-size: .9rem;
+}
+
+.formulario-nav {
+    margin: 0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    width: 100%;
+    padding: .55rem .7rem;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: .9rem;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color .2s ease;
+}
+
+.nav-item:hover,
+.nav-item:focus-visible {
+    background: rgba(255, 255, 255, .12);
+    outline: none;
+}
+
+.nav-item.activo {
+    background: linear-gradient(90deg, #2563eb, #22a7f0);
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, .35);
+}
+
+.nav-item .icono {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.separador {
+    height: 1px;
+    margin: .2rem .4rem;
+    background: rgba(255, 255, 255, .18);
+}
+
+.boton-admin {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: .7rem;
+    border: 0;
+    border-radius: 14px;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    color: #1f2937;
+    font: inherit;
+    font-weight: 700;
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+/* ---------- Contenido ---------- */
+.contenido {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+    padding: 1rem 1.2rem 1.4rem;
+}
+
+.cabecera-panel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .8rem 1.2rem;
+    min-height: 150px;
+    padding: 1.1rem 1.3rem;
+    overflow: hidden;
+    border-radius: 22px;
+    color: #fff;
+    background:
+        linear-gradient(90deg, rgba(6, 34, 74, .92) 0%, rgba(6, 34, 74, .55) 55%, rgba(6, 34, 74, .15) 100%),
+        url("/img/hero-costa.png") center / cover no-repeat;
+}
+
+.escena {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: .6;
+}
+
+.escena svg {
+    width: 100%;
+    height: 100%;
+}
+
+.cabecera-texto-panel,
+.cabecera-acciones {
+    position: relative;
+    z-index: 1;
+}
+
+.cabecera-texto-panel {
+    flex: 1 1 260px;
+}
+
+.saludo {
+    margin: 0;
+    font-size: .95rem;
+    opacity: .9;
+}
+
+.cabecera-texto-panel h1 {
+    margin: .1rem 0 0;
+    font-size: clamp(1.4rem, 2.6vw, 2rem);
+    font-weight: 800;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, .3);
+}
+
+.subtitulo {
+    margin: .2rem 0 0;
+    opacity: .85;
+    font-size: .9rem;
+}
+
+.cabecera-acciones {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    flex-wrap: wrap;
+}
+
+/* ---------- Animación: lluvia que cesa y sol que sale ---------- */
+.escena-cielo-dia {
+    animation: ciclo-dia 16s ease-in-out infinite;
+}
+
+.escena-sol {
+    transform-origin: 520px 60px;
+    animation: ciclo-sol 16s ease-in-out infinite;
+}
+
+.escena-nubes {
+    animation: ciclo-nubes 16s ease-in-out infinite;
+}
+
+.escena-lluvia {
+    animation: ciclo-lluvia 16s linear infinite;
+}
+
+.escena-lluvia line {
+    animation: caer .8s linear infinite;
+}
+
+.escena-lluvia line:nth-child(odd) {
+    animation-delay: -.3s;
+}
+
+.escena-persona {
+    animation: caminar .6s ease-in-out infinite;
+}
+
+.pierna-a {
+    transform-origin: 300px 166px;
+    animation: pierna 0.6s ease-in-out infinite;
+}
+
+.pierna-b {
+    transform-origin: 300px 166px;
+    animation: pierna 0.6s ease-in-out infinite reverse;
+}
+
+.brazo-a {
+    transform-origin: 300px 150px;
+    animation: brazo 0.6s ease-in-out infinite reverse;
+}
+
+.brazo-b {
+    transform-origin: 300px 150px;
+    animation: brazo 0.6s ease-in-out infinite;
+}
+
+@keyframes ciclo-dia {
+    0%, 45% { opacity: 0; }
+    75%, 100% { opacity: 1; }
+}
+
+@keyframes ciclo-sol {
+    0%, 45% { opacity: 0; transform: translateY(40px); }
+    75%, 100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ciclo-nubes {
+    0%, 45% { opacity: 1; }
+    75%, 100% { opacity: .35; }
+}
+
+@keyframes ciclo-lluvia {
+    0%, 45% { opacity: 1; }
+    65%, 100% { opacity: 0; }
+}
+
+@keyframes caer {
+    from { transform: translateY(0); }
+    to { transform: translateY(150px); }
+}
+
+@keyframes caminar {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+}
+
+@keyframes pierna {
+    0%, 100% { transform: rotate(-22deg); }
+    50% { transform: rotate(22deg); }
+}
+
+@keyframes brazo {
+    0%, 100% { transform: rotate(18deg); }
+    50% { transform: rotate(-18deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .escena *,
+    .escena-cielo-dia,
+    .escena-sol,
+    .escena-nubes,
+    .escena-lluvia {
+        animation: none !important;
+    }
+}
+
+/* ---------- Cuadrícula de tarjetas ---------- */
+.cuadricula-panel {
+    margin: 0;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 960px) {
+    .panel {
+        grid-template-columns: 1fr;
+    }
+
+    .barra-lateral {
+        position: static;
+        height: auto;
+        border-radius: 0 0 22px 22px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: .5rem;
+    }
+
+    .navegacion,
+    .navegacion-secundaria {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .separador {
+        display: none;
+    }
+
+    .boton-admin {
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 560px) {
+    .contenido {
+        padding: .7rem;
+    }
+
+    .nav-item {
+        font-size: .8rem;
+        padding: .45rem .55rem;
+    }
+
+    .cabecera-panel {
+        min-height: 0;
+    }
+}
+
+/* ---------- Modo oscuro ---------- */
+[data-theme="dark"] .panel-body {
+    background: linear-gradient(180deg, #050f1f 0%, #0a1b33 100%);
+    color: #e6f1ff;
+}

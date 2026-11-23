@@ -1,0 +1,298 @@
+/* Ajustes finales: animación del clima, carrusel de alertas y diseño del histórico.
+   Solo presentación. Se carga al final. */
+
+/* ---------- Clima actual: sol girando y nube flotando ---------- */
+.icono-sol > g {
+    transform-box: view-box;
+    transform-origin: 36px 36px;
+    animation: girar-rayos 14s linear infinite;
+}
+
+.icono-sol > circle {
+    transform-box: view-box;
+    transform-origin: 36px 36px;
+    animation: pulsar-sol 3s ease-in-out infinite;
+}
+
+.icono-sol > path {
+    animation: flotar-nube 4s ease-in-out infinite;
+}
+
+@keyframes girar-rayos {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulsar-sol {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.07); }
+}
+
+@keyframes flotar-nube {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .icono-sol > g,
+    .icono-sol > circle,
+    .icono-sol > path {
+        animation: none;
+    }
+}
+
+/* ---------- Alertas: carrusel horizontal ---------- */
+.alertas-carrusel {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin-top: .8rem;
+}
+
+.alertas-carrusel .alertas-lista {
+    flex: 1 1 auto;
+    display: flex;
+    gap: .9rem;
+    margin-top: 0;
+    min-width: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding: .2rem .1rem .8rem;
+    scrollbar-width: thin;
+}
+
+.alertas-carrusel .alertas-lista:focus-visible {
+    outline: 2px solid #22a7f0;
+    outline-offset: 4px;
+    border-radius: 12px;
+}
+
+.alertas-carrusel .alerta-termica {
+    flex: 0 0 210px;
+    scroll-snap-align: start;
+}
+
+.alertas-carrusel-boton {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #22a7f0);
+    color: #fff;
+    font-size: 1.5rem;
+    line-height: 1;
+    box-shadow: 0 8px 16px rgba(37, 99, 235, .3);
+    cursor: pointer;
+    transition: transform .2s ease, opacity .2s ease;
+}
+
+.alertas-carrusel-boton:hover:not(:disabled) {
+    transform: scale(1.08);
+}
+
+.alertas-carrusel-boton:disabled {
+    opacity: .35;
+    cursor: default;
+}
+
+.alertas-carrusel.sin-desplazamiento .alertas-carrusel-boton {
+    display: none;
+}
+
+/* Tarjetas de alerta: texto legible sobre la foto */
+.alerta-termica {
+    font-family: inherit;
+    text-align: left;
+}
+
+.alerta-termica::after {
+    background: linear-gradient(180deg, rgba(6, 34, 74, .1) 0%, rgba(6, 34, 74, .7) 45%, rgba(6, 34, 74, .96) 100%);
+}
+
+.alerta-termica-zona strong {
+    text-align: left;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, .5);
+}
+
+.alerta-termica-zona span,
+.alerta-termica-riesgo > span:not(.alerta-termica-nivel) {
+    color: #ffffff;
+    opacity: .92;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, .5);
+}
+
+.alerta-termica-temperatura strong {
+    font-family: inherit;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, .45);
+}
+
+.alerta-termica-umbral,
+.alerta-termica-hora {
+    color: #ffffff;
+    opacity: .85;
+}
+
+/* ---------- Histórico de temporadas ---------- */
+.tarjeta-historico {
+    padding: 1.3rem;
+    border-radius: 24px;
+    background: linear-gradient(160deg, #ffffff 0%, #eef6ff 100%);
+    box-shadow: 0 14px 34px rgba(11, 58, 115, .12);
+}
+
+.tarjeta-historico > .titulo-tarjeta {
+    grid-column: 1 / -1;
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+
+.formulario-historico {
+    position: relative;
+    gap: .9rem;
+    padding: 1.1rem;
+    border-radius: 22px;
+    background: linear-gradient(175deg, #0b3a73 0%, #06224a 100%);
+    color: #e6f1ff;
+    box-shadow: 0 14px 28px rgba(6, 34, 74, .35);
+}
+
+.formulario-titulo {
+    margin: 0 0 .2rem;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.formulario-titulo::before {
+    content: "";
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #22a7f0;
+    box-shadow: 0 0 0 4px rgba(34, 167, 240, .25);
+}
+
+.formulario-historico label {
+    color: #bcd8f5;
+    font-size: .78rem;
+    font-weight: 600;
+}
+
+.formulario-historico input[type="date"] {
+    width: 100%;
+    margin-top: .3rem;
+    padding: .5rem .6rem;
+    border: 0;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #0b1f3a;
+    font: inherit;
+    font-weight: 600;
+}
+
+.formulario-historico .meses {
+    margin: 0;
+    padding: .7rem;
+    border: 1px dashed rgba(255, 255, 255, .25);
+    border-radius: 16px;
+    color: #bcd8f5;
+}
+
+.formulario-historico .meses legend {
+    color: #bcd8f5;
+    font-size: .74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+.formulario-historico .meses-opciones {
+    gap: .4rem;
+}
+
+.formulario-historico .meses-opciones label {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    min-width: 46px;
+    padding: .3rem .4rem;
+    border: 1px solid rgba(255, 255, 255, .18);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .06);
+    color: #cfe3ff;
+    font-size: .76rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color .2s ease, box-shadow .2s ease;
+}
+
+.formulario-historico .meses-opciones label:has(input:checked) {
+    background: linear-gradient(90deg, #2563eb, #22a7f0);
+    border-color: transparent;
+    color: #ffffff;
+    box-shadow: 0 6px 14px rgba(34, 167, 240, .35);
+}
+
+#boton-historico,
+.boton-limpiar {
+    width: 100%;
+    min-height: 42px;
+    margin-top: 0;
+    border-radius: 14px;
+    font-weight: 700;
+    letter-spacing: .01em;
+}
+
+#boton-historico {
+    border: 0;
+    background: linear-gradient(90deg, #2563eb, #22a7f0);
+    color: #ffffff;
+    box-shadow: 0 10px 20px rgba(34, 167, 240, .35);
+}
+
+#boton-historico:hover {
+    filter: brightness(1.08);
+}
+
+.boton-limpiar {
+    border: 1px solid rgba(255, 255, 255, .35);
+    background: transparent;
+    color: #ffffff;
+}
+
+.boton-limpiar:hover,
+.boton-limpiar:focus-visible {
+    background: rgba(255, 255, 255, .1);
+    border-color: #ffffff;
+    color: #ffffff;
+}
+
+.historico-resultados {
+    gap: .8rem;
+}
+
+.historico-resumen,
+.historico-comparacion,
+.historico-calendario,
+.historico-grafico {
+    border-radius: 18px;
+    box-shadow: 0 10px 22px rgba(11, 58, 115, .08);
+}
+
+[data-theme="dark"] .tarjeta-historico {
+    background: #0f2643;
+}
+
+[data-theme="dark"] .formulario-historico {
+    background: linear-gradient(175deg, #0a2d5c 0%, #050f1f 100%);
+}
+
+@media (max-width: 560px) {
+    .alertas-carrusel .alerta-termica {
+        flex-basis: 170px;
+    }
+}
