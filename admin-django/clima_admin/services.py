@@ -20,6 +20,9 @@ class JavaClimateApi:
     def zones(self):
         return self._get_json("/api/zonas")
 
+    def weather(self):
+        return self._get_json("/api/weather")
+
     def rules(self):
         return self._get_json("/api/reglas")
 
