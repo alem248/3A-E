@@ -31,9 +31,37 @@ public class ZonaVulnerableEntity {
     @Column(name = "poligono", length = 2000)
     private String poligono;
 
+<<<<<<< HEAD
     @Column(name = "prioritaria", nullable = false, columnDefinition = "boolean default false")
     private boolean prioritaria = false;
 
+=======
+    @Column(name = "nombre", length = 120)
+    private String nombre;
+
+    @Column(name = "departamento", length = 80)
+    private String departamento;
+
+    @Column(name = "prioritaria", nullable = false, columnDefinition = "boolean default false")
+    private boolean prioritaria = false;
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getDepartamento() {
+        return departamento;
+    }
+
+    public void setDepartamento(String departamento) {
+        this.departamento = departamento;
+    }
+
+>>>>>>> feat(spring): entidades y repositorios de zonas vulnerables y TSM
     public Integer getId() {
         return id;
     }
