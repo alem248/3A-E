@@ -1,0 +1,275 @@
+/* Rediseño de la tarjeta del mapa: cabecera con selector Mapa/Satélite,
+   controles oscuros, botón para centrar, leyenda y pista. Solo presentación. */
+.tarjeta-mapa {
+    padding: 1.1rem 1.2rem 1.2rem;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #0c2340 0%, #0a1b33 100%);
+    border: 1px solid rgba(96, 165, 250, .25);
+    color: #e6f0ff;
+    box-shadow: 0 18px 40px rgba(2, 10, 24, .35);
+}
+
+.mapa-cabecera {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: .9rem;
+}
+
+.mapa-titulo {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.mapa-titulo .icono {
+    width: 20px;
+    height: 20px;
+    color: #60a5fa;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+}
+
+.mapa-subtitulo {
+    margin: .2rem 0 0;
+    font-size: .85rem;
+    color: #9db4d6;
+}
+
+.mapa-tipo {
+    display: inline-flex;
+    gap: .25rem;
+    padding: .25rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .06);
+    border: 1px solid rgba(255, 255, 255, .1);
+}
+
+.mapa-tipo-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    border: 0;
+    border-radius: 9px;
+    padding: .4rem .9rem;
+    background: transparent;
+    color: #9db4d6;
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.mapa-tipo-btn .icono {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+}
+
+.mapa-tipo-btn.activo {
+    background: #2f7fe6;
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(47, 127, 230, .4);
+}
+
+.mapa-tipo-btn:focus-visible {
+    outline: 2px solid #60a5fa;
+    outline-offset: 2px;
+}
+
+.tarjeta-mapa .mapa-contenedor {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .08);
+}
+
+.tarjeta-mapa #mapa {
+    height: clamp(320px, 46vh, 460px);
+    width: 100%;
+    border-radius: 16px;
+    background: #0a1b33;
+}
+
+.tarjeta-mapa .leaflet-control-zoom {
+    margin: 14px !important;
+    border: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .35);
+}
+
+.tarjeta-mapa .leaflet-control-zoom a {
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    background: #0f2440;
+    color: #e6f0ff;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.tarjeta-mapa .leaflet-control-zoom a:hover {
+    background: #17355d;
+    color: #fff;
+}
+
+.mapa-localizar {
+    position: absolute;
+    left: 14px;
+    top: 104px;
+    z-index: 900;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    background: #0f2440;
+    color: #e6f0ff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .35);
+    cursor: pointer;
+}
+
+.mapa-localizar:hover {
+    background: #17355d;
+    color: #fff;
+}
+
+.tarjeta-mapa .leyenda {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 900;
+    min-width: 200px;
+    padding: .7rem .85rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, .1);
+    background: rgba(8, 22, 42, .88);
+    backdrop-filter: blur(6px);
+    color: #e6f0ff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .3);
+}
+
+.tarjeta-mapa .leyenda h3 {
+    margin: 0 0 .5rem;
+    font-size: .8rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.tarjeta-mapa .leyenda ul {
+    display: grid;
+    gap: .45rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.tarjeta-mapa .leyenda li {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+    font-size: .78rem;
+    line-height: 1.3;
+}
+
+.tarjeta-mapa .leyenda .muestra-color {
+    flex: 0 0 12px;
+    width: 12px;
+    height: 12px;
+    margin-top: .2rem;
+    border-radius: 50%;
+}
+
+.mapa-pista {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    z-index: 900;
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    margin: 0;
+    padding: .45rem .75rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, .1);
+    background: rgba(8, 22, 42, .88);
+    color: #e6f0ff;
+    font-size: .8rem;
+}
+
+@media (max-width: 640px) {
+    .tarjeta-mapa .leyenda {
+        top: auto;
+        bottom: 56px;
+        right: 10px;
+        min-width: 0;
+        max-width: 58%;
+    }
+
+    .mapa-pista {
+        display: none;
+    }
+}
+
+/* Etiquetas de región dentro del mapa */
+.region-icono {
+    background: transparent;
+    border: 0;
+}
+
+.region-etiqueta {
+    display: grid;
+    gap: .15rem;
+    min-width: 150px;
+    padding: .45rem .6rem;
+    border-radius: 10px;
+    border-top: 3px solid var(--color-region);
+    background: rgba(8, 22, 42, .9);
+    color: #e6f0ff;
+    font-size: .72rem;
+    line-height: 1.3;
+    white-space: nowrap;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .35);
+}
+
+.region-etiqueta .region-nombre {
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--color-region);
+}
+
+.tarjeta-mapa .leyenda .leyenda-seccion {
+    margin-top: .8rem;
+}
+
+/* Leyenda: el bloque de El Niño se lee completo y la caja puede desplazarse */
+.tarjeta-mapa .leyenda {
+    max-height: calc(100% - 28px);
+    overflow-y: auto;
+}
+
+#leyenda-nino {
+    margin-top: .8rem;
+    padding-top: .6rem;
+    border-top: 1px solid rgba(255, 255, 255, .12);
+    font-size: .74rem;
+    line-height: 1.4;
+    color: #cfe0f5;
+}
+
+#leyenda-nino .leyenda-seccion {
+    margin: 0 0 .35rem;
+}
+
+#leyenda-nino p {
+    margin: .25rem 0;
+}
