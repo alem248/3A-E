@@ -1,0 +1,149 @@
+/* Bloque de sesion en la barra lateral y diálogo de inicio/registro. Solo presentación. */
+.sesion {
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+}
+
+.sesion[hidden],
+.sesion-anonima[hidden],
+.sesion-usuario[hidden] {
+    display: none !important;
+}
+
+.sesion-anonima,
+.sesion-usuario {
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+}
+
+.sesion-boton {
+    width: 100%;
+    padding: .5rem .7rem;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #2563eb, #22a7f0);
+    color: #fff;
+    font: inherit;
+    font-size: .85rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.sesion-boton.sesion-secundario {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, .4);
+}
+
+.sesion-nombre {
+    font-size: .85rem;
+    opacity: .9;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dialogo-sesion {
+    width: min(92vw, 380px);
+    padding: 1.4rem 1.4rem 1.2rem;
+    border: 0;
+    border-radius: 20px;
+    background: #ffffff;
+    color: #0b1f3a;
+    box-shadow: 0 24px 60px rgba(6, 34, 74, .35);
+}
+
+.dialogo-sesion::backdrop {
+    background: rgba(6, 34, 74, .55);
+}
+
+.dialogo-sesion h2 {
+    margin: 0 0 .8rem;
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.dialogo-cerrar {
+    position: absolute;
+    top: .6rem;
+    right: .8rem;
+    margin: 0;
+}
+
+.dialogo-cerrar button {
+    border: 0;
+    background: transparent;
+    color: #0b1f3a;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.dialogo-cerrar button:hover {
+    color: #2563eb;
+}
+
+.formulario-sesion {
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+}
+
+.formulario-sesion[hidden] {
+    display: none;
+}
+
+.formulario-sesion label {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+.formulario-sesion input {
+    padding: .55rem .65rem;
+    border: 1px solid #c9d8ea;
+    border-radius: 10px;
+    font: inherit;
+}
+
+.formulario-sesion > button[type="submit"] {
+    padding: .6rem;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #2563eb, #22a7f0);
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.enlace-cambio {
+    border: 0;
+    background: transparent;
+    color: #2563eb;
+    font: inherit;
+    font-size: .82rem;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.error-sesion {
+    min-height: 1.1rem;
+    margin: 0;
+    color: #dc2626;
+    font-size: .8rem;
+}
+
+/* Boton Admin: ahora es un enlace activo al panel de Django */
+.boton-admin {
+    opacity: 1;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.boton-admin:hover {
+    filter: brightness(1.06);
+}
