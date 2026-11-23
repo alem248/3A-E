@@ -1,5 +1,6 @@
 package com.tecsup.clima.persistence;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,4 +10,6 @@ public interface PreferenciaAlertaRepository extends JpaRepository<PreferenciaAl
 
     Optional<PreferenciaAlertaEntity> findByUsuarioAndNivelRiesgo(UsuarioEntity usuario,
                                                                   NivelRiesgoEntity nivelRiesgo);
+
+    List<PreferenciaAlertaEntity> findByUsuario(UsuarioEntity usuario);
 }
