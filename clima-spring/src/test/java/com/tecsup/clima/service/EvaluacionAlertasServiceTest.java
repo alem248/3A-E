@@ -39,6 +39,7 @@ class EvaluacionAlertasServiceTest {
     private final ZonaVulnerableRepository zonaRepository = mock(ZonaVulnerableRepository.class);
     private final NivelRiesgoRepository nivelRepository = mock(NivelRiesgoRepository.class);
     private final AlertaPreventivaRepository alertaRepository = mock(AlertaPreventivaRepository.class);
+    private final NotificacionService notificacionService = mock(NotificacionService.class);
 
     private final EvaluacionAlertasService service = new EvaluacionAlertasService(
         new ReglasAlertaProperties(false, List.of(
@@ -46,7 +47,7 @@ class EvaluacionAlertasServiceTest {
             new ReglaAlerta("Tumbes naranja", 1, 27.0, NivelRiesgo.NARANJA, "Atento", 12),
             new ReglaAlerta("Zona fantasma", 99, 20.0, NivelRiesgo.AMARILLO, "x", 1))),
         zonasService, zonaRepository, nivelRepository, alertaRepository,
-        Clock.fixed(Instant.from(AHORA), ZoneOffset.UTC));
+        Clock.fixed(Instant.from(AHORA), ZoneOffset.UTC), notificacionService);
 
     private final ZonaVulnerableEntity piura = zona(2);
     private final NivelRiesgoEntity rojo = nivel(4, "ROJO");
