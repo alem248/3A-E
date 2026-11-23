@@ -31,11 +31,6 @@ public class ZonaVulnerableEntity {
     @Column(name = "poligono", length = 2000)
     private String poligono;
 
-<<<<<<< HEAD
-    @Column(name = "prioritaria", nullable = false, columnDefinition = "boolean default false")
-    private boolean prioritaria = false;
-
-=======
     @Column(name = "nombre", length = 120)
     private String nombre;
 
@@ -61,7 +56,6 @@ public class ZonaVulnerableEntity {
         this.departamento = departamento;
     }
 
->>>>>>> feat(spring): entidades y repositorios de zonas vulnerables y TSM
     public Integer getId() {
         return id;
     }
