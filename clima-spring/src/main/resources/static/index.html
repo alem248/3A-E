@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clima Zona Costera</title>
+<<<<<<< HEAD
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="/css/estilos.css">
 </head>
@@ -131,5 +132,440 @@
     <script src="/js/historico-calendario.js"></script>
     <script src="/js/historico-grafico.js"></script>
     <script src="/js/historico.js"></script>
+=======
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="/css/estilos.css">
+    <link rel="stylesheet" href="/css/fotos-zonas.css">
+    <link rel="stylesheet" href="/css/pagina-principal.css">
+    <link rel="stylesheet" href="/css/carrusel-historico.css">
+    <link rel="stylesheet" href="/css/noticias.css?v=7">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/llamativo.css">
+    <link rel="stylesheet" href="/css/pulido.css">
+    <link rel="stylesheet" href="/css/paseo.css">
+    <link rel="stylesheet" href="/css/sesion.css">
+    <link rel="stylesheet" href="/css/notificaciones.css">
+    <link rel="stylesheet" href="/css/escena-lateral.css">
+    <link rel="stylesheet" href="/css/escena-cabecera.css">
+    <link rel="stylesheet" href="/css/mapa-diseno.css?v=2">
+    <link rel="stylesheet" href="/css/clima-zona.css?v=2">
+    <link rel="stylesheet" href="/css/clima-detalle.css">
+    <link rel="stylesheet" href="/css/ubicacion-diseno.css">
+    <style>#alertas[hidden] { display: none !important; }</style>
+    <link rel="stylesheet" href="/css/usuario-panel.css?v=1">
+</head>
+<body class="panel-body">
+    <div class="panel">
+        <aside class="barra-lateral" aria-label="Navegación principal">
+            <a class="marca" href="#inicio">
+                <svg class="marca-icono" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+                    <circle cx="26" cy="24" r="12" fill="#ffd166"/>
+                    <g stroke="#ffd166" stroke-width="3" stroke-linecap="round"><path d="M26 4v4M8 24h4M12 10l3 3M40 10l-3 3"/></g>
+                    <path d="M18 52a10 10 0 0 1 1-20 13 13 0 0 1 24 3 9 9 0 0 1 1 17z" fill="#ffffff"/>
+                </svg>
+                <span class="marca-texto">
+                    <strong>Clima Zona Costera</strong>
+                    <small>Tu clima, en tiempo real</small>
+                </span>
+            </a>
+
+            <div class="sesion" aria-live="polite">
+                <div id="sesion-anonima" class="sesion-anonima">
+                    <button type="button" id="boton-iniciar" class="sesion-boton">Iniciar sesión</button>
+                    <button type="button" id="boton-registrarse" class="sesion-boton sesion-secundario">Registrarse</button>
+                </div>
+                <div id="sesion-usuario" class="sesion-usuario" hidden>
+                    <span id="sesion-nombre" class="sesion-nombre"></span>
+                    <button type="button" id="boton-notificaciones" class="sesion-boton sesion-campana" aria-expanded="false" aria-controls="panel-notificaciones">
+                        🔔 Notificaciones <span id="contador-notificaciones" class="contador-notificaciones" hidden>0</span>
+                    </button>
+                    <section id="panel-notificaciones" class="panel-notificaciones" hidden aria-label="Mis notificaciones">
+                        <ul id="lista-notificaciones" class="lista-notificaciones"></ul>
+                    </section>
+                    <a id="enlace-admin" class="sesion-boton sesion-admin" href="http://localhost:8000/cuentas/desde-spring/?next=/" hidden>Panel de administración</a>
+                    <button type="button" id="boton-cerrar-sesion" class="sesion-boton sesion-secundario">Cerrar sesión</button>
+                </div>
+            </div>
+
+            <nav class="navegacion">
+                <a class="nav-item activo" href="#inicio">
+                    <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+                    Inicio
+                </a>
+                <a class="nav-item" href="#mapa-seccion">
+                    <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                    Mapa de la zona
+                </a>
+                <a class="nav-item" href="#historico">
+                    <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h6"/></svg>
+                    Noticias e histórico
+                </a>
+            </nav>
+
+            <div class="separador" aria-hidden="true"></div>
+
+            <nav class="navegacion navegacion-secundaria" aria-label="Herramientas">
+                <a class="nav-item" role="button" tabindex="0" data-filtro-alerta="AMARILLO">
+                    <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+                    Alertas térmicas bajas
+                </a>
+                <a class="nav-item" role="button" tabindex="0" data-filtro-alerta="NARANJA">
+                    <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z"/></svg>
+                    Alertas térmicas altas
+                </a>
+                <form action="/preferencias" method="get" class="formulario-nav">
+                    <input type="hidden" name="usuarioId" value="1">
+                    <button class="nav-item nav-boton" type="submit">
+                        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21h4"/></svg>
+                        Configurar alertas
+                    </button>
+                </form>
+                <a class="nav-item" href="/simulacion.html">
+                    <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg>
+                    Simulador de escenarios de alerta
+                </a>
+            </nav>
+
+
+            <div class="escena-lateral" aria-hidden="true">
+            </div>
+        </aside>
+
+        <main class="contenido" id="inicio">
+            <header class="cabecera-panel">
+                <div class="escena" aria-hidden="true">
+                    <svg viewBox="0 0 640 200" preserveAspectRatio="xMidYMid slice" focusable="false">
+                        <defs>
+                            <linearGradient id="cielo-dia" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0" stop-color="#1d6fb0"/>
+                                <stop offset="1" stop-color="#7fc4f0"/>
+                            </linearGradient>
+                            <linearGradient id="cielo-lluvia" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0" stop-color="#1b2a44"/>
+                                <stop offset="1" stop-color="#3b5577"/>
+                            </linearGradient>
+                        </defs>
+                        <rect class="escena-cielo-lluvia" width="640" height="200" fill="url(#cielo-lluvia)"/>
+                        <rect class="escena-cielo-dia" width="640" height="200" fill="url(#cielo-dia)"/>
+                        <g class="escena-sol">
+                            <circle cx="520" cy="60" r="34" fill="#ffd166"/>
+                            <g stroke="#ffd166" stroke-width="5" stroke-linecap="round"><path d="M520 12v8M472 60h8M560 60h8M486 26l6 6M554 26l-6 6"/></g>
+                        </g>
+                        <g class="escena-nubes" fill="#ffffff">
+                            <path d="M430 92a22 22 0 0 1 4-43 30 30 0 0 1 57 6 18 18 0 0 1 2 37z" opacity=".95"/>
+                            <path d="M240 58a18 18 0 0 1 3-35 24 24 0 0 1 46 5 15 15 0 0 1 2 30z" opacity=".8"/>
+                        </g>
+                        <g class="escena-lluvia" stroke="#cfe6ff" stroke-width="2" stroke-linecap="round">
+                            <line x1="60" y1="20" x2="54" y2="34"/><line x1="110" y1="10" x2="104" y2="24"/>
+                            <line x1="160" y1="30" x2="154" y2="44"/><line x1="210" y1="14" x2="204" y2="28"/>
+                            <line x1="300" y1="8" x2="294" y2="22"/><line x1="350" y1="26" x2="344" y2="40"/>
+                            <line x1="400" y1="12" x2="394" y2="26"/><line x1="460" y1="34" x2="454" y2="48"/>
+                            <line x1="20" y1="48" x2="14" y2="62"/><line x1="260" y1="40" x2="254" y2="54"/>
+                        </g>
+                        <rect x="0" y="170" width="640" height="30" fill="#1e88c7" opacity=".6"/>
+                        <g class="escena-persona" fill="#0a2a52">
+                            <circle cx="300" cy="138" r="7"/>
+                            <path d="M300 146 L300 166" stroke="#0a2a52" stroke-width="5" stroke-linecap="round"/>
+                            <path class="pierna pierna-a" d="M300 166 L292 182" stroke="#0a2a52" stroke-width="4" stroke-linecap="round"/>
+                            <path class="pierna pierna-b" d="M300 166 L308 182" stroke="#0a2a52" stroke-width="4" stroke-linecap="round"/>
+                            <path class="brazo brazo-a" d="M300 150 L290 160" stroke="#0a2a52" stroke-width="4" stroke-linecap="round"/>
+                            <path class="brazo brazo-b" d="M300 150 L310 160" stroke="#0a2a52" stroke-width="4" stroke-linecap="round"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="cabecera-texto-panel">
+                    <p class="saludo">¡Hola! <span aria-hidden="true">👋</span></p>
+                    <h1>Clima Zona Costera</h1>
+                    <p class="subtitulo">Información climática en tiempo real</p>
+                </div>
+                <div class="cabecera-acciones">
+                    <span class="cabecera-pildora">
+                        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                        Costa del Perú
+                    </span>
+                    <button type="button" id="boton-tema" class="boton-tema" aria-pressed="false">
+                        <span aria-hidden="true">☾</span> Modo oscuro
+                    </button>
+                </div>
+            </header>
+
+            <div class="row g-3 cuadricula-panel paseo-zona">
+                <div class="paseo" aria-hidden="true">
+                    <div class="paseo-lluvia"></div>
+                    
+                </div>
+                <div class="col-12 col-xl-6">
+                    <section class="tarjeta-clima tarjeta-clima-actual h-100" aria-labelledby="titulo-clima">
+                        <h2 id="titulo-clima" class="titulo-tarjeta">
+                            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4 4 0 0 1 0-8 6 6 0 0 1 11.5 2A3.5 3.5 0 0 1 18 18z"/></svg>
+                            Clima actual
+                        </h2>
+                        <div class="clima-principal">
+                            <svg class="icono-sol" viewBox="0 0 96 96" aria-hidden="true" focusable="false">
+                                <circle cx="36" cy="36" r="18" fill="#ffd166"/>
+                                <g stroke="#ffd166" stroke-width="4" stroke-linecap="round">
+                                    <path d="M36 6v8M6 36h8M10 10l6 6M62 10l-6 6M10 62l6-6"/>
+                                </g>
+                                <path d="M30 82a14 14 0 0 1 2-28 18 18 0 0 1 34 4 12 12 0 0 1 2 24z" fill="#ffffff" opacity="0.95"/>
+                            </svg>
+                            <div>
+                                <span class="etiqueta">Temperatura actual</span>
+                                <p class="temperatura-valor"><strong id="temperatura">Cargando...</strong></p>
+                            </div>
+                        </div>
+                        <dl class="datos-linea">
+                            <div>
+                                <dt>Latitud</dt>
+                                <dd id="latitud">—</dd>
+                            </div>
+                            <div>
+                                <dt>Longitud</dt>
+                                <dd id="longitud">—</dd>
+                            </div>
+                            <div>
+                                <dt>Actualizado</dt>
+                                <dd id="ultima-actualizacion">—</dd>
+                            </div>
+                        </dl>
+                        <div id="clima-detalle" class="clima-detalle" aria-live="polite"></div>
+                    </section>
+                </div>
+
+                <div class="col-12 col-xl-6">
+                    <section class="tarjeta-clima tarjeta-ubicacion h-100" aria-labelledby="titulo-ubicacion">
+                        <h2 id="titulo-ubicacion" class="titulo-tarjeta">
+                            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                            Mi ubicación
+                        </h2>
+                        <p class="descripcion">Comprueba si estás dentro de una zona vulnerable.</p>
+                        <button type="button" id="boton-ubicacion">Usar mi ubicación (GPS)</button>
+                        <p id="estado-ubicacion" role="status"></p>
+                        <div id="clima-zona" hidden></div>
+                        <p id="comparacion-ubicacion" role="status"></p>
+                    </section>
+                </div>
+
+                <div class="col-12" id="mapa-seccion">
+                    <section class="tarjeta-clima tarjeta-mapa" aria-labelledby="titulo-mapa">
+                        <header class="mapa-cabecera">
+                            <div>
+                                <h2 id="titulo-mapa" class="mapa-titulo">
+                                    <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>
+                                    Mapa de la zona
+                                </h2>
+                                <p class="mapa-subtitulo">Consulta las zonas con mayor riesgo climático</p>
+                            </div>
+                            <div class="mapa-tipo" role="group" aria-label="Tipo de mapa">
+                                <button type="button" class="mapa-tipo-btn activo" data-capa="Normal (calles)" aria-pressed="true">
+                                    <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/></svg>Mapa
+                                </button>
+                                <button type="button" class="mapa-tipo-btn" data-capa="Satelital" aria-pressed="false">
+                                    <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/></svg>Satélite
+                                </button>
+                            </div>
+                        </header>
+                        <div class="mapa-contenedor">
+                            <div id="mapa"></div>
+                            <button type="button" id="mapa-localizar" class="mapa-localizar" aria-label="Centrar en Perú" title="Centrar en Perú">
+                                <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="7"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+                            </button>
+                            <aside id="leyenda" class="leyenda"></aside>
+                            <p class="mapa-pista">
+                                <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+                                Haz clic para ver la zona y doble clic para agregar un favorito
+                            </p>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="col-12" id="alertas" hidden>
+                    <section class="tarjeta-clima alertas-termicas" aria-labelledby="titulo-alertas" aria-live="polite">
+                        <div class="alertas-encabezado">
+                            <div>
+                                <p class="alertas-sobrelinea">Monitoreo de temperatura superficial del mar</p>
+                                <h2 id="titulo-alertas">Alertas térmicas</h2>
+                                <p class="alertas-descripcion">Temperatura observada y nivel de riesgo por zona costera.</p>
+                            </div>
+                            <span id="alertas-contador" class="alertas-contador">Cargando</span>
+                        </div>
+                        <div class="alertas-controles">
+                            <ul id="alertas-resumen" class="alertas-resumen" aria-label="Cantidad de alertas por nivel" hidden></ul>
+                            <label id="alertas-filtro-contenedor" class="alertas-filtro" for="alertas-filtro" hidden>
+                                Filtrar por nivel
+                                <select id="alertas-filtro">
+                                    <option value="TODAS">Todos los niveles</option>
+                                </select>
+                            </label>
+                        </div>
+                        <p id="alertas-estado" class="alertas-estado" role="status">Las lecturas aparecerán aquí cuando estén disponibles.</p>
+                        <ul id="alertas-lista" class="alertas-lista" aria-label="Alertas activas por zona"></ul>
+                        <p id="alertas-sin-datos" class="alertas-sin-datos" hidden></p>
+                        <p class="alertas-nota">Umbrales TSM: vigilancia desde 24 °C · alto desde 26 °C · crítico desde 28 °C.</p>
+                    </section>
+                </div>
+
+                <div class="col-12" id="noticias-para-ti" hidden>
+                    <section class="tarjeta-clima noticias-para-ti" aria-labelledby="titulo-noticias-para-ti" aria-live="polite">
+                        <h2 id="titulo-noticias-para-ti" class="titulo-tarjeta">
+                            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10v4h4l7 4V6L7 10z"/><path d="M18 8a5 5 0 0 1 0 8"/></svg>
+                            Noticias para ti
+                        </h2>
+                        <p class="noticias-para-ti-zona" id="noticias-para-ti-zona"></p>
+                        <div class="noticias-para-ti-lista" id="noticias-para-ti-lista"></div>
+                    </section>
+                </div>
+
+                <div class="col-12" id="historico">
+                    <section class="tarjeta-clima tarjeta-historico" aria-labelledby="titulo-historico">
+                        <h2 id="titulo-historico" class="titulo-tarjeta">
+                            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+                            Histórico de temporadas
+                        </h2>
+                        <form id="formulario-historico" class="formulario-historico">
+                        <p class="formulario-titulo">Filtros de consulta</p>
+                            <label>Desde
+                                <input type="date" id="historico-desde" name="desde" value="2020-01-01" required>
+                            </label>
+                            <label>Hasta
+                                <input type="date" id="historico-hasta" name="hasta" value="2023-12-31" required>
+                            </label>
+                            <fieldset class="meses">
+                                <legend>Meses de temporada</legend>
+                                <div class="meses-opciones">
+                                <label><input type="checkbox" name="mes" value="1" checked> Ene</label>
+                                <label><input type="checkbox" name="mes" value="2" checked> Feb</label>
+                                <label><input type="checkbox" name="mes" value="3" checked> Mar</label>
+                                <label><input type="checkbox" name="mes" value="4" checked> Abr</label>
+                                <label><input type="checkbox" name="mes" value="5"> May</label>
+                                <label><input type="checkbox" name="mes" value="6"> Jun</label>
+                                <label><input type="checkbox" name="mes" value="7"> Jul</label>
+                                <label><input type="checkbox" name="mes" value="8"> Ago</label>
+                                <label><input type="checkbox" name="mes" value="9"> Sep</label>
+                                <label><input type="checkbox" name="mes" value="10"> Oct</label>
+                                <label><input type="checkbox" name="mes" value="11"> Nov</label>
+                                <label><input type="checkbox" name="mes" value="12" checked> Dic</label>
+                                </div>
+                            </fieldset>
+                            <button type="submit" id="boton-historico">Consultar</button>
+                        </form>
+                        <p id="estado-historico" role="status"></p>
+                        <div id="historico-resumen" class="historico-resumen" hidden></div>
+                        <div id="historico-comparacion" class="historico-comparacion" role="region" aria-label="Comparación con la situación actual" hidden></div>
+                        <div id="historico-calendario" class="historico-calendario" hidden></div>
+                        <div id="historico-grafico" class="historico-grafico" hidden></div>
+                        <p class="historico-fuente">Fuente: Open-Meteo Historical Weather API. Los registros ausentes se muestran como espacios en el gráfico.</p>
+                    </section>
+                </div>
+            </div>
+
+            <footer class="pie-pagina">
+                <div class="pie-tarjeta">
+                    <span class="pie-icono" aria-hidden="true">
+                        <svg class="icono" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+                    </span>
+                    <div class="pie-texto">
+                        <strong>Fuente de datos</strong>
+                        <span>Open-Meteo: pronóstico actual y archivo histórico.</span>
+                    </div>
+                </div>
+                <div class="pie-tarjeta">
+                    <span class="pie-icono" aria-hidden="true">
+                        <svg class="icono" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>
+                    </span>
+                    <div class="pie-texto">
+                        <strong>Zonas vulnerables</strong>
+                        <span>El riesgo se calcula con la temperatura observada en cada zona.</span>
+                    </div>
+                </div>
+                <div class="pie-tarjeta">
+                    <span class="pie-icono" aria-hidden="true">
+                        <svg class="icono" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg>
+                    </span>
+                    <div class="pie-texto">
+                        <strong>Simulador</strong>
+                        <span>Prueba escenarios sin registrar alertas. <a href="/simulacion.html">Abrir</a></span>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <dialog id="dialogo-sesion" class="dialogo-sesion" aria-labelledby="titulo-dialogo">
+        <form method="dialog" class="dialogo-cerrar"><button type="submit" aria-label="Cerrar">✕</button></form>
+        <h2 id="titulo-dialogo">Iniciar sesión</h2>
+        <form id="formulario-login" class="formulario-sesion" novalidate>
+            <label>Correo
+                <input type="email" name="email" required autocomplete="email" maxlength="160">
+            </label>
+            <label>Contraseña
+                <input type="password" name="password" required minlength="8" autocomplete="current-password" maxlength="72">
+            </label>
+            <p class="error-sesion" role="alert"></p>
+            <button type="submit">Entrar</button>
+            <button type="button" class="enlace-cambio" data-ir="registro">¿No tienes cuenta? Regístrate</button>
+        </form>
+        <form id="formulario-registro" class="formulario-sesion" hidden novalidate>
+            <label>Nombre
+                <input type="text" name="nombres" required maxlength="120" autocomplete="name">
+            </label>
+            <label>Correo
+                <input type="email" name="email" required autocomplete="email" maxlength="160">
+            </label>
+            <label>Contraseña (mínimo 8 caracteres)
+                <input type="password" name="password" required minlength="8" autocomplete="new-password" maxlength="72">
+            </label>
+            <p class="error-sesion" role="alert"></p>
+            <button type="submit">Crear cuenta</button>
+            <button type="button" class="enlace-cambio" data-ir="login">Ya tengo cuenta</button>
+        </form>
+    </dialog>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/js/clima.js"></script>
+    <script src="/js/mapa.js?v=15"></script>
+    <script src="/js/ubicacion.js?v=8"></script>
+    <script src="/js/iconos-clima.js"></script>
+    <script src="/js/clima-zona.js?v=6"></script>
+    <script src="/js/clima-detalle.js?v=3"></script>
+    <script src="/js/tema.js"></script>
+    <script src="/js/alertas-temperatura.js"></script>
+    <script src="/js/usuario-panel.js?v=5"></script>
+    <script src="/js/carrusel-alertas.js"></script>
+    <script src="/js/paseo.js"></script>
+    <script src="/js/escena-3d.js"></script>
+    <script src="/js/escena-cabecera-3d.js"></script>
+    <script src="/js/sesion.js"></script>
+    <script src="/js/notificaciones.js"></script>
+    <script src="/js/fotos-zonas.js"></script>
+    <script src="/js/historico-calendario.js"></script>
+    <script src="/js/carrusel-historico.js"></script>
+    <script src="/js/noticias.js"></script>
+    <script src="/js/noticias-para-ti.js?v=6"></script>
+    <script src="/js/historico-grafico.js"></script>
+    <script src="/js/historico.js"></script>
+    <script>
+        (() => {
+            const seccionAlertas = document.getElementById('alertas');
+            const filtroAlertas = document.getElementById('alertas-filtro');
+
+            document.querySelectorAll('[data-filtro-alerta]').forEach((enlace) => {
+                enlace.addEventListener('click', (evento) => {
+                    evento.preventDefault();
+                    seccionAlertas.hidden = false;
+                    if (filtroAlertas) {
+                        filtroAlertas.value = enlace.dataset.filtroAlerta;
+                        filtroAlertas.dispatchEvent(new Event('change'));
+                    }
+                    seccionAlertas.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            });
+
+            document.querySelector('a.nav-item[href="#inicio"]').addEventListener('click', () => {
+                seccionAlertas.hidden = true;
+            });
+        })();
+    </script>
+>>>>>>> ed5e4de (feat(spring): página principal)
 </body>
 </html>

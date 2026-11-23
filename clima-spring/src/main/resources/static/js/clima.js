@@ -30,9 +30,6 @@ async function cargarClima() {
         const datos = await respuesta.json();
         renderizarClima(datos);
 
-        if (window.mapa && window.mapa.centrarEnLatLng) {
-            window.mapa.centrarEnLatLng(datos.latitude, datos.longitude);
-        }
     } catch (error) {
         console.error('Error al obtener datos del clima:', error);
     }
