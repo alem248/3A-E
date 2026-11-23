@@ -43,9 +43,18 @@ const HistoricoPagina = (() => {
         return valor === null || valor === undefined ? '—' : valor.toFixed(1) + unidad;
     }
 
-    function renderizarResumen(resumen) {
+    /** Promedio de la temperatura media diaria ((máx + mín) / 2) de los registros con ambos valores. */
+    function temperaturaMediaPeriodo(registros) {
+        const medias = (registros || [])
+            .filter((r) => typeof r.temperaturaMaxC === 'number' && typeof r.temperaturaMinC === 'number')
+            .map((r) => (r.temperaturaMaxC + r.temperaturaMinC) / 2);
+        return medias.length ? medias.reduce((suma, valor) => suma + valor, 0) / medias.length : null;
+    }
+
+    function renderizarResumen(resumen, registros) {
         const datos = [
             ['Días considerados', String(resumen.diasConsiderados)],
+            ['Temp. media del periodo', formatear(temperaturaMediaPeriodo(registros), ' °C')],
             ['Temp. máxima promedio', formatear(resumen.temperaturaMaxPromedioC, ' °C')],
             ['Temp. mínima promedio', formatear(resumen.temperaturaMinPromedioC, ' °C')],
             ['Lluvia total', formatear(resumen.precipitacionTotalMm, ' mm')]
@@ -63,7 +72,7 @@ const HistoricoPagina = (() => {
     }
 
     function renderizarResultado(datos) {
-        renderizarResumen(datos.resumen);
+        renderizarResumen(datos.resumen, datos.registros);
         calendarioEl.hidden = false;
         graficoEl.hidden = false;
         HistoricoCalendario.renderizar(calendarioEl, datos.registros);
