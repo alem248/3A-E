@@ -1,0 +1,38 @@
+/* Estilos compartidos de Usuarios, Alertas, Estadísticas y Configuración (tema azul marino). */
+.pagina .acciones{display:flex;justify-content:flex-end;margin-bottom:14px}
+.pagina .tabla-wrap{overflow-x:auto;border:1px solid #1f3d63;border-radius:10px}
+.pagina table{width:100%;border-collapse:collapse;font-size:13px;color:#e5edf7}
+.pagina th{background:#0b1f3a;color:#9fb8d6;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;text-align:left;padding:11px 14px;border-bottom:1px solid #1f3d63;white-space:nowrap}
+.pagina td{padding:12px 14px;border-bottom:1px solid #1f3d63;vertical-align:middle}
+.pagina tbody tr:last-child td{border-bottom:0}
+.pagina tbody tr:hover td{background:#132c4f}
+.pagina td.vacio{text-align:center;color:#8fa6c4;padding:26px 14px}
+.pagina .dash-card h2{display:block}
+.pagina .dash-card > h2{margin-bottom:14px}
+.pagina .form-control{background:#0b1f3a;color:#e5edf7;border:1px solid #1f3d63;border-radius:8px}
+.pagina .form-control::placeholder{color:#7f97b5;opacity:1}
+.pagina .form-control:focus{border-color:#38bdf8;box-shadow:0 0 0 2px rgba(56,189,248,.2);background:#0b1f3a;color:#e5edf7}
+.pagina .buscador{margin-bottom:14px}
+.pagina .btn-acc,.pagina .btn-acc-link{display:inline-block;border:0;border-radius:8px;background:linear-gradient(135deg,#2563eb,#0ea5e9);color:#fff!important;padding:9px 16px;font:600 13px system-ui;text-decoration:none;cursor:pointer}
+.pagina .btn-acc:hover,.pagina .btn-acc-link:hover{filter:brightness(1.08)}
+.pagina .btn-outline-primary{color:#7fb6ff;border:1px solid #2f5f86;background:transparent}
+.pagina .btn-outline-primary:hover{background:#16365f;color:#fff}
+.pagina .btn-outline-danger{color:#f87171;border:1px solid #7f2d36;background:transparent}
+.pagina .btn-outline-danger:hover{background:#4a1f26;color:#fff}
+.pagina .badge.text-bg-primary{background:#1d4f8a!important;color:#e5edf7;font-weight:600}
+.pagina .alert-danger{background:#482b27;color:#ffc2ae;border:1px solid #7f3d33}
+.pagina .notice{padding:12px 15px;border-radius:8px;margin-bottom:14px;font-size:13px}
+.pagina .notice.success{background:#163a2d;color:#9ee0bd;border:1px solid #1f5a40}
+.pagina .notice.error{background:#482b27;color:#ffc2ae;border:1px solid #7f3d33}
+.pagina .ajustes-form{display:grid;gap:10px;max-width:280px;margin-top:14px}
+.pagina .ajustes-form label{font-size:11px;font-weight:600;color:#9fb8d6;letter-spacing:.3px}
+.pagina .ajustes-form .btn-acc{justify-self:start}
+.pagina .dash-card p{font-size:13px;color:#9fb8d6;margin:0}
+.pagina .dash-card p strong{color:#e5edf7}
+.pagina .dash-card .kpi{margin-bottom:0}
+.pagina .vacio-bloque{padding:26px 10px;text-align:center;color:#8fa6c4}
+.pagina .vacio-bloque p{margin:0 0 4px;color:#e5edf7;font-size:14px}
+.pagina .vacio-bloque small{font-size:12px}
+.pagina .regla-nombre{font-weight:600;color:#fff}
+.pagina .umbral{font-weight:700;font-variant-numeric:tabular-nums;color:#fff}
+.pagina .nivel-pill{display:inline-flex;align-items:center;gap:8px;background:#0b1f3a;border:1px solid #1f3d63;border-radius:20px;padding:4px 12px 4px 10px;font-size:12px}
