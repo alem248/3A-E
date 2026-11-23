@@ -1,0 +1,196 @@
+/* Escena costera de la barra lateral: lluvia, viento, río, muñeco y mareas. Solo presentación. */
+.escena-lateral {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 300px;
+    margin-top: .6rem;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(2, 18, 42, .45);
+}
+
+/* Lluvia: cada capa es un patrón que se desplaza una vuelta completa */
+.escena-lateral .esc-lluvia-frente {
+    animation: caer-frente 1.1s linear infinite;
+}
+
+.escena-lateral .esc-lluvia-fondo {
+    animation: caer-fondo 2.2s linear infinite;
+}
+
+@keyframes caer-frente {
+    from { transform: translateY(-70px); }
+    to { transform: translateY(0); }
+}
+
+@keyframes caer-fondo {
+    from { transform: translateY(-90px); }
+    to { transform: translateY(0); }
+}
+
+/* Viento: líneas que cruzan el cielo y palmeras que se inclinan */
+.escena-lateral .esc-viento {
+    animation: viento-cruza 3s ease-in-out infinite;
+}
+
+@keyframes viento-cruza {
+    0%, 100% { transform: translateX(0); opacity: .2; }
+    50% { transform: translateX(26px); opacity: .6; }
+}
+
+.escena-lateral .esc-palma {
+    animation: mecer-palma 3.2s ease-in-out infinite alternate;
+}
+
+.escena-lateral .esc-palma-2 {
+    animation-duration: 3.8s;
+    animation-delay: -1s;
+}
+
+.escena-lateral .esc-palma-viento {
+    animation: mecer-viento 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes mecer-palma {
+    from { transform: rotate(-3deg); }
+    to { transform: rotate(3deg); }
+}
+
+@keyframes mecer-viento {
+    from { transform: rotate(-8deg); }
+    to { transform: rotate(3deg); }
+}
+
+/* Río: el agua fluye hacia el mar */
+.escena-lateral .esc-agua {
+    stroke-dasharray: 16 22;
+    animation: fluir-agua 1.6s linear infinite;
+}
+
+.escena-lateral .esc-agua-2 {
+    stroke-dasharray: 6 40;
+    animation: fluir-agua 1s linear infinite;
+}
+
+@keyframes fluir-agua {
+    to { stroke-dashoffset: -38px; }
+}
+
+/* Mareas: el mar sube y baja, las olas avanzan y el oleaje se mueve */
+.escena-lateral .esc-marea {
+    animation: marea 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes marea {
+    from { transform: translateY(0); }
+    to { transform: translateY(-8px); }
+}
+
+.escena-lateral .esc-ola {
+    animation: ola-avanza 1.6s linear infinite;
+}
+
+.escena-lateral .esc-ola-2 {
+    animation: ola-avanza-inversa 2.2s linear infinite;
+}
+
+@keyframes ola-avanza {
+    from { transform: translateX(-48px); }
+    to { transform: translateX(0); }
+}
+
+@keyframes ola-avanza-inversa {
+    from { transform: translateX(0); }
+    to { transform: translateX(-48px); }
+}
+
+.escena-lateral .esc-cresta {
+    animation: cresta-sube 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes cresta-sube {
+    from { transform: translateY(0); }
+    to { transform: translateY(-5px); }
+}
+
+.escena-lateral .esc-remolino {
+    stroke-dasharray: 180 60;
+    animation: remolino 3s linear infinite;
+}
+
+.escena-lateral .esc-remolino-2 {
+    stroke-dasharray: 150 50;
+    animation-duration: 3.6s;
+}
+
+@keyframes remolino {
+    from { stroke-dashoffset: 0; }
+    to { stroke-dashoffset: -240px; }
+}
+
+/* Muñeco: rebota al caminar y mueve las piernas en contrafase */
+.escena-lateral .esc-persona {
+    overflow: visible;
+    animation: rebote-persona .5s ease-in-out infinite alternate;
+}
+
+@keyframes rebote-persona {
+    from { transform: translateY(0); }
+    to { transform: translateY(-2px); }
+}
+
+.escena-lateral .esc-pierna {
+    transform-box: view-box;
+    animation: paso-persona 1s ease-in-out infinite alternate;
+}
+
+.escena-lateral .esc-pierna-2 {
+    animation-delay: -.5s;
+}
+
+.escena-lateral .esc-brazo {
+    transform-box: view-box;
+    transform-origin: 20px 56px;
+    animation: brazo-persona 1s ease-in-out infinite alternate;
+}
+
+@keyframes paso-persona {
+    from { transform: rotate(-18deg); }
+    to { transform: rotate(18deg); }
+}
+
+@keyframes brazo-persona {
+    from { transform: rotate(14deg); }
+    to { transform: rotate(-14deg); }
+}
+
+@media (max-width: 960px) {
+    .escena-lateral {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .escena-lateral * {
+        animation: none !important;
+    }
+}
+
+/* Profundidad: los elementos cercanos proyectan sombra sobre las capas de atrás */
+.escena-lateral .esc-sombra {
+    filter: drop-shadow(0 4px 5px rgba(3, 12, 28, .45));
+}
+
+/* Escena 3D: el lienzo de Three.js reemplaza a la versión 2.5D */
+.escena-lateral {
+    background: linear-gradient(180deg, #0a1322 0%, #1d2f47 30%, #3d5a78 55%, #0f3a66 100%);
+}
+
+.escena-lateral canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
