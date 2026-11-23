@@ -1,0 +1,157 @@
+/* Panel de usuario con sesion iniciada: zona guardada y ubicaciones favoritas. Solo presentacion. */
+.resumen-saludo {
+    margin: .4rem 0 0;
+    color: #bae6fd;
+    font-size: .95rem;
+}
+
+.resumen-saludo[hidden],
+.panel-usuario[hidden] {
+    display: none;
+}
+
+.panel-usuario {
+    display: grid;
+    gap: .7rem;
+    margin: 0 0 1rem;
+    padding: 1.1rem 1.2rem;
+    border: 1px solid rgba(96, 165, 250, .22);
+    border-radius: 18px;
+    background: linear-gradient(160deg, #10284a 0%, #0b1d36 100%);
+    color: #e6f1ff;
+}
+
+.panel-usuario-titulo {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.panel-usuario-subtitulo {
+    margin: .4rem 0 0;
+    font-size: .95rem;
+    color: #9db4d6;
+}
+
+.panel-usuario-zona {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem .8rem;
+}
+
+.panel-usuario-nivel {
+    padding: .2rem .6rem;
+    border: 1px solid var(--nivel-color);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--nivel-color) 22%, transparent);
+    font-size: .8rem;
+    font-weight: 700;
+}
+
+.panel-usuario-detalle,
+.panel-usuario-vacio,
+.panel-usuario-favorita-texto small {
+    color: #9db4d6;
+    font-size: .88rem;
+}
+
+.panel-usuario-detalle {
+    width: 100%;
+    margin: 0;
+}
+
+.panel-usuario-lista {
+    display: grid;
+    gap: .5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.panel-usuario-favorita {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .6rem;
+    padding: .6rem .8rem;
+    border: 1px solid rgba(96, 165, 250, .2);
+    border-radius: 12px;
+    background: rgba(11, 29, 54, .85);
+}
+
+.panel-usuario-favorita-texto {
+    display: grid;
+    gap: .1rem;
+}
+
+.panel-usuario-quitar {
+    padding: .35rem .7rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.panel-usuario-quitar {
+    border: 1px solid rgba(248, 113, 113, .5);
+    background: transparent;
+    color: #fca5a5;
+}
+
+.panel-usuario-mensaje {
+    min-height: 1.2em;
+    margin: 0;
+    color: #86efac;
+    font-size: .85rem;
+}
+
+.panel-usuario-mensaje.error {
+    color: #fca5a5;
+}
+
+/* Accion de favorita dentro del popup del mapa (fondo claro de Leaflet). */
+.popup-favorita {
+    margin-top: .6rem;
+    padding-top: .5rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.popup-favorita-form {
+    display: grid;
+    gap: .35rem;
+}
+
+.popup-favorita-nombre {
+    padding: .4rem .5rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    color: #0f172a;
+}
+
+.popup-favorita-boton {
+    padding: .4rem .6rem;
+    border: 0;
+    border-radius: 8px;
+    background: #2563eb;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.popup-favorita-aviso {
+    margin: 0;
+    color: #334155;
+    font-size: .8rem;
+}
+
+/* Ubicaciones favoritas: nombre, temperatura actual y accion de quitar. */
+.panel-usuario-favorita-nombre {
+    flex: 1;
+    min-width: 0;
+}
+
+.panel-usuario-temperatura {
+    margin-right: .6rem;
+    color: #fde68a;
+    font-weight: 700;
+    white-space: nowrap;
+}

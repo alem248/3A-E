@@ -1,9 +1,6 @@
-// Solicita el permiso de ubicacion (GPS), captura las coordenadas del dispositivo
-// y las registra en el backend: POST /api/usuarios/{id}/ubicacion
+// Solicita el permiso de ubicación (GPS), captura las coordenadas del dispositivo
+// y las registra en el backend para el usuario que tiene la sesión iniciada.
 const ubicacion = (() => {
-    // Usuario demo sembrado por DatosInicialesLoader (hasta que exista login)
-    const USUARIO_ID = 1;
-
     const OPCIONES_GPS = {
         enableHighAccuracy: true,
         timeout: 15000,
@@ -34,6 +31,17 @@ const ubicacion = (() => {
         }
     }
 
+    // Devuelve el id del usuario con sesión iniciada, o null si no hay sesión
+    async function usuarioActual() {
+        try {
+            const respuesta = await fetch('/api/auth/yo', { credentials: 'same-origin' });
+            const datos = await respuesta.json();
+            return datos.autenticado ? datos.id : null;
+        } catch (error) {
+            return null;
+        }
+    }
+
     // La primera llamada hace que el navegador muestre el diálogo de permiso
     function obtenerPosicionActual() {
         return new Promise((resolve, reject) => {
@@ -56,9 +64,15 @@ const ubicacion = (() => {
     }
 
     async function registrarEnServidor(posicion) {
-        const respuesta = await fetch(`/api/usuarios/${USUARIO_ID}/ubicacion`, {
+        const usuarioId = await usuarioActual();
+        if (usuarioId === null) {
+            throw new Error('Inicia sesión para guardar tu ubicación.');
+        }
+
+        const respuesta = await fetch(`/api/usuarios/${usuarioId}/ubicacion`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
             body: JSON.stringify(posicion)
         });
         const cuerpo = await respuesta.json();
@@ -83,7 +97,7 @@ const ubicacion = (() => {
         return `Ubicación guardada (${coordenadas}). Estás en ${registrada.zona.nombre}.${alertas}`;
     }
 
-    // Clasifica la última ubicación frente a las zonas del fenómeno (GET /api/usuarios/{id}/comparacion)
+    // Clasifica la última ubicación frente a las zonas del fenómeno
     function describirComparacion(comparacion) {
         if (comparacion.estado === 'EN_ZONA') {
             return `Comparación: estás dentro de ${comparacion.zonaNombre} (nivel ${comparacion.nivelRiesgo}).`;
@@ -100,7 +114,13 @@ const ubicacion = (() => {
         const contenedor = document.getElementById('comparacion-ubicacion');
 
         try {
-            const respuesta = await fetch(`/api/usuarios/${USUARIO_ID}/comparacion`);
+            const usuarioId = await usuarioActual();
+            if (usuarioId === null) {
+                contenedor.textContent = '';
+                return;
+            }
+
+            const respuesta = await fetch(`/api/usuarios/${usuarioId}/comparacion`, { credentials: 'same-origin' });
             if (!respuesta.ok) {
                 contenedor.textContent = '';
                 return;
@@ -119,13 +139,21 @@ const ubicacion = (() => {
 
         try {
             const posicion = await obtenerPosicionActual();
+
+            // Se centra antes de guardar: así el mapa va a tu ubicación aunque el registro falle.
+            if (window.mapa && window.mapa.centrarEnLatLng) {
+                window.mapa.centrarEnLatLng(posicion.latitud, posicion.longitud, 18);
+            }
+            document.dispatchEvent(new CustomEvent('ubicacion-gps', {
+                detail: { latitud: posicion.latitud, longitud: posicion.longitud }
+            }));
+
             const registrada = await registrarEnServidor(posicion);
             mostrarEstado(describir(registrada));
             await cargarComparacion();
 
-            if (window.mapa && window.mapa.centrarEnLatLng) {
-                window.mapa.centrarEnLatLng(posicion.latitud, posicion.longitud);
-            }
+            document.dispatchEvent(new CustomEvent('ubicacion-cambio', { detail: registrada }));
+
         } catch (error) {
             mostrarEstado(error.message);
         } finally {
