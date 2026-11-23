@@ -1,0 +1,19 @@
+{% extends "clima_admin/base.html" %}
+{% block page_content %}
+<div class="container-fluid px-0" style="max-width: 40rem">
+  <a href="{% url 'clima_admin:usuarios' %}">← Volver a usuarios</a>
+  <h1 class="h3 my-3">Nuevo usuario</h1>
+  <form method="post" class="section-card p-4">{% csrf_token %}
+    <div class="mb-3"><label class="form-label" for="nombres">Nombre</label><input class="form-control" id="nombres" name="nombres" value="{{ valores.nombres|default:'' }}"></div>
+    <div class="mb-3"><label class="form-label" for="email">Correo</label><input class="form-control" id="email" name="email" type="email" value="{{ valores.email|default:'' }}" required></div>
+    <div class="mb-3"><label class="form-label" for="password">Contraseña (mínimo 8 caracteres)</label><input class="form-control" id="password" name="password" type="password" minlength="8" required></div>
+    <div class="mb-3">
+      <label class="form-label" for="rol">Rol</label>
+      <select class="form-select" id="rol" name="rol">
+        {% for rol in roles %}<option value="{{ rol }}" {% if rol == valores.rol %}selected{% endif %}>{{ rol }}</option>{% endfor %}
+      </select>
+    </div>
+    <button class="btn btn-primary" type="submit">Crear usuario</button>
+  </form>
+</div>
+{% endblock %}

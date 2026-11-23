@@ -1,0 +1,30 @@
+{% extends "clima_admin/base.html" %}
+{% block page_content %}
+<div class="container py-4" style="max-width: 40rem">
+  <a href="{% url 'clima_admin:usuarios' %}">← Volver a usuarios</a>
+  <h1 class="h3 my-3">{{ usuario.nombres|default:usuario.email }}</h1>
+  <p class="text-muted">
+    Zona actual: {% if usuario.zonaNombre %}{{ usuario.zonaNombre }}{% elif usuario.tieneUbicacion %}Fuera de zonas vulnerables{% else %}sin ubicación registrada{% endif %}
+  </p>
+  <form method="post" action="{% url 'clima_admin:usuario_detalle' usuario_id=usuario.id %}">{% csrf_token %}
+    <div class="mb-3"><label class="form-label" for="nombres">Nombre</label><input class="form-control" id="nombres" name="nombres" value="{{ usuario.nombres|default:'' }}"></div>
+    <div class="mb-3"><label class="form-label" for="email">Correo</label><input class="form-control" id="email" name="email" type="email" value="{{ usuario.email }}" required></div>
+    <div class="mb-3">
+      <label class="form-label" for="rol">Rol</label>
+      <select class="form-select" id="rol" name="rol">
+        {% for rol in roles %}<option value="{{ rol }}" {% if rol == usuario.rol %}selected{% endif %}>{{ rol }}</option>{% endfor %}
+      </select>
+    </div>
+    <fieldset class="mb-3">
+      <legend class="h6">Alertas que recibe</legend>
+      {% for p in usuario.preferencias %}
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="nivel_{{ p.nivelRiesgoId }}" name="nivel_{{ p.nivelRiesgoId }}" {% if p.activa %}checked{% endif %}>
+        <label class="form-check-label" for="nivel_{{ p.nivelRiesgoId }}">{{ p.nombre }} · {{ p.descripcion }}</label>
+      </div>
+      {% endfor %}
+    </fieldset>
+    <button class="btn btn-primary" type="submit">Guardar cambios</button>
+  </form>
+</div>
+{% endblock %}
