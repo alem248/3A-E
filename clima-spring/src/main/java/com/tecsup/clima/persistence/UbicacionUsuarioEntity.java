@@ -105,4 +105,26 @@ public class UbicacionUsuarioEntity {
     public void setZona(ZonaVulnerableEntity zona) {
         this.zona = zona;
     }
+
+    @Column(name = "departamento", length = 80)
+    private String departamento;
+
+    public String getDepartamento() {
+        return departamento;
+    }
+
+    public void setDepartamento(String departamento) {
+        this.departamento = departamento;
+    }
+
+    @Column(name = "distrito", length = 80)
+    private String distrito;
+
+    public String getDistrito() {
+        return distrito;
+    }
+
+    public void setDistrito(String distrito) {
+        this.distrito = distrito;
+    }
 }

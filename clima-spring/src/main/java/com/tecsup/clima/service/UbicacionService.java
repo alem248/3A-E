@@ -1,5 +1,8 @@
 package com.tecsup.clima.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Clock;
@@ -7,6 +10,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +36,8 @@ import com.tecsup.clima.persistence.ZonaVulnerableRepository;
 @Service
 public class UbicacionService {
 
+    private static final Logger log = LoggerFactory.getLogger(UbicacionService.class);
+
     /** Las coordenadas se guardan con 6 decimales (~0.1 m), suficiente para GPS. */
     private static final int DECIMALES = 6;
 
@@ -41,6 +47,7 @@ public class UbicacionService {
     private final AlertaPreventivaRepository alertaRepository;
     private final UbicacionProperties properties;
     private final Clock clock;
+    private DepartamentoResolver departamentoResolver;
 
     public UbicacionService(UsuarioRepository usuarioRepository,
                             UbicacionUsuarioRepository ubicacionRepository,
@@ -71,6 +78,8 @@ public class UbicacionService {
         ubicacion.setFechaRegistro(fecha);
         ubicacion.setZona(zonaQueContiene(latitud, longitud).orElse(null));
 
+        ubicacion.setDepartamento(resolverDepartamento(usuario, latitud, longitud));
+        ubicacion.setDistrito(resolverDistrito(usuario, latitud, longitud));
         return aRespuesta(ubicacionRepository.save(ubicacion));
     }
 
@@ -107,6 +116,44 @@ public class UbicacionService {
             throw new DatoInvalidoException("Precision GPS insuficiente: " + precisionMetros.intValue()
                 + " m (maximo " + properties.precisionMaximaM() + " m)");
         }
+    }
+
+    @Autowired(required = false)
+    public void setDepartamentoResolver(DepartamentoResolver departamentoResolver) {
+        this.departamentoResolver = departamentoResolver;
+    }
+
+    /** Reutiliza el departamento anterior si el usuario sigue cerca (~5 km); si no, consulta el servicio. */
+    private String resolverDepartamento(UsuarioEntity usuario, double latitud, double longitud) {
+        if (departamentoResolver == null) {
+            log.warn("DepartamentoResolver no inyectado; departamento no se resuelve");
+            return null;
+        }
+        Optional<UbicacionUsuarioEntity> anterior =
+            ubicacionRepository.findFirstByUsuarioOrderByFechaRegistroDescIdDesc(usuario);
+        if (anterior.isPresent() && anterior.get().getDepartamento() != null
+            && Math.abs(anterior.get().getLatitud().doubleValue() - latitud) < 0.05
+            && Math.abs(anterior.get().getLongitud().doubleValue() - longitud) < 0.05) {
+            return anterior.get().getDepartamento();
+        }
+        String resultado = departamentoResolver.resolver(latitud, longitud).orElse(null);
+        log.info("Departamento resuelto para {}, {}: {}", latitud, longitud, resultado);
+        return resultado;
+    }
+
+    /** Reutiliza el distrito anterior si el usuario sigue en el mismo punto; si no, consulta el servicio. */
+    private String resolverDistrito(UsuarioEntity usuario, double latitud, double longitud) {
+        if (departamentoResolver == null) {
+            return null;
+        }
+        Optional<UbicacionUsuarioEntity> anterior =
+            ubicacionRepository.findFirstByUsuarioOrderByFechaRegistroDescIdDesc(usuario);
+        if (anterior.isPresent() && anterior.get().getDistrito() != null
+            && Math.abs(anterior.get().getLatitud().doubleValue() - latitud) < 0.01
+            && Math.abs(anterior.get().getLongitud().doubleValue() - longitud) < 0.01) {
+            return anterior.get().getDistrito();
+        }
+        return departamentoResolver.resolverDistrito(latitud, longitud).orElse(null);
     }
 
     private UsuarioEntity buscarUsuario(int usuarioId) {
