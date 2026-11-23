@@ -1,0 +1,99 @@
+/* Panel "Mi ubicación": acentos de color, chips y botón con brillo. Solo presentación. */
+.tarjeta-ubicacion {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(160deg, #10284a 0%, #0b1d36 100%);
+    border: 1px solid rgba(96, 165, 250, .22);
+}
+
+.tarjeta-ubicacion::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: linear-gradient(90deg, #38bdf8, #34d399, #facc15, #fb923c, #f87171);
+}
+
+.tarjeta-ubicacion .descripcion {
+    opacity: .75;
+}
+
+#boton-ubicacion {
+    border: 0;
+    border-radius: 999px;
+    padding: .55rem 1.2rem;
+    background: linear-gradient(90deg, #2563eb, #38bdf8);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 8px 22px rgba(56, 189, 248, .35);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+#boton-ubicacion:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(56, 189, 248, .5);
+}
+
+#boton-ubicacion:disabled {
+    opacity: .6;
+}
+
+#estado-ubicacion {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    margin: .6rem 0 0;
+    padding: .3rem .7rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .06);
+    font-size: .8rem;
+}
+
+#estado-ubicacion:not(:empty)::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #94a3b8;
+    box-shadow: 0 0 0 4px rgba(148, 163, 184, .2);
+}
+
+#estado-ubicacion:empty {
+    display: none;
+}
+
+#clima-zona h3 {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+#clima-zona h3::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #34d399, #38bdf8);
+    box-shadow: 0 0 10px rgba(52, 211, 153, .7);
+}
+
+.zona-dato {
+    position: relative;
+    border-top: 3px solid var(--tono, #94a3b8);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--tono, #94a3b8) 14%, transparent), rgba(255, 255, 255, .03));
+    transition: transform .2s ease;
+}
+
+.zona-dato:hover {
+    transform: translateY(-2px);
+}
+
+.zona-titulo {
+    color: var(--tono, #94a3b8);
+    opacity: 1;
+    font-weight: 700;
+}
+
+.zona-dia {
+    border-top: 2px solid rgba(255, 255, 255, .15);
+}
