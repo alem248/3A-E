@@ -1,0 +1,76 @@
+/* Panel "Tu zona hoy" dentro de la tarjeta de ubicación. Solo presentación. */
+#clima-zona {
+    margin-top: .9rem;
+}
+
+#clima-zona[hidden] {
+    display: none;
+}
+
+#clima-zona h3 {
+    margin: 0 0 .5rem;
+    font-size: .95rem;
+    font-weight: 700;
+}
+
+.zona-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .5rem;
+}
+
+.zona-dato {
+    display: grid;
+    gap: .15rem;
+    padding: .6rem .7rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .06);
+    border: 1px solid rgba(255, 255, 255, .1);
+}
+
+.zona-titulo {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    opacity: .7;
+}
+
+.zona-dato strong {
+    font-size: .95rem;
+}
+
+.zona-dato small {
+    font-size: .78rem;
+    opacity: .8;
+}
+
+.zona-subtitulo {
+    margin: .9rem 0 .5rem;
+    font-size: .85rem;
+    font-weight: 700;
+}
+
+.zona-pronostico {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+    gap: .45rem;
+}
+
+.zona-dia {
+    display: grid;
+    gap: .1rem;
+    padding: .5rem .45rem;
+    border-radius: 12px;
+    text-align: center;
+    background: rgba(255, 255, 255, .05);
+    border: 1px solid rgba(255, 255, 255, .08);
+}
+
+.zona-dia strong {
+    font-size: .85rem;
+}
+
+.zona-dia small {
+    font-size: .72rem;
+    opacity: .8;
+}
