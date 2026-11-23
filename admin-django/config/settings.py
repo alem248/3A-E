@@ -27,6 +27,8 @@ TEMPLATES = [{
     "OPTIONS": {"context_processors": [
         "django.template.context_processors.request", "django.contrib.auth.context_processors.auth",
         "django.contrib.messages.context_processors.messages",
+        "clima_admin.context_processors.spring_web_url",
+        "clima_admin.context_processors.nav_sidebar",
     ]},
 }]
 DATABASES = {"default": {
@@ -41,7 +43,8 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "/cuentas/login/"
-JAVA_API_BASE_URL = os.environ.get("JAVA_API_BASE_URL", "http://localhost:8080").rstrip("/")
+SPRING_WEB_URL = os.environ.get("SPRING_WEB_URL", "http://localhost:8081").rstrip("/")
+JAVA_API_BASE_URL = os.environ.get("JAVA_API_BASE_URL", "http://localhost:8081").rstrip("/")
 JAVA_API_TIMEOUT_SECONDS = float(os.environ.get("JAVA_API_TIMEOUT_SECONDS", "5"))
 JAVA_API_HISTORY_PATH = os.environ.get(
     "JAVA_API_HISTORY_PATH", "/api/v1/admin/zonas/{zone_id}/historial"
