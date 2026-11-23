@@ -7,17 +7,102 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'clima_admin/css/dashboard.css' %}">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/historial.css' %}">
+  <link rel="stylesheet" href="{% static 'clima_admin/css/panel-diseno.css' %}">
 {% endblock %}
 {% block page_content %}
 <div class="history-page" id="history-app" data-history-url-template="{% url 'clima_admin:zone_history' 'ZONE_ID' %}" data-trend-url-template="{% url 'clima_admin:zone_trend' 'ZONE_ID' %}">
-    {{ zones|json_script:"zone-catalog" }}
-    <section class="page-heading"><div><p class="eyebrow">MONITOREO Y ANÁLISIS</p><h1>Historial climático</h1><p>Lecturas y tendencias de riesgo por región.</p></div></section>
-    <section class="metric-grid history-metrics" aria-label="Resumen del sistema"><article class="metric-card"><span class="metric-icon blue">⌖</span><div><small>Zonas monitoreadas</small><strong>{{ zones_count }}</strong></div></article><a class="metric-card metric-link" href="{% url 'clima_admin:alerts' %}"><span class="metric-icon amber">⚠</span><div><small>Alertas activas</small><strong>{{ active_alerts }}</strong></div></a><article class="metric-card"><span class="metric-icon green">▥</span><div><small>Disponibilidad de lecturas</small><strong>{% if zones_count %}{{ available_percent }}%{% else %}—{% endif %}</strong></div></article></section>
-    {% if api_unavailable %}<div class="connection-banner error" role="status"><span class="banner-icon">!</span><div><strong>Sin conexión con Spring</strong><p>Verifica que el servicio Java esté en ejecución.</p></div></div>{% else %}<div class="connection-banner" role="status"><span class="banner-icon">i</span><div><strong>Conexión con Spring establecida</strong><p>Catálogo de zonas cargado correctamente.</p></div><button id="refresh-zones" class="refresh-button" type="button">↻ Actualizar</button></div>{% endif %}
-    <section class="chart-card" aria-labelledby="chart-title"><div class="card-heading"><div><h2 id="chart-title">Lecturas históricas</h2><p id="chart-caption">Selecciona una región y zona para cargar las lecturas.</p></div><div class="chart-tools"><span id="trend-indicator" class="trend-badge hidden" role="status" aria-live="polite"><span aria-hidden="true">⚠</span> Tendencia en empeoramiento</span><span id="alert-indicator" class="alert-badge hidden" role="status" aria-live="polite"><span aria-hidden="true">●</span> <span id="alert-text">Alerta activa</span></span></div></div><div class="history-filters"><div class="zone-picker"><label for="region-select">Región</label><select id="region-select" aria-label="Seleccionar región"><option value="">Selecciona una región…</option>{% for region in regions %}<option value="{{ region }}">{{ region }}</option>{% endfor %}</select></div><div class="zone-picker"><label for="zone-select">Zona monitoreada</label><select id="zone-select" aria-label="Seleccionar zona" disabled><option value="">Selecciona una región primero</option></select></div></div><div id="history-status" class="chart-status">Esperando selección.</div><div class="chart-wrap"><canvas id="history-chart" aria-label="Gráfico del historial por zona" role="img"></canvas></div><footer class="chart-footer"><span><i class="legend-dot"></i> Temperatura superficial del mar</span><span id="trend-caption">Evaluación de tendencia: últimos 3 registros</span></footer></section>
-    <p class="page-foot">Clima Costero · Panel de administración</p>
+  {{ zones|json_script:"zone-catalog" }}
+
+  <section class="hero-admin">
+    <div>
+      <p class="crumbs">Inicio › Monitoreo y análisis</p>
+      <h1>Historial climático</h1>
+      <p class="texto-suave mb-0">Lecturas y tendencias de riesgo por región. <span class="estado-activo">En vivo</span></p>
+    </div>
+    <div class="hero-admin-hora">Actualizado<strong>{% now "H:i" %}</strong></div>
+  </section>
+
+  {% if api_unavailable %}
+  <div class="hist-banner error" role="status">
+    <span class="banner-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 8v5"/><path d="M12 17h.01"/></svg></span>
+    <div><strong>Sin conexión con Spring</strong><p>Verifica que el servicio Java esté en ejecución.</p></div>
+  </div>
+  {% else %}
+  <div class="hist-banner" role="status">
+    <span class="banner-icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 8v4"/><path d="M12 16h.01"/></svg></span>
+    <div><strong>Conexión con Spring establecida</strong><p>Catálogo de zonas cargado correctamente.</p></div>
+    <button id="refresh-zones" class="hist-refresh" type="button">Actualizar</button>
+  </div>
+  {% endif %}
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-md-4">
+      <article class="kpi kpi-cian">
+        <div class="kpi-icono" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+        <div><span>Zonas monitoreadas</span><strong>{{ zones_count }}</strong></div>
+      </article>
+    </div>
+    <div class="col-12 col-md-4">
+      <a class="kpi kpi-rojo" href="{% url 'clima_admin:alerts' %}">
+        <div class="kpi-icono" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
+        <div><span>Alertas activas</span><strong>{{ active_alerts }}</strong></div>
+      </a>
+    </div>
+    <div class="col-12 col-md-4">
+      <article class="kpi kpi-verde">
+        <svg class="ring" viewBox="0 0 44 44" aria-hidden="true"><circle class="ring-base" cx="22" cy="22" r="18"/><circle class="ring-val" cx="22" cy="22" r="18" stroke-dasharray="{% widthratio available_percent 100 113 %} 113"/></svg>
+        <div><span>Disponibilidad de lecturas</span><strong>{% if zones_count %}{{ available_percent }}%{% else %}—{% endif %}</strong></div>
+      </article>
+    </div>
+  </div>
+
+  <section class="dash-card panel-brillo">
+    <div class="hist-card-head">
+      <div>
+        <h2 id="chart-title">Lecturas históricas</h2>
+        <p id="chart-caption">Selecciona una región y una zona para cargar las lecturas.</p>
+      </div>
+      <div class="hist-tools">
+        <span id="trend-indicator" class="trend-badge hidden" role="status" aria-live="polite">Tendencia en empeoramiento</span>
+        <span id="alert-indicator" class="alert-badge hidden" role="status" aria-live="polite"><span id="alert-text">Alerta activa</span></span>
+      </div>
+    </div>
+
+    <div class="hist-filters">
+      <div class="hist-field">
+        <label for="region-select">Región</label>
+        <select id="region-select" aria-label="Seleccionar región">
+          <option value="">Selecciona una región…</option>
+          {% for region in regions %}<option value="{{ region }}">{{ region }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="hist-field">
+        <label for="zone-select">Zona monitoreada</label>
+        <select id="zone-select" aria-label="Seleccionar zona" disabled>
+          <option value="">Selecciona una región primero</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="history-status" class="hist-status" aria-live="polite"></div>
+
+    <div class="hist-chart-wrap">
+      <canvas id="history-chart" aria-label="Gráfico del historial por zona" role="img"></canvas>
+      <div id="chart-empty" class="hist-empty">
+        <div class="hist-empty-icono" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div>
+        <p id="chart-empty-text">Selecciona una región y una zona para ver sus lecturas.</p>
+      </div>
+    </div>
+
+    <footer class="hist-footer">
+      <span><i class="legend-dot"></i> Temperatura superficial del mar</span>
+      <span id="trend-caption">Evaluación de tendencia: últimos 3 registros</span>
+    </footer>
+  </section>
+
+  <p class="page-foot">Clima Costero · Panel de administración</p>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script src="{% static 'clima_admin/js/history.js' %}" defer></script>
 {% endblock %}
-
